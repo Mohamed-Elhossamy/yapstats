@@ -1,0 +1,44 @@
+{
+  "name": "yapstats",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-12",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/recap-email/*"
+    ]
+  },
+  "vars": {
+    "SITE_ORIGIN": "https://yapstats.tech",
+    "RECAP_EMAIL_ENABLED": "false",
+    "EMAIL_FROM": "Yapstats <recaps@send.yapstats.tech>",
+    "POLAR_PRODUCT_ID": "841fbefd-ac86-43e7-b15d-353606206595"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "DELIVERIES",
+        "class_name": "RecapDelivery"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "recap-email-v1",
+      "new_sqlite_classes": [
+        "RecapDelivery"
+      ]
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "RECAP_UPLOAD_LIMIT",
+      "namespace_id": "186712",
+      "simple": {
+        "limit": 3,
+        "period": 60
+      }
+    }
+  ]
+}

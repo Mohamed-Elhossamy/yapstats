@@ -1,0 +1,2688 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HwQ9ZTyKVPGnOy0ecVrhfFnsVcmB6bp8VDgylwk15iU='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
+<meta property="og:title" content="Yapstats: who really runs the group chat?">
+<meta property="og:description" content="Turn a WhatsApp or Instagram chat export into recap cards for your group. Start free. Your chat stays on your device.">
+<meta property="og:image" content="https://yapstats.tech/og.png">
+<meta property="og:url" content="https://yapstats.tech/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://yapstats.tech/">
+
+<title>Yapstats: group chat recap cards</title>
+<style>
+:root {
+  color-scheme: light dark;
+  --ink: #f3f5f2;
+  --surface: #fff;
+  --surface-raised: #e9ece6;
+  --text: #17171c;
+  --muted: #575a63;
+  --line: #d6d9d3;
+  --accent: #ffd92e;
+  --on-accent: #17171c;
+  --action: #17171c;
+  --on-action: #fff;
+  --danger: #a8261d;
+  --shadow: #17171c32;
+  --radius: 24px;
+  --ease: cubic-bezier(.2,.75,.25,1);
+  --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #131317;
+    --surface: #1e1e25;
+    --surface-raised: #2a2a33;
+    --text: #f1f2ee;
+    --muted: #a6a8b2;
+    --line: #34353f;
+    --action: var(--accent);
+    --on-action: var(--on-accent);
+    --danger: #ff9c92;
+    --shadow: #0008;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ink); color: var(--text); font: 1rem/1.55 var(--sans); }
+h1, h2, h3, p, ol, figure { margin: 0; }
+h1, h2, h3 { line-height: 1.02; letter-spacing: -.045em; text-wrap: balance; }
+a { color: inherit; }
+button, input, select { font: inherit; }
+button { color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 5px; }
+mark { display: inline-block; padding: .02em .22em; border-radius: 8px; background: var(--accent); color: var(--on-accent); transform: rotate(-1.2deg); }
+.wrap { width: min(100% - 2 * clamp(20px, 4.5vw, 56px), 1160px); margin-inline: auto; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.icon { width: 1.2em; height: 1.2em; flex: none; vertical-align: middle; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.top { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-size: 1.23rem; font-weight: 850; letter-spacing: -.055em; text-decoration: none; }
+.brand-icon { display: grid; place-items: center; width: 30px; aspect-ratio: 1; border-radius: 8px; background: var(--accent); color: var(--on-accent); }
+.top-link { font-size: .88rem; font-weight: 700; text-underline-offset: .22em; color: var(--muted); }
+.top-link:hover { color: var(--text); }
+.hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(42px, 6vw, 90px) clamp(48px, 7vw, 104px); }
+.hero-copy { display: grid; gap: 18px; min-width: 0; }
+.hero h1 { font-size: clamp(2.8rem, 6.4vw, 6rem); font-weight: 890; line-height: 1.02; letter-spacing: -.075em; }
+.hero h1 mark { white-space: nowrap; margin-block-start: .07em; }
+.lede { color: var(--muted); font-size: clamp(1.04rem, 1.4vw, 1.22rem); max-width: 37ch; text-wrap: pretty; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 4px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; padding: 9px 19px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); font-weight: 740; line-height: 1.25; text-align: center; text-decoration: none; cursor: pointer; transition: transform 220ms var(--ease), background-color 220ms var(--ease), color 220ms var(--ease), border-color 220ms var(--ease); }
+.btn.primary { background: var(--action); color: var(--on-action); border-color: transparent; }
+.btn.primary:hover { background: color-mix(in srgb, var(--action), var(--on-action) 12%); }
+.btn.ghost:hover { background: var(--surface-raised); border-color: var(--muted); }
+.btn:active { transform: scale(.965); transition-duration: 90ms; }
+.btn:disabled { opacity: .42; cursor: default; transform: none; }
+.actions .btn { min-height: 55px; padding-inline: 20px; border-radius: 999px; }
+.vh:focus-visible + .btn { outline: 2px solid var(--text); outline-offset: 5px; }
+.file-note { color: var(--muted); font-size: .84rem; }
+.error { color: var(--danger); font-weight: 650; max-width: 48ch; }
+.hero.is-drop .actions .btn { outline: 3px solid var(--accent); outline-offset: 6px; }
+.fan { position: relative; isolation: isolate; aspect-ratio: 1.1; margin-inline: 4%; min-width: 0; }
+.sample { position: absolute; top: 50%; left: 50%; width: 48%; padding: 0; border: 0; border-radius: clamp(10px, 2vw, 20px); background: transparent; cursor: pointer; transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) rotate(var(--r)); -webkit-tap-highlight-color: transparent; }
+.sample:nth-child(1) { --x: -62%; --y: 5%; --r: -12deg; z-index: 1; }
+.sample:nth-child(2) { --x: 0%; --y: -4%; --r: -2deg; z-index: 3; }
+.sample:nth-child(3) { --x: 62%; --y: 6%; --r: 12deg; z-index: 2; }
+.sample img { display: block; width: 100%; height: auto; border-radius: inherit; box-shadow: 0 12px 22px var(--shadow); pointer-events: none; transition: transform 440ms var(--ease); }
+.sample:focus-visible, .sample[aria-pressed=true] { z-index: 5; }
+.sample:focus-visible img, .sample[aria-pressed=true] img { transform: translateY(-3%) rotate(calc(var(--r) * -.65)) scale(1.09); }
+@media (hover: hover) {
+  .sample:hover { z-index: 6; }
+  .sample:hover img { transform: translateY(-4%) rotate(calc(var(--r) * -.65)) scale(1.1); }
+}
+.band { padding-block: clamp(38px, 5vw, 66px); border-top: 1px solid var(--line); }
+.band h2 { font-size: clamp(1.9rem, 3.5vw, 3.15rem); }
+.note { color: var(--muted); font-size: .9rem; }
+.hero-offer { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 0; border-block: 1px solid var(--line); max-width: 540px; }
+.hero-offer strong { display: block; line-height: 1.3; }
+.hero-offer p { color: var(--muted); font-size: .84rem; line-height: 1.35; margin-top: 3px; }
+.hero-offer .offer-price { color: var(--muted); font-size: .85em; margin-left: .25em; }
+.mini-deck { position: relative; height: 38px; }
+.mini-deck i { position: absolute; left: 10px; top: 4px; width: 22px; height: 30px; border: 1px solid #17171c; border-radius: 4px; background: #ff8fbd; transform: translateX(-8px) rotate(-16deg); }
+.mini-deck i:nth-child(2) { background: #74c5ff; transform: translateX(8px) rotate(16deg); }
+.mini-deck i:last-child { background: var(--accent); transform: translateY(-2px); }
+.mini-deck i:last-child::after { content: ""; position: absolute; inset: 6px 5px; border-block: 1px solid #17171c; }
+.checkout-link { width: fit-content; font-size: .84rem; font-weight: 780; text-underline-offset: .25em; }
+.checkout-link:hover { text-decoration-thickness: 2px; }
+.recap-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(24px, 5vw, 64px); margin-top: 28px; }
+.recap-option { display: grid; align-content: start; gap: 10px; padding-top: 16px; border-top: 2px solid var(--line); }
+.recap-option h3 { font-size: clamp(1.35rem, 3vw, 1.8rem); text-align: left; }
+.recap-option p { color: var(--muted); max-width: 47ch; }
+.option-full { border-color: var(--accent); }
+.option-full mark { font-size: .67em; margin-inline-start: .25em; padding: .14em .36em; }
+.recap-privacy { margin-top: 22px; }
+.howto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
+.panel { border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(17px, 3vw, 30px); }
+.panel h3 { font-size: 1.35rem; margin-bottom: 14px; }
+.instagram-guide { grid-column: 1 / -1; }
+.thread-picker { max-width: 610px; padding-block: 48px; }
+.thread-picker .panel { background: var(--surface); display: grid; gap: 16px; }
+.thread-picker h2 { font-size: clamp(1.7rem, 5vw, 2.5rem); text-wrap: pretty; }
+.thread-picker .actions .btn { min-height: 45px; }
+.panel ol { padding-left: 1.3em; }
+.panel li { padding-left: .28em; margin-block: 7px; color: var(--muted); }
+.panel li::marker { color: var(--text); font-weight: 750; font-variant-numeric: tabular-nums; }
+.panel b { color: var(--text); }
+.pack { position: relative; display: grid; grid-template-columns: minmax(0, .83fr) minmax(0, 1.17fr); align-items: center; gap: clamp(14px, 3vw, 36px); width: min(100%, 660px); margin: 52px auto 0; padding: clamp(16px, 4vw, 30px); border: 2px solid #17171c; border-radius: 22px; background: #ffdc41; color: #17171c; box-shadow: 4px 5px 0 #17171c, 0 0 0 1px #ffdc41; scroll-margin-block-start: 18px; text-align: left; }
+.result:has(#gallery:not([hidden])) > .pack, #viewer[data-offer] ~ .pack { display: none; }
+.pack-copy { display: grid; align-content: center; gap: 10px; min-width: 0; }
+.pack-label { font-size: .69rem; font-weight: 850; text-transform: uppercase; letter-spacing: .1em; }
+.pack h3 { font-size: clamp(1.8rem, 5vw, 2.85rem); font-weight: 900; text-wrap: initial; }
+.pack-details { display: grid; gap: 5px; list-style: none; margin: 1px 0 3px; padding: 0; font-size: .88rem; line-height: 1.35; }
+.pack-details li { padding-left: 15px; position: relative; overflow-wrap: anywhere; }
+.pack-details li::before { content: "↳"; position: absolute; left: 0; font-weight: 800; }
+.pack-buy { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: fit-content; min-height: 44px; padding: 8px 14px; border: 1px solid #17171c; border-radius: 9px; background: #17171c; color: #fff; font-size: .88rem; font-weight: 800; text-decoration: none; transition: transform 200ms var(--ease), box-shadow 200ms var(--ease); }
+.pack-buy:hover { transform: translate(-2px, -2px); box-shadow: 2px 2px 0 #fff; }
+.pack :focus-visible { outline-color: #17171c; }
+.pack-buy:active { transform: translate(0, 0); box-shadow: none; }
+.pack-note { font-size: .72rem; line-height: 1.35; color: #443a22; }
+.pack-art { position: relative; isolation: isolate; width: min(100%, 225px); min-height: 154px; margin: auto; display: grid; place-items: center; }
+.pack-ticket { position: absolute; width: 52%; max-width: 114px; min-height: 90px; aspect-ratio: 4 / 5; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 4px; padding: 9px; border: 1px solid #17171c; border-radius: 9px; background: #ff8fbd; box-shadow: 0 3px 0 #17171c; transform: translate(var(--ticket-x), var(--ticket-y)) rotate(var(--ticket-angle)); }
+.pack-ticket:first-child { --ticket-x: -43%; --ticket-y: -8%; --ticket-angle: -15deg; }
+.pack-ticket:nth-child(2) { --ticket-x: 43%; --ticket-y: -8%; --ticket-angle: 15deg; background: #74c5ff; align-items: flex-end; text-align: right; }
+.pack-ticket:last-child { --ticket-x: 0%; --ticket-y: 13%; --ticket-angle: -3deg; width: 55%; background: #fffbf1; }
+.pack-ticket span { font-size: .56rem; line-height: 1.05; font-weight: 800; }
+.pack-ticket b { font-size: clamp(.7rem, 1.8vw, 1rem); line-height: .98; letter-spacing: -.045em; overflow-wrap: anywhere; }
+.pack-ticket i { width: 75%; height: 9px; background: repeating-linear-gradient(90deg,#17171c 0 1px,transparent 1px 3px,#17171c 3px 5px,transparent 5px 7px); }
+.pack--slide { width: min(100% - 10px, 500px); min-height: min(440px, max(270px, calc(100svh - var(--story-chrome)))); margin: 6px 5px; }
+.slide:not([aria-hidden]) .pack-ticket { animation: deal-ticket 620ms var(--ease) both; }
+.slide:not([aria-hidden]) .pack-ticket:nth-child(2) { animation-delay: 70ms; }
+.slide:not([aria-hidden]) .pack-ticket:last-child { animation-delay: 130ms; }
+@keyframes deal-ticket { from { transform: translate(0, 14%) rotate(-2deg) scale(.93); } to { transform: translate(var(--ticket-x), var(--ticket-y)) rotate(var(--ticket-angle)); } }
+.pack-cue { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 39px; margin: 6px auto 0; padding: 3px 8px; border: 0; background: transparent; color: var(--text); font-size: .78rem; font-weight: 740; cursor: pointer; }
+.pack-cue span:first-child { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; background: var(--accent); color: var(--on-accent); animation: offer-nudge 1100ms var(--ease) 3; }
+.pack-cue:hover #packCueText { text-decoration: underline; text-underline-offset: .22em; }
+@keyframes offer-nudge { 0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 #ffd92e65; } 45% { transform: translateY(3px); box-shadow: 0 0 0 5px #ffd92e00; } }
+.unlocked { padding: 10px 14px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-weight: 650; max-width: 48ch; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.guide-links { margin-top: 18px; }
+.foot { display: grid; gap: 6px; padding-block: 20px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
+.loading { min-height: min(650px, 76svh); display: grid; place-items: center; padding-block: 45px; }
+.loading-inner { width: min(100%, 360px); display: grid; justify-items: center; gap: 14px; text-align: center; }
+.loading-inner h2 { font-size: clamp(1.9rem, 6vw, 3.1rem); }
+.loader-art { position: relative; display: grid; place-items: center; width: 172px; height: 126px; margin-bottom: 8px; animation: loader-appear 420ms var(--ease) both; }
+@keyframes loader-appear { from { opacity: 0; scale: .94; } to { opacity: 1; scale: 1; } }
+.loader-art span { position: absolute; width: 54px; height: 88px; border: 1px solid #17171c35; border-radius: 11px; background: var(--card-color, var(--accent)); box-shadow: 0 6px 14px var(--shadow); transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--angle, 0deg)); transition: transform 630ms var(--ease); }
+.loader-art span::after { content: ""; display: block; width: 46%; height: 4px; margin: 13px 9px; border-radius: 3px; background: #17171c55; }
+.loader-art span:first-child { --card-color: #ff8fbd; --x: -8px; --angle: -8deg; }
+.loader-art span:nth-child(2) { --card-color: #74c5ff; --x: 8px; --angle: 8deg; }
+.loader-art span:last-child { --y: -5px; }
+.loading[data-phase="counting"] .loader-art span:first-child { --x: -23px; --y: 4px; --angle: -17deg; }
+.loading[data-phase="counting"] .loader-art span:nth-child(2) { --x: 23px; --y: 4px; --angle: 17deg; }
+.loading[data-phase="building"] .loader-art span:first-child { --x: -44px; --y: 12px; --angle: -24deg; }
+.loading[data-phase="building"] .loader-art span:nth-child(2) { --x: 44px; --y: 12px; --angle: 24deg; }
+.loading[data-phase="building"] .loader-art span:last-child { animation: loader-pulse 840ms ease-in-out infinite alternate; }
+@keyframes loader-pulse { from { transform: translateY(-8px) scale(1.02); } to { transform: translateY(-15px) scale(1.08); } }
+.loading[data-phase="ready"] .loader-art span:first-child { --x: -39px; --y: 5px; --angle: -16deg; }
+.loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 39px; --y: 5px; --angle: 16deg; }
+.loading[data-phase="ready"] .loader-art span:last-child { transform: translateY(-12px) scale(1.1); }
+.load-track { width: 100%; height: 7px; overflow: hidden; border-radius: 99px; background: var(--line); margin-top: 6px; }
+.load-track span { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--action); transform: scaleX(0); transform-origin: left; transition: transform 380ms var(--ease); }
+.loading[data-phase="ready"] .load-track span { transition-duration: 180ms; }
+.result { --story-chrome: 312px; padding-block: 13px 38px; }
+.result h2 { flex: 1; min-width: 0; font-size: clamp(1.45rem, 4vw, 2.65rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.result-head { width: min(100%, 530px); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding-bottom: 10px; }
+.settings { position: relative; margin-inline-start: auto; }
+.settings > summary { list-style: none; min-height: 42px; padding: 5px 10px; font-size: .76rem; white-space: nowrap; }
+.settings > summary::-webkit-details-marker { display: none; }
+.settings-panel { position: absolute; top: calc(100% + 8px); right: 0; width: min(360px, calc(100vw - 40px)); max-height: min(65svh, 480px); overflow: auto; padding: 16px; display: grid; gap: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); z-index: 10; box-shadow: 0 14px 35px var(--shadow); }
+.settings[open] .settings-panel, .prediction[open], .result-actions:not([hidden]) { animation: panel-in 260ms var(--ease); }
+@keyframes panel-in { from { opacity: .45; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.field, .name-list { display: grid; gap: 6px; min-width: 0; }
+.field label { font-size: .86rem; font-weight: 700; color: var(--muted); overflow-wrap: anywhere; }
+.field input, .field select { min-height: 44px; width: 100%; padding: 0 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--ink); color: var(--text); font-size: 1rem; }
+.name-list { gap: 10px; margin-top: 12px; }
+.names summary { cursor: pointer; padding: 6px 0; font-weight: 700; }
+.viewer { width: min(100%, 530px); margin-inline: auto; }
+.story-nav { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; margin: 5px auto 0; width: min(100%, 420px); }
+.arrow { padding: 0; min-height: 44px; border-radius: 50%; }
+.story-count { text-align: center; color: var(--muted); font-size: .78rem; font-weight: 690; font-variant-numeric: tabular-nums; line-height: 1.25; }
+.progress { display: flex; gap: 3px; margin: 0 auto 8px; width: min(100%, 420px); }
+.progress span { flex: 1; height: 4px; border-radius: 5px; background: var(--line); transition: background-color 160ms var(--ease); }
+.progress span.seen { background: #d9a500; }
+.progress span.current { background: var(--action); }
+@media (prefers-color-scheme: dark) { .progress span.seen { background: var(--accent); } .progress span.current { background: var(--text); } }
+.cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
+.cards::-webkit-scrollbar { display: none; }
+.cards.dragging, .cards.settling { scroll-snap-type: none; }
+.cards.dragging { cursor: grabbing; user-select: none; }
+.slide { flex: 0 0 100%; min-width: 0; display: grid; place-items: center; padding-inline: 2px; scroll-snap-align: center; scroll-snap-stop: always; }
+.slide--offer { contain: size; overflow: hidden; }
+.viewer[data-offer] .slide--offer { contain: none; }
+.slide .card, .gallery-item .card { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; background: var(--surface); }
+.slide .card { width: min(100%, 395px, max(118px, calc((100svh - var(--story-chrome)) * .5625))); border-radius: clamp(12px, 3vw, 24px); cursor: grab; transition: translate 310ms var(--ease); }
+.cards.dragging .card { cursor: grabbing; transition: none; }
+.story-hint { text-align: center; margin: 7px auto 0; }
+.prediction { width: min(440px, calc(100% - 32px)); max-height: calc(100% - 32px); border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); background: var(--surface); padding: clamp(20px, 6vw, 32px); box-shadow: 0 12px 34px var(--shadow); }
+.prediction[open] { display: grid; gap: 16px; }
+.prediction::backdrop { background: #17171c85; }
+.prediction h3 { font-size: clamp(1.5rem, 6vw, 2.15rem); line-height: 1.08; }
+.guess-choices { display: grid; gap: 8px; }
+.guess-choices .btn { justify-content: flex-start; text-align: left; overflow-wrap: anywhere; }
+.guess-choices .btn.selected { color: var(--on-accent); background: var(--accent); border-color: transparent; opacity: 1; }
+.story-tools, .result-actions { display: flex; justify-content: center; gap: 4px; margin: 5px auto 0; width: min(100%, 420px); }
+.story-tools { padding: 3px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+.story-tools .btn { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 5px 6px; border: 0; border-radius: 12px; background: transparent; font-size: clamp(.72rem, 2.8vw, .84rem); white-space: nowrap; }
+.story-tools .btn:hover { background: var(--surface-raised); }
+.story-tools .story-guess { background: var(--accent); color: var(--on-accent); }
+.story-tools .story-guess:hover { background: #f4c926; }
+.result-actions { flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.result-actions .btn { font-size: .84rem; }
+#sendNote { margin-top: 9px; text-align: center; }
+.gallery-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+.gallery-top h3 { font-size: 1.6rem; }
+.gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr)); gap: 12px; }
+.gallery-item { display: grid; gap: 6px; color: var(--muted); font-size: .85rem; }
+.gallery-open { display: block; border: 0; padding: 0; border-radius: 16px; background: transparent; cursor: zoom-in; }
+.gallery-item img { border-radius: 16px; transition: transform 260ms var(--ease); }
+.gallery-open:active img { transform: scale(.98); transition-duration: 90ms; }
+.gallery-flight { position: fixed; z-index: 20; border-radius: 16px; transform-origin: top left; pointer-events: none; }
+@media (hover: hover) {
+  .gallery-open:hover img { transform: translateY(-2px); }
+  .gallery-open:active img { transform: scale(.98); }
+}
+@media (max-width: 760px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero h1 { font-size: clamp(2.4rem, 10vw, 5.25rem); }
+  .fan { width: min(90%, 490px); margin-inline: auto; }
+
+}
+@media (max-width: 480px) {
+  .top { min-height: 52px; }
+  .wrap { width: calc(100% - 32px); }
+  .hero { padding-top: 34px; }
+  .hero-copy { gap: 15px; }
+  .hero-offer { grid-template-columns: 35px minmax(0, 1fr) auto; gap: 7px; }
+  .hero-offer .checkout-link { max-width: 9ch; line-height: 1.25; }
+  .recap-options { grid-template-columns: 1fr; }
+  .result { --story-chrome: 300px; }
+  .pack { grid-template-columns: 1fr; gap: 4px; }
+  .pack-art { min-height: 90px; width: min(100%, 156px); margin-bottom: 9px; }
+  .pack-ticket { width: 46%; min-height: 68px; padding: 6px; }
+  .pack-ticket:last-child { width: 47%; }
+  .pack-copy { gap: 7px; }
+  .howto { grid-template-columns: 1fr; }
+  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .loading[data-phase="building"] .loader-art span:last-child { animation: none; }
+  .sample:focus-visible img, .sample:hover img, .sample[aria-pressed=true] img, .gallery-open:hover img { transform: none; }
+}
+</style>
+</head>
+<body>
+<header class="wrap top" id="top">
+  <a class="top-link" id="exportLink" href="#export-guide">How to export</a>
+  <a class="brand" id="brand" href="./" aria-label="Yapstats home">
+    <span class="brand-icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4zM8 10v2m4-3v4m4-3v2"/></svg></span>Yapstats
+  </a>
+</header>
+<main>
+  <div id="landing">
+    <section class="wrap hero" id="hero">
+      <div class="hero-copy">
+        <h1>Who really runs the <mark>group chat?</mark></h1>
+        <p class="lede">Find the biggest yapper, the midnight regular and the emoji your group has worn out. Turn the results into cards and drop the receipts back in the chat.</p>
+        <div class="actions">
+          <input class="vh" type="file" id="file" accept=".zip,.txt,.json">
+          <label class="btn primary" for="file">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg>
+            Upload chat export
+          </label>
+          <span class="file-note">WhatsApp or Instagram</span>
+        </div>
+        <p class="error" id="error" role="alert" hidden></p>
+        <div class="hero-offer" id="heroOffer" hidden>
+          <div class="mini-deck" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div><strong>Full recap <span class="offer-price">£2.99</span></strong><p>Personal cards and extra rankings for your chat.</p></div>
+          <a class="checkout-link" target="_blank" rel="noopener noreferrer">Get full recap <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="panel" id="deliveryReturn" hidden>
+          <p role="status" id="deliveryReturnText">Checking your Polar purchase…</p>
+          <a id="deliveryDownload" hidden>Download your recap ZIP</a>
+        </div>
+        <p class="unlocked" id="unlocked" role="status" hidden>Full recap unlocked on this device. Go back to your recap, or upload a chat here.</p>
+      </div>
+      <div class="fan" id="fan" aria-label="Sample Yapstats cards"></div>
+    </section>
+    <section class="wrap band" aria-labelledby="what-you-get">
+      <h2 id="what-you-get">What’s in the recap?</h2>
+      <div class="recap-options">
+        <article class="recap-option">
+          <h3>Free recap</h3>
+          <p>The group’s highlights, top talkers, favourite emojis and awards. Save and share every card in your free recap.</p>
+        </article>
+        <article class="recap-option option-full" id="fullOption" hidden>
+          <h3>Full recap <mark class="offer-price">£2.99</mark></h3>
+          <p>Get individual cards with personal stats and awards, plus bonus rankings like Slowest Replier and Longest Monologue.</p>
+          <a class="checkout-link" target="_blank" rel="noopener noreferrer">Get full recap <span aria-hidden="true">↗</span></a>
+        </article>
+      </div>
+      <p class="note recap-privacy">No sign-up or install. Your chat export stays on this device.</p>
+    </section>
+    <section class="wrap band" id="export-guide">
+      <h2>How to get your chat export</h2>
+      <div class="howto">
+        <div class="panel">
+          <h3>WhatsApp on iPhone</h3>
+          <ol>
+            <li>Open the group chat and tap the group name.</li>
+            <li>Tap <b>Export Chat</b>, then <b>Without Media</b>.</li>
+            <li>Tap <b>Save to Files</b>, then choose the saved file here.</li>
+          </ol>
+        </div>
+        <div class="panel">
+          <h3>WhatsApp on Android</h3>
+          <ol>
+            <li>Open the group chat and tap the three dots, then <b>More</b>.</li>
+            <li>Tap <b>Export chat</b>, then <b>Without media</b>.</li>
+            <li>Save the file to your phone, then choose it here.</li>
+          </ol>
+        </div>
+        <div class="panel instagram-guide">
+          <h3>Instagram DMs</h3>
+          <ol>
+            <li>Open your profile menu and go to <b>Accounts Centre</b> or <b>Meta Account settings</b>.</li>
+            <li>Under <b>Your information and permissions</b>, open <b>Export your information</b> and select <b>Create export</b>.</li>
+            <li>Choose your Instagram profile and <b>Export to device</b>.</li>
+            <li>Select <b>Messages</b>, set the format to <b>JSON</b>, choose a date range and start the export.</li>
+            <li>When it’s ready, download the ZIP and open it here. To recap just one file, open its <b>message_1.json</b> instead.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="note guide-links">Stuck? Read the full guide for <a href="/export-whatsapp-chat/">WhatsApp</a> or <a href="/export-instagram-messages/">Instagram</a>.</p>
+    </section>
+  </div>
+  <section class="wrap loading" id="loading" hidden>
+    <div class="loading-inner">
+      <div class="loader-art" aria-hidden="true"><span></span><span></span><span></span></div>
+      <h2 id="loadingTitle" tabindex="-1">Creating your recap</h2>
+      <p class="note" id="loadingStatus" role="status">Reading your export…</p>
+      <progress class="vh" id="loadingProgress" max="100" value="0" aria-label="Recap progress"></progress>
+      <div class="load-track" aria-hidden="true"><span id="loadingFill"></span></div>
+    </div>
+  </section>
+  <section class="wrap thread-picker" id="threads" hidden>
+    <div class="panel">
+      <h2 id="threadTitle" tabindex="-1">Choose an Instagram chat</h2>
+      <p class="note">Your export contains multiple conversations. Pick the one you want to recap.</p>
+      <div class="field">
+        <label for="threadFilter">Find a conversation</label>
+        <input id="threadFilter" type="search" autocomplete="off" placeholder="Search chats">
+      </div>
+      <div class="field">
+        <label for="threadSelect">Conversation</label>
+        <select id="threadSelect"></select>
+      </div>
+      <p class="error" id="threadError" role="alert" hidden></p>
+      <div class="actions">
+        <button class="btn primary" id="openThread" type="button" disabled>Create recap</button>
+        <button class="btn ghost" id="changeExport" type="button">Use another file</button>
+      </div>
+    </div>
+  </section>
+  <section class="wrap result" id="result" hidden>
+    <div class="result-head">
+      <h2 id="groupTitle" tabindex="-1">Your group chat</h2>
+      <details class="settings" id="settings">
+        <summary class="btn ghost">Recap settings</summary>
+        <div class="settings-panel">
+          <div class="field">
+            <label for="year">Date range</label>
+            <select id="year"></select>
+          </div>
+          <details class="names">
+            <summary>Edit names</summary>
+            <div class="name-list" id="nameList"></div>
+          </details>
+          <button class="btn ghost" id="again" type="button">Use another chat</button>
+        </div>
+      </details>
+    </div>
+    <div class="viewer" id="viewer">
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <div class="cards" id="cards" role="region" aria-label="Recap cards. Tap either side, swipe, or use the arrow keys." tabindex="0"></div>
+      <nav class="story-nav" aria-label="Recap navigation">
+        <button class="btn ghost arrow" id="prev" type="button" aria-label="Previous card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
+        <p class="story-count" id="storyCount" role="status"></p>
+        <button class="btn ghost arrow" id="next" type="button" aria-label="Next card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg></button>
+      </nav>
+      <p class="note story-hint" id="storyHint">Tap either side or swipe to move between cards.</p>
+      <div class="story-tools" id="storyTools" aria-label="Card actions">
+        <a class="btn" id="saveCard">Save this card</a>
+        <button class="btn" id="shareCard" type="button">Share this card</button>
+        <button class="btn story-guess" id="guessTalker" type="button" hidden>Guess the top talker</button>
+        <button class="btn" id="openGallery" type="button">View all cards</button>
+      </div>
+      <button class="pack-cue" id="packCue" type="button" hidden>
+        <span aria-hidden="true">↓</span> <span id="packCueText"></span>
+      </button>
+      <div class="result-actions" id="bulkActions" hidden>
+        <button class="btn primary" id="send" type="button" disabled>Share recap</button>
+        <button class="btn ghost" id="save" type="button" disabled>Save all images</button>
+      </div>
+    </div>
+    <aside class="pack" id="pack" aria-label="Full recap preview" hidden></aside>
+    <section id="gallery" hidden>
+      <div class="gallery-top">
+        <h3 id="galleryTitle" tabindex="-1">All cards</h3>
+        <button class="btn ghost" id="backToStory" type="button">Back to recap</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+    <p class="note" id="sendNote" role="status"></p>
+    <dialog class="prediction" id="prediction" aria-labelledby="predictionTitle">
+      <h3 id="predictionTitle">Who sent the most messages?</h3>
+      <p class="note" id="guessStatus" role="status">Pick a name before you see the leaderboard.</p>
+      <div id="guessChoices" class="guess-choices"></div>
+      <div class="actions">
+        <button class="btn primary" id="guessReveal" type="button" hidden>See the result</button>
+        <button class="btn ghost" id="guessClose" type="button">Back to recap</button>
+      </div>
+    </dialog>
+    <dialog class="prediction" id="emailRecap" aria-labelledby="emailRecapTitle">
+      <h3 id="emailRecapTitle">Get your recap by email</h3>
+      <p>Yapstats will upload the finished cards for this chat. We’ll send a private ZIP download link to the email you use at Polar checkout. The link lasts seven days.</p>
+      <p class="note">Your chat export stays on this device. Only share cards containing names or stats you’re comfortable emailing.</p>
+      <p class="note" id="emailRecapStatus" role="status" hidden></p>
+      <div class="actions">
+        <button class="btn primary" type="button" id="prepareEmailRecap">Prepare cards for checkout</button>
+        <a class="btn primary" id="emailCheckout" target="_blank" rel="noopener noreferrer" hidden>Continue to Polar ↗</a>
+        <a class="btn ghost" id="skipEmailRecap" target="_blank" rel="noopener noreferrer">Buy without email delivery ↗</a>
+        <button class="btn ghost" type="button" id="closeEmailRecap">Back to recap</button>
+      </div>
+    </dialog>
+    <template id="packTemplate">
+      <div class="pack-art" aria-hidden="true">
+        <div class="pack-ticket"><span>Bonus ranking</span><b></b></div>
+        <div class="pack-ticket"><span>Bonus ranking</span><b></b></div>
+        <div class="pack-ticket"><span>Personal stats</span><b></b><i></i></div>
+      </div>
+      <div class="pack-copy">
+        <p class="pack-label">The full recap</p>
+        <h3 tabindex="-1"></h3>
+        <ul class="pack-details"></ul>
+        <a class="pack-buy" target="_blank" rel="noopener noreferrer"></a>
+        <p class="pack-note">One payment for every recap in this browser. Your chat export stays here.</p>
+      </div>
+    </template>
+  </section>
+</main>
+<footer class="wrap foot">
+  <p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
+  <p>Your browser reads your chat export on this device. Email delivery uploads only the finished cards.</p>
+  <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
+</footer>
+<script>(() => {
+'use strict';
+/* Core logic: read an export, count things, hand out awards. No DOM, so Node can test it. */
+
+const GAP = 6 * 36e5;   // 6 hours of quiet ends a conversation
+const MIN_REPLIES = 10; // replies needed before a typical reply time is shown
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Direction marks the app adds around names and placeholders. The emoji joiner ‍ is kept.
+const MARKS = /[‎‏‪-‮⁦-⁩﻿]/g;
+const LEADING_MARKS = /^[‎‏‪-‮⁦-⁩﻿]+/;
+// "[11/11/2026, 21:30:05] rest" (iPhone) or "11/11/2026, 21:30 - rest" (Android), 12 or 24 hour.
+const HEADER = /^\[?(\d{1,4})[\/.\-](\d{1,2})[\/.\-](\d{1,4}),?\s+(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?(?:\s?([AaPp])\.?\s?[Mm]\.?)?(?:\]\s?|\s-\s)(.*)$/;
+const EVENT = /\b(added|removed|left|joined|changed|created|pinned|deleted|turned|reset)\b/i;
+const DELETED = /^(this message was deleted\.?|you deleted this message\.?|this message was deleted by admin .*)$/i;
+const MEDIA = /^<[^<>\n]+>$|^(image|video|audio|sticker|gif|document|contact card|voice message|video note) omitted$/i;
+
+const LINK = /https?:\/\/\S+/gi;
+const EMOJI = /[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}(?:️|[\u{1F3FB}-\u{1F3FF}])*(?:‍\p{Extended_Pictographic}(?:️|[\u{1F3FB}-\u{1F3FF}])*)*/gu;
+const SKIN = /[\u{1F3FB}-\u{1F3FF}]/gu;
+const WORD = /\p{L}+(?:['’]\p{L}+)*/gu;
+const LAUGH = /\b(?:a?(?:ha){2,}h?|lo+l|lmf?a+o+)\b|[😂🤣]/iu;
+// shortcut: English stop words only, add other languages if non-UK chats matter
+const STOP = new Set(('the and you that was for are with his they this have from not but had what all were when your can said there ' +
+  'use each which she how their will other about out many then them these some her would make like him into time has look two more ' +
+  'see way could people than first been who its now find long down day did get come made may part yeah yes just got one too also ' +
+  'gonna wanna still back want need good well much very here why where does off over only even ever any because being our she\'s ' +
+  'he\'s they\'re we\'re there\'s what\'s let\'s i\'ll you\'ll won\'t isn\'t aren\'t wasn\'t doesn\'t don\'t dont i\'m it\'s that\'s ' +
+  'i\'ve ive you\'re youre can\'t cant didn\'t didnt going really think know thats its im should were going been those though ' +
+  'them then than doing done has had having his hers ours yours mine him her did does say says thing things actually literally ' +
+  'again after before while until since between through without anyone someone everyone anybody somebody everybody nobody anything ' +
+  'something everything nothing never always maybe might must shall let lets put take took give gave went came tell told knew saw ' +
+  'seen myself yourself themselves theirs whose whom such same both few own okay yep nah nope sure right quite i\'d we\'ll we\'ve ' +
+  'we\'d you\'ve you\'d they\'ve they\'ll they\'d he\'ll she\'ll it\'ll that\'ll who\'s how\'s where\'s couldn\'t wouldn\'t ' +
+  'shouldn\'t haven\'t hasn\'t hadn\'t weren\'t ain\'t').split(' '));
+
+class ChatError extends Error {}
+
+const fmt = n => n.toLocaleString('en-GB');
+const count = (n, word) => `${fmt(n)} ${word}${n === 1 ? '' : 's'}`;
+const hourLabel = h => `${h % 12 || 12}${h % 24 < 12 ? 'am' : 'pm'}`;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const dayLabel = day => { const d = new Date(day * 864e5); return `${DAYS[d.getUTCDay()].slice(0, 3)} ${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const dur = ms => {
+  const min = Math.round(ms / 6e4);
+  return ms < 6e4 ? 'under a minute' : min < 60 ? `${min} min` : `${Math.floor(min / 60)} hr ${min % 60} min`;
+};
+const bump = (map, key) => map.set(key, (map.get(key) || 0) + 1);
+const top = (map, n) => [...map].sort((a, b) => b[1] - a[1]).slice(0, n);
+// Highest scorer at or above min. Lists arrive sorted by message count, so ties go to the bigger talker.
+const best = (list, score, min = 1) => list.reduce((b, p) => score(p) >= min && (!b || score(p) > score(b)) ? p : b, null);
+
+/* ---------- parsing ---------- */
+
+// Times are kept as wall-clock time stored in UTC, so results do not depend on the reader's time zone.
+function stamp(r, order) {
+  const [a, b, c] = r.d;
+  let [y, mo, d] = order === 'ymd' ? [a, b, c] : order === 'mdy' ? [c, a, b] : [c, b, a];
+  if (y < 100) y += 2000;
+  const h = r.ap ? r.h % 12 + (/p/i.test(r.ap) ? 12 : 0) : r.h;
+  return Date.UTC(y, mo - 1, d, h, r.mi, r.s);
+}
+
+function dateOrder(rows) {
+  if (rows.some(r => r.d[0] > 31)) return 'ymd';
+  const dayFirst = rows.some(r => r.d[0] > 12), monthFirst = rows.some(r => r.d[1] > 12);
+  if (dayFirst !== monthFirst) return dayFirst ? 'dmy' : 'mdy';
+  // Both readings fit. Exports run oldest to newest, so the reading with fewer backwards jumps wins.
+  const jumps = order => { let n = 0, prev = -Infinity; for (const r of rows) { const t = stamp(r, order); if (t < prev) n++; prev = t; } return n; };
+  // shortcut: a true tie is read day-first (UK). Add a day/month switch if US users report wrong dates.
+  return jumps('mdy') < jumps('dmy') ? 'mdy' : 'dmy';
+}
+
+function parseChat(raw) {
+  const rows = [];
+  for (const rawLine of raw.split(/\r?\n/)) {
+    const line = rawLine.replace(/[  ]/g, ' ');
+    const m = HEADER.exec(line.replace(LEADING_MARKS, ''));
+    if (m) rows.push({ d: [+m[1], +m[2], +m[3]], h: +m[4], mi: +m[5], s: +(m[6] || 0), ap: m[7], body: m[8] });
+    else if (rows.length) rows[rows.length - 1].body += '\n' + line;
+  }
+  const order = dateOrder(rows), messages = [];
+  for (const r of rows) {
+    const cut = /^([^:\n]{1,80}?): ?/.exec(r.body);
+    if (!cut) continue; // no "Name:" means a group event such as "Sam added Jo"
+    const a = cut[1].replace(MARKS, '').replace(/^~\s*/, '').trim();
+    if (!a || (/["“”]/.test(a) && EVENT.test(a))) continue; // 'Sam changed the subject to "Plans: Friday"'
+    const rest = r.body.slice(cut[0].length);
+    const marked = /^[‎‏]/.test(rest); // iPhone puts a mark before placeholders and group events
+    const text = rest.replace(MARKS, '').replace(/<This message was edited>\s*$/i, '').trim(); // no leading \s*: it backtracks badly on long runs of spaces
+    let type = 'text';
+    if (DELETED.test(text)) type = 'deleted';
+    else if (MEDIA.test(text) || (marked && /omitted$/i.test(text))) type = 'media';
+    else if (marked || !text || text === 'null' || /^POLL:\n/.test(text)) continue; // events, polls, locations, view-once
+    messages.push({ t: stamp(r, order), a, type, text: type === 'text' ? text : '' });
+  }
+  return { messages, order };
+}
+
+/* ---------- reading the file ---------- */
+
+const MAX_CHAT_BYTES = 300_000_000;
+const IG_PART = /(?:^|\/)message(?:_(\d+))?\.json$/i;
+
+async function zipDirectory(file) {
+  const invalid = () => new ChatError('That ZIP looks damaged or incomplete. Try a fresh export.');
+  const tailAt = Math.max(0, file.size - 65557);
+  const tail = new DataView(await file.slice(tailAt).arrayBuffer());
+  let e = tail.byteLength - 22;
+  while (e >= 0) {
+    if (tail.getUint32(e, true) === 0x06054b50 && e + 22 + tail.getUint16(e + 20, true) === tail.byteLength) break;
+    e--;
+  }
+  if (e < 0) throw invalid();
+  const count = tail.getUint16(e + 10, true);
+  const dirSize = tail.getUint32(e + 12, true);
+  const dirAt = tail.getUint32(e + 16, true);
+  if (tail.getUint16(e + 4, true) || tail.getUint16(e + 6, true) ||
+      dirAt === 0xffffffff || count === 0xffff || dirSize > 32_000_000) {
+    throw new ChatError('This ZIP format is too large or split across files. Unzip it first and choose a chat TXT or Instagram message JSON.');
+  }
+  if (dirAt + dirSize > tailAt + e) throw invalid();
+  const dir = new DataView(await file.slice(dirAt, dirAt + dirSize).arrayBuffer());
+  const decoder = new TextDecoder();
+  const entries = [];
+  let p = 0;
+  for (let i = 0; i < count; i++) {
+    if (p + 46 > dir.byteLength || dir.getUint32(p, true) !== 0x02014b50) throw invalid();
+    const nameLength = dir.getUint16(p + 28, true);
+    const next = p + 46 + nameLength + dir.getUint16(p + 30, true) + dir.getUint16(p + 32, true);
+    if (next > dir.byteLength) throw invalid();
+    const name = decoder.decode(new Uint8Array(dir.buffer, p + 46, nameLength));
+    if (!name.startsWith('__MACOSX/')) {
+      entries.push({
+        name,
+        flags: dir.getUint16(p + 8, true),
+        method: dir.getUint16(p + 10, true),
+        packed: dir.getUint32(p + 20, true),
+        size: dir.getUint32(p + 24, true),
+        at: dir.getUint32(p + 42, true),
+      });
+    }
+    p = next;
+  }
+  return { entries, dirAt };
+}
+
+async function readZipText(file, entry, dirAt) {
+  const invalid = () => new ChatError('A chat file in that ZIP is damaged. Try a fresh export.');
+  if (entry.size > MAX_CHAT_BYTES) throw new ChatError('This chat is too large. Export a shorter date range and try again.');
+  if (entry.flags & 1) throw new ChatError('This ZIP is password protected. Unzip it first and select the chat file inside.');
+  if (entry.at + 30 > dirAt) throw invalid();
+  const local = new DataView(await file.slice(entry.at, entry.at + 30).arrayBuffer());
+  if (local.getUint32(0, true) !== 0x04034b50 || local.getUint16(8, true) !== entry.method) throw invalid();
+  const from = entry.at + 30 + local.getUint16(26, true) + local.getUint16(28, true);
+  if (from + entry.packed > dirAt) throw invalid();
+  const data = file.slice(from, from + entry.packed);
+  if (entry.method === 0) {
+    if (entry.packed !== entry.size) throw invalid();
+    return data.text();
+  }
+  if (entry.method !== 8 || typeof DecompressionStream === 'undefined') {
+    throw new ChatError('This browser cannot open that ZIP. Unzip it first, then choose the chat TXT or Instagram message JSON.');
+  }
+  let stream;
+  try {
+    stream = data.stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  } catch {
+    throw new ChatError('This browser cannot open that ZIP. Unzip it first, then choose the chat file inside.');
+  }
+  const reader = stream.getReader(), decoder = new TextDecoder(), parts = [];
+  let bytes = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > entry.size) {
+        await reader.cancel();
+        throw invalid();
+      }
+      parts.push(decoder.decode(value, { stream: true }));
+    }
+    if (bytes !== entry.size) throw invalid();
+    parts.push(decoder.decode());
+    return parts.join('');
+  } catch {
+    throw invalid();
+  } finally {
+    reader.releaseLock();
+  }
+}
+
+// Some Meta exports store UTF-8 bytes as escaped Latin-1 characters.
+const metaByteSequence = /[\xC2-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF4][\x80-\xBF]{3}/g;
+const metaDecoder = new TextDecoder('utf-8', { fatal: true });
+const instagramMedia = ['photos', 'videos', 'audio_files', 'gifs', 'files', 'sticker', 'share'];
+
+function metaText(value) {
+  if (typeof value !== 'string') return '';
+  return value.replace(metaByteSequence, bytes => {
+    try { return metaDecoder.decode(Uint8Array.from(bytes, c => c.charCodeAt(0))); }
+    catch { return bytes; }
+  }).replace(MARKS, '').trim();
+}
+
+function instagramPart(raw, messages) {
+  let data;
+  try { data = JSON.parse(raw); } catch { /* report a friendly error below */ }
+  if (!Array.isArray(data?.messages)) {
+    throw new ChatError('This is not an Instagram messages JSON. Export Messages in JSON format or choose a message_1.json from the chat folder.');
+  }
+  for (const item of data.messages) {
+    const t = item?.timestamp_ms;
+    if (!Number.isSafeInteger(t) || t <= 0 || t > 8.64e15) continue;
+    const a = metaText(item.sender_name);
+    if (!a || item.call_duration != null) continue;
+    const content = metaText(item.content);
+    const media = instagramMedia.some(key => {
+      const value = item[key];
+      return Array.isArray(value) ? value.length > 0 : value != null && typeof value === 'object';
+    });
+    if (item.is_unsent === true) messages.push({ t, a, type: 'deleted', text: '' });
+    else if (media) messages.push({ t, a, type: 'media', text: '' });
+    else if (content) messages.push({ t, a, type: 'text', text: content });
+  }
+  return metaText(data.title);
+}
+
+function finishInstagram(messages, group) {
+  if (!messages.length) throw new ChatError('No messages found in this Instagram conversation. Check the date range of your export.');
+  messages.sort((a, b) => a.t - b.t);
+  return { chat: { messages, localTime: true }, group: group || 'Instagram chat' };
+}
+
+function instagramThreads(entries) {
+  const threads = new Map();
+  for (const entry of entries) {
+    const match = IG_PART.exec(entry.name);
+    if (!match) continue;
+    const path = entry.name.slice(0, entry.name.lastIndexOf('/') + 1);
+    if (!threads.has(path)) {
+      const folder = path.split('/').filter(Boolean).at(-1) || '';
+      const label = metaText(folder.replace(/_\d{5,}$/, '').replace(/_/g, ' ')) || 'Instagram chat';
+      threads.set(path, { label, parts: [] });
+    }
+    threads.get(path).parts.push({ ...entry, part: Number(match[1] || 1) });
+  }
+  const result = Array.from(threads.values()).sort((a, b) => a.label.localeCompare(b.label));
+  const labels = new Map();
+  for (const thread of result) {
+    const n = (labels.get(thread.label) || 0) + 1;
+    labels.set(thread.label, n);
+    if (n > 1) thread.label += ` (${n})`;
+  }
+  return result;
+}
+
+async function readChatExport(file) {
+  const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
+  const zip = head[0] === 0x50 && head[1] === 0x4b;
+  if (!zip && file.size > MAX_CHAT_BYTES) {
+    throw new ChatError('This chat is too large. Export a shorter date range and try again.');
+  }
+  if (!zip && /\.json$/i.test(file.name)) {
+    const messages = [];
+    const title = instagramPart(await file.text(), messages);
+    return finishInstagram(messages.reverse(), title);
+  }
+  let raw;
+  if (zip) {
+    const { entries, dirAt } = await zipDirectory(file);
+    const threads = instagramThreads(entries);
+    if (threads.length) {
+      async function openThread(thread) {
+        const parts = [...thread.parts].sort((a, b) => a.part - b.part);
+        if (parts.some((entry, index) => entry.part !== index + 1)) {
+          throw new ChatError('This ZIP is missing parts of the conversation. Try a complete export, or open one message JSON to recap just that part.');
+        }
+        if (parts.reduce((size, entry) => size + entry.size, 0) > MAX_CHAT_BYTES) {
+          throw new ChatError('This chat is too large. Export a shorter date range and try again.');
+        }
+        const messages = [];
+        let title = '';
+        // Parts run newest to oldest. Reverse both levels to preserve order at tied timestamps.
+        for (const part of parts.reverse()) {
+          const segment = [];
+          const partTitle = instagramPart(await readZipText(file, part, dirAt), segment);
+          if (partTitle) title = partTitle;
+          for (let i = segment.length - 1; i >= 0; i--) messages.push(segment[i]);
+        }
+        return finishInstagram(messages, title || thread.label);
+      }
+      return threads.length === 1 ? openThread(threads[0]) : { threads, openThread };
+    }
+    if (entries.some(entry => /(?:^|\/)message(?:_\d+)?\.html$/i.test(entry.name))) {
+      throw new ChatError('This Instagram export is HTML. Request another export with Messages and JSON selected.');
+    }
+    const txt = entries.find(entry => /(?:^|\/)_chat\.txt$/i.test(entry.name)) ||
+      entries.find(entry => /\.txt$/i.test(entry.name));
+    if (!txt) throw new ChatError('No chat files found. Export a WhatsApp chat without media, or select Messages and JSON for Instagram.');
+    raw = await readZipText(file, txt, dirAt);
+  } else {
+    if (/\.html?$/i.test(file.name)) throw new ChatError('Choose an Instagram JSON export or a WhatsApp TXT or ZIP file.');
+    raw = await file.text();
+  }
+  const chat = parseChat(raw);
+  if (!chat.messages.length) throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram JSON or ZIP export.');
+  return { chat, group: groupFromFile(file.name) };
+}
+
+function groupFromFile(name) {
+  const m = /^WhatsApp Chat (?:with|-) (.+?)(?: ?\(\d+\))?\.(?:zip|txt)$/i.exec(name || '');
+  return m ? m[1].trim() : '';
+}
+
+/* ---------- counting ---------- */
+
+function messageYear(message, localTime) {
+  const date = new Date(message.t);
+  return localTime ? date.getFullYear() : date.getUTCFullYear();
+}
+
+function chatClock(time, localTime) {
+  return localTime ? time - new Date(time).getTimezoneOffset() * 60_000 : time;
+}
+
+function peakBurst(messages, localTime) {
+  const windowMs = 10 * 60_000;
+  const ordered = messages.every((message, i) => !i || messages[i - 1].t <= message.t)
+    ? messages
+    : [...messages].sort((a, b) => a.t - b.t);
+  let left = 0, start = 0, size = 0;
+  for (let right = 0; right < ordered.length; right++) {
+    while (ordered[right].t - ordered[left].t >= windowMs) left++;
+    if (right - left + 1 > size) {
+      start = left;
+      size = right - left + 1;
+    }
+  }
+  if (size < 8) return null;
+  const speakers = new Map();
+  for (let i = start; i < start + size; i++) bump(speakers, ordered[i].a);
+  const [sender, sent] = top(speakers, 1)[0];
+  const clock = new Date(chatClock(ordered[start].t, localTime));
+  const hour = clock.getUTCHours(), minute = clock.getUTCMinutes();
+  const time = `${hour % 12 || 12}:${String(minute).padStart(2, '0')}${hour < 12 ? 'am' : 'pm'}`;
+  return { size, day: dayLabel(Math.floor(+clock / 864e5)), time, sender, sent };
+}
+
+function computeStats(all, year, localTime = false) {
+  const msgs = year ? all.filter(m => messageYear(m, localTime) === year) : all;
+  const people = new Map(), hours = Array(24).fill(0), days = new Map(), emoji = new Map(), words = new Map();
+  const person = a => {
+    let p = people.get(a);
+    if (!p) people.set(a, p = { a, n: 0, text: 0, media: 0, deleted: 0, night: 0, early: 0, weekend: 0, starts: 0, quietGap: 0, replies: [], runs: 0, maxRun: 0,
+      emojis: 0, emoji: new Map(), words: 0, q: 0, caps: 0, links: 0, laughs: 0, hours: Array(24).fill(0), wd: Array(7).fill(0) });
+    return p;
+  };
+  let run = 0, last = null, previousTime = null, longestRun = 0;
+  const endRun = () => { if (run > 1) { last.runs++; last.maxRun = Math.max(last.maxRun, run); } };
+  for (const m of msgs) {
+    const clock = chatClock(m.t, localTime);
+    const p = person(m.a), hour = Math.floor(clock / 36e5) % 24, day = Math.floor(clock / 864e5), wd = (day + 4) % 7; // 1 Jan 1970 was a Thursday
+    p.n++; p[m.type]++; p.hours[hour]++; p.wd[wd]++; hours[hour]++; bump(days, day);
+    if (hour < 5) p.night++; else if (hour < 8) p.early++;
+    if (wd === 0 || wd === 6) p.weekend++;
+    const gap = previousTime === null ? GAP : m.t - previousTime;
+    const starts = gap >= GAP;
+    if (starts) p.starts++;
+    if (starts && previousTime !== null) p.quietGap = Math.max(p.quietGap, gap);
+    if (!starts && gap >= 0 && last !== p) p.replies.push(gap);
+    if (!starts && last === p) run++; else { endRun(); run = 1; last = p; }
+    longestRun = Math.max(longestRun, run);
+    previousTime = m.t;
+    if (m.type !== 'text') continue;
+    const links = m.text.match(LINK), plain = m.text.replace(LINK, ' ');
+    if (links) p.links += links.length;
+    for (const found of plain.match(EMOJI) || []) {
+      if (found.codePointAt(0) < 0x231a || found.length > 40) continue; // ©, ™ and arrows are not emoji to most people; absurdly long joined chains are skipped
+      const e = found.replace(SKIN, '');
+      p.emojis++; bump(p.emoji, e); bump(emoji, e);
+    }
+    const tokens = plain.toLowerCase().match(WORD) || [];
+    p.words += tokens.length;
+    for (const w of tokens) if (w.length > 2 && w.length < 31 && !STOP.has(w)) bump(words, w);
+    if (plain.includes('?')) p.q++;
+    const letters = plain.replace(/[^\p{L}]/gu, '');
+    if (letters.length > 3 && letters === letters.toUpperCase() && letters !== letters.toLowerCase()) p.caps++;
+    if (LAUGH.test(plain)) p.laughs++;
+  }
+  endRun();
+  const members = [...people.values()].sort((x, y) => y.n - x.n || (x.a < y.a ? -1 : 1));
+  for (const p of members) {
+    const r = p.replies.sort((a, b) => a - b);
+    const middle = Math.floor(r.length / 2);
+    p.med = r.length < MIN_REPLIES ? null : r.length % 2 ? r[middle] : (r[middle - 1] + r[middle]) / 2;
+    p.replies = r.length;
+  }
+  const keys = [...days.keys()].sort((a, b) => a - b);
+  let streak = { len: 0 }, from = keys[0], busiest = { n: 0 };
+  keys.forEach((k, i) => {
+    if (i && k !== keys[i - 1] + 1) from = k;
+    if (k - from + 1 > streak.len) streak = { len: k - from + 1, from, to: k };
+    if (days.get(k) > busiest.n) busiest = { day: k, n: days.get(k) };
+  });
+  return { total: msgs.length, members, hours, peak: hours.indexOf(Math.max(...hours)), activeDays: keys.length, longestRun, burst: peakBurst(msgs, localTime),
+    first: keys[0], last: keys[keys.length - 1], busiest, streak, emoji: top(emoji, 5), words: top(words, 8) };
+}
+
+/* ---------- awards ---------- */
+
+// [title, score, line, minimum score]. A title only ever goes to the person who really is top for it.
+const AWARDS = [
+  ['Chief Yapper', p => p.n, p => `${count(p.n, 'message')}, the most in the chat`, 1],
+  ['Night Owl', p => p.night, p => `${count(p.night, 'message')} between midnight and 5am`],
+  ['Chat Starter', p => p.starts, p => `woke the chat up ${count(p.starts, 'time')}`],
+  ['Speed Replier', p => p.med === null ? 0 : 1e12 - p.med, p => `typical reply: ${dur(p.med)}`, 1],
+  ['The Comeback', p => p.quietGap, p => `revived the chat after ${p.quietGap % 864e5 ? 'over ' : ''}${count(Math.floor(p.quietGap / 864e5), 'day')} of silence`, 864e5],
+  ['The Monologue', p => p.maxRun, p => `${count(p.maxRun, 'message')} in one uninterrupted run`, 5],
+  ['Double Texter', p => p.runs, p => `sent 2 or more in a row ${count(p.runs, 'time')}`],
+  ['Emoji Dealer', p => p.emojis, p => `${count(p.emojis, 'emoji')} sent`],
+  ['The Eraser', p => p.deleted, p => `${count(p.deleted, 'deleted message')}`],
+  ['Media Mogul', p => p.media, p => `${count(p.media, 'media message')}`],
+  ['The Essayist', p => p.text >= 20 ? p.words / p.text : 0, p => `${(p.words / p.text).toFixed(1)} words per message`, 8],
+  ['Question Asker', p => p.q, p => `${count(p.q, 'message')} with a question mark`],
+  ['CAPS LOCK', p => p.caps, p => `${fmt(p.caps)} MESSAGES IN ALL CAPS`],
+  ['Link Dropper', p => p.links, p => `${count(p.links, 'link')} shared`],
+  ['Laugh Track', p => p.laughs, p => `${count(p.laughs, 'message')} with haha, lol or 😂`],
+  ['Early Bird', p => p.early, p => `${count(p.early, 'message')} between 5am and 8am`],
+  ['Weekend Texter', p => p.n >= 20 ? p.weekend / p.n : 0, p => `${Math.round(p.weekend / p.n * 100)}% of their messages at the weekend`, 0.4],
+];
+
+// For people who are not top of anything: something true about them alone, with no ranking claimed.
+function personalAward(p, i) {
+  if (p.n < 5) return { title: 'Rare Sighting', line: `only ${count(p.n, 'message')}` };
+  const fav = top(p.emoji, 1)[0], hour = p.hours.indexOf(Math.max(...p.hours)), wd = p.wd.indexOf(Math.max(...p.wd));
+  const options = [
+    { title: `The ${hourLabel(hour)} Regular`, line: `most active between ${hourLabel(hour)} and ${hourLabel(hour + 1)}` },
+    { title: `${DAYS[wd]} Texter`, line: `${Math.round(p.wd[wd] / p.n * 100)}% of their messages on a ${DAYS[wd]}` },
+  ];
+  if (fav && fav[1] > 2) options.unshift({ title: `Team ${fav[0]}`, line: `their most used emoji, ${count(fav[1], 'time')}` });
+  return options[i % options.length];
+}
+
+// Exactly one award for every member, in member order.
+function assignAwards(S) {
+  const got = new Map();
+  for (const [title, score, line, min = 3] of AWARDS) {
+    const winner = best(S.members, score, min);
+    if (winner && !got.has(winner.a)) got.set(winner.a, { title, line: line(winner) });
+  }
+  const quiet = S.members[S.members.length - 1];
+  if (S.members.length > 2 && !got.has(quiet.a)) got.set(quiet.a, { title: 'Quiet One', line: `${count(quiet.n, 'message')}, the fewest in the chat` });
+  S.members.filter(p => !got.has(p.a)).forEach((p, i) => got.set(p.a, personalAward(p, i)));
+  return S.members.map(p => ({ a: p.a, ...got.get(p.a) }));
+}
+
+
+/* Built-in demo chat. Every person and message here is made up. It is written out as an export file
+   and read by the same parser as a real chat, so the demo exercises the real code path. */
+
+function demoChat() {
+  let seed = 20261111;
+  const rnd = () => { // mulberry32: same demo every time
+    seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+  const pick = list => list[Math.floor(rnd() * list.length)];
+  const weighted = table => { let r = rnd() * table.reduce((s, x) => s + x[1], 0); return table.find(x => (r -= x[1]) < 0)[0]; };
+
+  const everyone = [['Tunde', 30], ['Aoife', 22], ['Priya', 18], ['Callum', 14], ['Maisie', 10], ['Idris', 6]];
+  const lateCrew = [['Aoife', 70], ['Callum', 18], ['Maisie', 12]];
+  const lines = ['who is in tonight', 'running late sorry', 'that is actually mad', 'no way', 'someone bring a charger', 'pub at 8?',
+    'has anyone seen my keys', 'lecture was dead today', 'what time are we meeting?', 'I am outside', 'send the pics', 'haha stop', 'lol',
+    'who took my milk', 'bins go out tomorrow', 'anyone want chips?', 'can someone let me in', 'this flat is unhinged', 'see you there',
+    'what is the plan?', 'revision is not going well', 'we need to book the train', 'rent is due friday', 'the wifi is down again',
+    'big match tonight', 'that was the best night', 'never again', 'who is cooking?', 'takeaway?', 'true', 'fair', 'hahaha', 'on my way',
+    'save me a seat', 'the heating is broken again', 'whose turn is it to buy milk?'];
+  const shouts = ['FOOD', 'LETS GOOO', 'WHO ATE MY PASTA', 'NO WAY', 'I AM NEVER DRINKING AGAIN', 'GOAL'];
+  const flavour = { Tunde: ['😂', '💀', '😂', '🔥'], Aoife: ['😭', '🌙', '😭'], Priya: ['☀️', '✅'], Maisie: ['🙌🏽', '😂'], Callum: ['🍕'], Idris: [] };
+
+  const pad = n => String(n).padStart(2, '0');
+  const out = [];
+  const say = (t, who, text) => out.push([t, who, text]);
+  const messageFor = who => {
+    const r = rnd();
+    if (who === 'Callum' && r < 0.12) return 'This message was deleted';
+    if (who === 'Callum' && r < 0.3) return pick(shouts);
+    if (who === 'Maisie' && r < 0.3) return '<Media omitted>';
+    if (who === 'Idris' && r < 0.25) return `have you seen this https://example.com/quiz/${Math.floor(rnd() * 90) + 10}`;
+    if (r > 0.95) return '<Media omitted>';
+    if (r < 0.012) return 'This message was deleted';
+    const emoji = flavour[who].length && rnd() < 0.45 ? ' ' + pick(flavour[who]) : '';
+    return pick(lines) + emoji;
+  };
+
+  const start = Date.UTC(2026, 0, 1), end = Date.UTC(2026, 10, 10);
+  const streakFrom = Date.UTC(2026, 1, 3), streakTo = Date.UTC(2026, 3, 19), bigDay = Date.UTC(2026, 5, 13);
+  for (let day = start; day <= end; day += 864e5) {
+    const inStreak = day >= streakFrom && day <= streakTo;
+    if (!inStreak && day !== bigDay && rnd() > 0.7) continue;
+    const chats = day === bigDay ? 9 : 1 + (rnd() < 0.45) + (rnd() < 0.2);
+    for (let c = 0; c < chats; c++) {
+      const late = rnd() < 0.12;
+      const hour = late ? pick([0, 1, 1, 2, 3]) : pick([8, 9, 12, 13, 17, 18, 19, 20, 20, 21, 21, 21, 22, 22, 23]);
+      const cast = late ? lateCrew : everyone;
+      let t = day + hour * 36e5 + Math.floor(rnd() * 60) * 6e4;
+      let who = !late && rnd() < (hour < 11 ? 0.7 : 0.3) ? 'Priya' : weighted(cast); // Priya opens most conversations
+      const length = 3 + Math.floor(rnd() * rnd() * (day === bigDay ? 60 : 28));
+      for (let i = 0; i < length; i++) {
+        if (i) {
+          const again = who === 'Tunde' && rnd() < 0.45;
+          if (!again) { let next; do next = weighted(cast); while (next === who); who = next; }
+          t += Math.floor(rnd() * (who === 'Maisie' ? 1.3 : 5)) * 6e4;
+        }
+        say(t, who, messageFor(who));
+      }
+    }
+  }
+  say(Date.UTC(2026, 2, 14, 19, 2), 'Priya', 'shopping list:\nmilk\nbin bags\nsomething that is not pasta');
+  out.sort((a, b) => a[0] - b[0]);
+
+  const stampOf = t => { const d = new Date(t); return `${pad(d.getUTCDate())}/${pad(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}, ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`; };
+  return ['01/01/2026, 00:00 - Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them.',
+    '01/01/2026, 00:00 - Priya created group "Flat 12"',
+    ...out.map(([t, who, text]) => `${stampOf(t)} - ${who}: ${text}`)].join('\n');
+}
+
+
+/* Money settings, filled in by build.mjs from site.config.json. An empty link hides that feature. */
+const TIP_URL = 'https://ko-fi.com/yapstats';
+const CHECKOUT_URL = 'https://buy.polar.sh/polar_cl_hhCexdidz7GjWdMaHHAUIEddSOPfuXmXBFdAe4TtQuW';
+const PACK_PRICE = '£2.99';
+const UNLOCK_CODE = 'yap-1e656267c3';
+const PACK_KEY = 'yapstats-full';
+const PACK_PEOPLE = 40; // personal cards are drawn for the 40 biggest talkers, so huge groups still load quickly
+
+// shortcut: the unlock is a code in the link the payment page sends buyers back to, remembered in this browser.
+// Anyone who reads this file can find it. Move to a checked licence key if shared links ever cost real money.
+let packOwned = false;
+try { packOwned = localStorage.getItem(PACK_KEY) === UNLOCK_CODE; } catch { /* storage blocked: the unlock lasts for this visit */ }
+// 'none': nothing is for sale. 'sample': the top talker's personal card is shown free. 'full': everything.
+const packMode = () => !CHECKOUT_URL ? 'none' : packOwned ? 'full' : 'sample';
+
+/* Share cards. Everything from a chat is drawn as text and stays on the device. */
+
+const SITE_URL = 'yapstats.tech';
+const W = 1080, H = 1920, PAD = 74, INNER = W - 2 * PAD;
+const INK = '#17171c', PAPER = '#fffbf1', MUTED = '#535258', LINE = '#dbd7cc';
+const YELLOW = '#ffd92e', PINK = '#ff8fbd', BLUE = '#74c5ff', ORANGE = '#ffa052';
+const SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif';
+const clamp = (value, lo, hi) => Math.max(lo, Math.min(hi, value));
+
+function font(c, px, weight) {
+  c.font = `${weight} ${px}px ${SANS}`;
+}
+
+function box(c, x, y, width, height, radius, color) {
+  c.fillStyle = color;
+  c.beginPath();
+  if (c.roundRect) c.roundRect(x, y, width, height, radius);
+  else c.rect(x, y, width, height);
+  c.fill();
+}
+
+function line(c, x, y, width, color = LINE) {
+  c.fillStyle = color;
+  c.fillRect(x, y, width, 3);
+}
+
+function disc(c, x, y, radius, color) {
+  c.fillStyle = color;
+  c.beginPath();
+  c.arc(x, y, radius, 0, Math.PI * 2);
+  c.fill();
+}
+
+function polygon(c, points, color) {
+  c.fillStyle = color;
+  c.beginPath();
+  c.moveTo(...points[0]);
+  for (const point of points.slice(1)) c.lineTo(...point);
+  c.closePath();
+  c.fill();
+}
+
+function stroke(c, points, color, width = 10) {
+  c.strokeStyle = color;
+  c.lineWidth = width;
+  c.lineCap = 'round';
+  c.lineJoin = 'round';
+  c.beginPath();
+  c.moveTo(...points[0]);
+  for (const point of points.slice(1)) c.lineTo(...point);
+  c.stroke();
+}
+
+function chatMark(c, x, y, scale, color) {
+  const points = [[0, 0], [91, 0], [91, 58], [33, 58], [13, 77], [13, 58], [0, 58], [0, 0]];
+  stroke(c, points.map(([dx, dy]) => [x + dx * scale, y + dy * scale]), color, 6 * scale);
+  for (let i = 1; i <= 3; i++) disc(c, x + i * 22.75 * scale, y + 29 * scale, 3.5 * scale, color);
+}
+
+// Keep names and numbers readable at phone size. The complete wording is in the image description.
+function text(c, value, x, y, { max = INNER, size = 48, min = size, weight = 700, color = INK, align = 'left' } = {}) {
+  value = String(value);
+  font(c, size, weight);
+  while (size > min && c.measureText(value).width > max) {
+    size = Math.max(min, size - 2);
+    font(c, size, weight);
+  }
+  if (c.measureText(value).width > max) {
+    const glyphs = Array.from(value);
+    do { glyphs.pop(); } while (glyphs.length && c.measureText(glyphs.join('') + '…').width > max);
+    value = glyphs.join('') + '…';
+  }
+  c.fillStyle = color;
+  c.textAlign = align;
+  c.fillText(value, x, y, max);
+  c.textAlign = 'left';
+}
+
+function frame(c, card, meta, index, total) {
+  const { background = PAPER, foreground = INK, muted = MUTED, divider = LINE } = card.theme || {};
+  c.fillStyle = background;
+  c.fillRect(0, 0, W, H);
+  c.textBaseline = 'alphabetic';
+  box(c, PAD, 73, 65, 65, 16, YELLOW);
+  for (const [offset, height] of [[14, 17], [27, 32], [40, 22]]) {
+    box(c, PAD + offset, 105 - height / 2, 8, height, 4, INK);
+  }
+  text(c, SITE_URL, PAD + 86, 121, { size: 43, weight: 800, color: foreground });
+  if (index != null) text(c, `${index + 1} / ${total}`, W - PAD, 121, { size: 43, align: 'right', color: muted });
+  line(c, PAD, 177, INNER, divider);
+  text(c, card.title, PAD, 300, { size: 108, min: 61, weight: 900, color: foreground });
+
+  line(c, PAD, 1758, INNER, divider);
+  font(c, 45, 720);
+  const dateWidth = c.measureText(meta.period).width;
+  text(c, meta.group, PAD, 1840, { max: INNER - dateWidth - 45, size: 45, min: 38, color: foreground });
+  text(c, meta.period, W - PAD, 1840, { size: 45, weight: 720, align: 'right', color: foreground });
+}
+
+const NIGHT = { background: '#1b1e2b', foreground: PAPER, muted: '#bfc8da', divider: '#454b61' };
+const AWARD = { background: '#221b29', foreground: PAPER, muted: '#dbccdf', divider: '#54485a' };
+const EMOJI_FRAME = { background: '#ffe0c3', divider: '#e0b089' };
+
+const LEAD = PAD + 52;
+const LEAD_WIDTH = INNER - 104;
+
+function poster(c, height, color, radius = 35) {
+  box(c, PAD + 13, 386, INNER - 2, height, radius, INK);
+  box(c, PAD, 373, INNER - 2, height, radius, color);
+}
+
+function totalCard(c, stats, when, busiestDay) {
+  poster(c, 618, YELLOW);
+  chatMark(c, 786, 436, 1.35, '#967611');
+  text(c, fmt(stats.total), LEAD, 776, { max: LEAD_WIDTH, size: 315, min: 118, weight: 900 });
+  text(c, `${stats.total === 1 ? 'message' : 'messages'} ${when}`, LEAD, 905, { max: LEAD_WIDTH, size: 55, min: 43 });
+
+  const width = (INNER - 24) / 2;
+  for (const [index, label, value] of [[0, 'Days you chatted', stats.activeDays], [1, 'People chatting', stats.members.length]]) {
+    const x = PAD + index * (width + 24);
+    box(c, x, 1112, width, 273, 26, '#fff0a9');
+    text(c, fmt(value), x + 30, 1283, { max: width - 60, size: 117, min: 58, weight: 900 });
+    text(c, label, x + 30, 1345, { max: width - 60, size: 44, min: 31, weight: 720 });
+  }
+  line(c, PAD, 1471, INNER);
+  text(c, 'Busiest day', PAD, 1551, { size: 45, color: MUTED });
+  text(c, `${busiestDay} · ${count(stats.busiest.n, 'message')}`, PAD, 1640, { size: 64, min: 43, weight: 850 });
+}
+
+function winnerLead(c, name, value, label, color, mark) {
+  poster(c, 594, color);
+  const centerX = W - PAD - 123;
+  disc(c, centerX, 494, 67, PAPER);
+  if (mark === 'chat') chatMark(c, centerX - 34, 467, .75, INK);
+  if (mark === 'reply') {
+    stroke(c, [[centerX + 28, 480], [centerX - 27, 480], [centerX - 27, 519], [centerX + 26, 519]], INK);
+    stroke(c, [[centerX - 8, 461], [centerX - 27, 480], [centerX - 8, 498]], INK);
+  }
+  if (mark === 'double') {
+    chatMark(c, centerX - 15, 458, .53, '#a54d75');
+    chatMark(c, centerX - 43, 489, .53, INK);
+  }
+  if (mark === 'erase') {
+    stroke(c, [[centerX - 30, 507], [centerX + 10, 466], [centerX + 34, 489], [centerX + 4, 520], [centerX - 18, 520], [centerX - 30, 507]], INK);
+    stroke(c, [[centerX - 8, 487], [centerX + 15, 509]], INK, 7);
+  }
+  text(c, name, LEAD, 544, { max: LEAD_WIDTH - 174, size: 113, min: 63, weight: 900 });
+  text(c, value, LEAD, 790, { max: LEAD_WIDTH, size: 197, min: 74, weight: 900 });
+  text(c, label, LEAD, 888, { max: LEAD_WIDTH, size: 52, min: 42, weight: 740 });
+}
+
+function topTalkersCard(c, leader, talkers, total, show) {
+  const ratio = leader.n / total;
+  const percent = Math.round(ratio * 100);
+  poster(c, 628, PINK);
+  const cx = W - PAD - 126;
+  polygon(c, [[cx - 57, 541], [cx - 60, 595], [cx, 573], [cx + 59, 595], [cx + 55, 542]], '#8d2755');
+  disc(c, cx, 497, 77, INK);
+  disc(c, cx, 497, 64, PAPER);
+  text(c, '#1', cx, 519, { size: 64, weight: 900, align: 'center' });
+  text(c, show(leader.a), LEAD, 542, { max: LEAD_WIDTH - 177, size: 120, min: 66, weight: 900 });
+  text(c, fmt(leader.n), LEAD, 762, { max: LEAD_WIDTH, size: 210, min: 94, weight: 900 });
+  text(c, `${leader.n === 1 ? 'message' : 'messages'} · ${percent}% of the chat`, LEAD, 850, { max: LEAD_WIDTH, size: 52, min: 42 });
+  box(c, LEAD, 897, LEAD_WIDTH, 23, 12, '#f9c5dc');
+  box(c, LEAD, 897, LEAD_WIDTH * ratio, 23, 12, INK);
+  if (!talkers.length) {
+    text(c, 'Only one sender appears in this recap.', PAD, 1155, { size: 48, min: 41, color: MUTED });
+    return;
+  }
+  text(c, 'Other top talkers', PAD, 1118, { size: 45, color: MUTED });
+  text(c, 'Messages', W - PAD, 1118, { size: 45, align: 'right', color: MUTED });
+  ranks(c, talkers.map((person, i) => [show(person.a), fmt(person.n), i + 2]), 1222);
+}
+
+function emojiLead(c, emoji, uses) {
+  poster(c, 618, ORANGE, 48);
+  const x = W / 2, y = 629;
+  for (let i = 0; i < 12; i++) {
+    const a = i * Math.PI / 6;
+    const point = radius => [x + Math.cos(a) * radius, y + Math.sin(a) * radius * .78];
+    stroke(c, [point(220), point(i % 2 ? 264 : 285)], '#a54c16', 10);
+  }
+  disc(c, x, y + 9, 176, '#9f4818');
+  disc(c, x, y, 176, PAPER);
+  text(c, emoji, x, 720, { max: 300, size: 252, min: 115, weight: 400, align: 'center' });
+  box(c, x - 304, 855, 608, 86, 43, INK);
+  text(c, `Used ${count(uses, 'time')}`, x, 913, { max: 544, size: 52, min: 42, color: PAPER, align: 'center' });
+}
+
+function wordsLead(c, word, uses) {
+  poster(c, 517, INK);
+  text(c, '“', W - PAD - 51, 539, { size: 181, weight: 900, align: 'right', color: ORANGE });
+  text(c, word, LEAD, 704, { max: LEAD_WIDTH, size: 171, min: 61, weight: 900, color: PAPER });
+  box(c, LEAD, 756, LEAD_WIDTH, 10, 5, ORANGE);
+  text(c, `Used ${count(uses, 'time')}`, LEAD, 842, { max: LEAD_WIDTH, size: 53, min: 44, color: ORANGE });
+}
+
+function streakCard(c, streak, from, to) {
+  poster(c, 619, BLUE);
+  for (const x of [LEAD + 13, W - LEAD - 13]) {
+    box(c, x - 13, 408, 26, 73, 13, INK);
+    disc(c, x, 450, 8, PAPER);
+  }
+  box(c, LEAD, 506, LEAD_WIDTH, 8, 4, '#3984b9');
+  text(c, fmt(streak), LEAD, 808, { max: LEAD_WIDTH, size: 312, min: 116, weight: 900 });
+  text(c, 'days in a row with a message', LEAD, 919, { max: LEAD_WIDTH, size: 53, min: 42 });
+  const x = PAD + 26;
+  stroke(c, [[x, 1176], [x, 1515]], '#397ba4', 10);
+  for (const [offset, label, date] of [[0, 'Streak started', from], [1, 'Streak ended', to]]) {
+    const y = 1176 + offset * 339;
+    disc(c, x, y, 22, INK);
+    disc(c, x, y, 12, BLUE);
+    text(c, label, PAD + 81, y - 15, { max: INNER - 81, size: 45, color: MUTED });
+    text(c, date, PAD + 81, y + 74, { max: INNER - 81, size: 65, min: 44, weight: 850 });
+  }
+}
+
+function ranks(c, rows, start = 1166) {
+  rows.forEach(([label, value, rank], index) => {
+    const y = start + 129 * index;
+    font(c, 55, 830);
+    const valueWidth = c.measureText(value).width;
+    const x = rank ? PAD + 94 : PAD;
+    if (rank) {
+      box(c, PAD, y - 55, 62, 68, 14, '#efe9da');
+      text(c, rank, PAD + 31, y - 8, { size: 39, color: INK, align: 'center' });
+    }
+    text(c, label, x, y, { max: W - PAD - x - valueWidth - 37, size: 61, min: 42, weight: 780 });
+    text(c, value, W - PAD, y, { size: 55, weight: 830, align: 'right' });
+    if (index < rows.length - 1) line(c, PAD, y + 43, INNER);
+  });
+}
+
+function busiestCard(c, stats, owl, show) {
+  const peak = stats.hours[stats.peak];
+  poster(c, 993, BLUE);
+  text(c, hourLabel(stats.peak) + '–' + hourLabel(stats.peak + 1), LEAD, 605,
+    { max: LEAD_WIDTH, size: 150, min: 81, weight: 900 });
+  text(c, count(peak, 'message') + ' in that hour', LEAD, 701, { max: LEAD_WIDTH, size: 52, min: 43 });
+  box(c, LEAD, 780, LEAD_WIDTH, 511, 24, '#e4f4ff');
+  text(c, 'Messages by hour', LEAD + 27, 860, { max: LEAD_WIDTH - 54, size: 45, weight: 850 });
+  const base = 1175, gap = 8, chartX = LEAD + 27, chartWidth = LEAD_WIDTH - 54;
+  const barWidth = (chartWidth - gap * 23) / 24;
+  stats.hours.forEach((n, hour) => {
+    const barHeight = n ? Math.max(7, (n / peak) * 259) : 3;
+    box(c, chartX + hour * (barWidth + gap), base - barHeight, barWidth, barHeight,
+      Math.min(7, barHeight / 2), hour === stats.peak ? INK : '#5786ad');
+  });
+  [0, 6, 12, 18].forEach(hour => {
+    text(c, hourLabel(hour), chartX + hour * (barWidth + gap), 1242, { size: 39, color: MUTED });
+  });
+  if (owl) {
+    box(c, PAD, 1465, INNER, 222, 28, '#30364b');
+    disc(c, PAD + 74, 1571, 32, '#ffe780');
+    disc(c, PAD + 88, 1555, 28, '#30364b');
+    text(c, 'Night owl · midnight to 5am', PAD + 135, 1547, { max: INNER - 175, size: 42, color: '#d6eaff' });
+    text(c, `${show(owl.a)} · ${count(owl.night, 'message')}`, PAD + 135, 1627, { max: INNER - 175, size: 58, min: 42, weight: 850, color: PAPER });
+  }
+}
+
+function burstCard(c, burst, show) {
+  poster(c, 664, ORANGE, 39);
+  const cx = W - PAD - 126, cy = 501;
+  const flash = [[cx + 12, cy - 67], [cx - 54, cy + 11], [cx - 8, cy + 11], [cx - 21, cy + 67], [cx + 58, cy - 20], [cx + 11, cy - 20]];
+  polygon(c, flash, INK);
+  text(c, fmt(burst.size), LEAD, 799, { max: LEAD_WIDTH, size: 292, min: 107, weight: 900 });
+  text(c, 'messages in 10 minutes', LEAD, 937, { max: LEAD_WIDTH, size: 56, min: 43 });
+
+  text(c, 'Peak stretch started', PAD, 1193, { size: 45, color: MUTED });
+  text(c, `${burst.day} · ${burst.time}`, PAD, 1277, { size: 65, min: 44, weight: 850 });
+  line(c, PAD, 1374, INNER);
+  text(c, 'Most messages in that stretch', PAD, 1465, { size: 45, color: MUTED });
+  text(c, `${show(burst.sender)} · ${count(burst.sent, 'message')}`, PAD, 1550, { size: 65, min: 43, weight: 850 });
+}
+
+function awardsCard(c, rows) {
+  const spacious = rows.length <= 2;
+  const height = spacious ? 536 : Math.min(303, Math.floor(1300 / rows.length));
+  const colors = ['#fff0a9', '#ffd6e6', '#d8edff', '#ffdfc2'];
+  rows.forEach((row, index) => {
+    const y = 380 + index * height;
+    const color = colors[index % colors.length];
+    box(c, PAD, y, INNER, height - 18, 23, color);
+    const cx = spacious ? W - PAD - 97 : PAD + 70, cy = y + (spacious ? 113 : 91);
+    polygon(c, [[cx - 30, cy + 13], [cx - 29, cy + 58], [cx, cy + 44], [cx + 29, cy + 58], [cx + 30, cy + 13]], INK);
+    disc(c, cx, cy, 39, INK);
+    disc(c, cx, cy, 26, PAPER);
+    const star = Array.from({ length: 8 }, (_, i) => {
+      const angle = i * Math.PI / 4 - Math.PI / 2;
+      const r = i % 2 ? 5 : 16;
+      return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+    });
+    polygon(c, star, INK);
+    const x = PAD + (spacious ? 43 : 130), max = INNER - (spacious ? 208 : 160);
+    text(c, row.title, x, y + (spacious ? 146 : 63), { max, size: spacious ? 94 : 62, min: 44, weight: 900 });
+    text(c, row.name, x, y + (spacious ? 307 : 121), { max, size: spacious ? 103 : 47, min: 39 });
+    text(c, row.line, x, y + (spacious ? 416 : 172), { max: spacious ? INNER - 86 : max, size: spacious ? 49 : 39, min: 34, weight: 570, color: MUTED });
+  });
+}
+
+function personalCard(c, p, award, percent, tiles, color) {
+  poster(c, 441, color);
+  text(c, award.title, LEAD, 522, { max: LEAD_WIDTH, size: 96, min: 50, weight: 900 });
+  text(c, fmt(p.n), LEAD, 710, { max: LEAD_WIDTH, size: 197, min: 92, weight: 900 });
+  text(c, `${p.n === 1 ? 'message' : 'messages'} · ${percent}% of the chat`, LEAD, 777, { max: LEAD_WIDTH, size: 48, min: 38 });
+
+  box(c, PAD, 882, INNER, 219, 27, INK);
+  text(c, 'Earned for', PAD + 36, 965, { size: 44, color: YELLOW });
+  text(c, award.line, PAD + 36, 1053, { max: INNER - 72, size: 62, min: 34, weight: 850, color: PAPER });
+
+  const half = (INNER - 24) / 2;
+  const colors = ['#fff0a9', '#ffd6e6', '#d8edff', '#ffdfc2'];
+  tiles.forEach(([label, value, weight = 900], i) => {
+    const x = PAD + (i % 2) * (half + 24), y = 1141 + Math.floor(i / 2) * 254;
+    box(c, x, y, half, 230, 27, colors[i]);
+    text(c, label, x + 30, y + 84, { max: half - 60, size: 44, min: 34 });
+    text(c, value, x + 30, y + 179, { max: half - 60, size: 72, min: 42, weight });
+  });
+}
+
+function chatIdentity(stats) {
+  if (stats.total < 20 || stats.activeDays < 3 || stats.members.length < 2) return null;
+  const afterMidnight = stats.hours.slice(0, 5).reduce((sum, n) => sum + n, 0);
+  if (afterMidnight >= stats.total * .25) {
+    return ['The Night Shift', `${Math.round(afterMidnight / stats.total * 100)}% of messages between midnight and 5am`];
+  }
+  if (stats.burst?.size >= stats.total * .3) {
+    return ['All at Once', `${count(stats.burst.size, 'message')} in one ten-minute stretch`];
+  }
+  if (stats.streak.len >= 14) {
+    return ['The Daily Regulars', `${stats.streak.len} days in a row with a message`];
+  }
+  return null;
+}
+
+function buildHighlights(stats, meta, show) {
+  const title = 'Chat highlights';
+  const leader = stats.members[0];
+  const speaker = show(leader.a);
+  const leaderLabel = stats.members[1]?.n === leader.n ? 'Joint top talker' : 'Top talker';
+  const emoji = stats.emoji[0]?.[0];
+  const identity = chatIdentity(stats);
+  const peak = `${hourLabel(stats.peak)}–${hourLabel(stats.peak + 1)}`;
+  return {
+    title,
+    alt: `${meta.group}, ${meta.period}. ${count(stats.total, 'message')}. ${leaderLabel} ${speaker}. Busiest hour ${peak}. ${emoji ? `Favourite emoji ${emoji}.` : `${count(stats.activeDays, 'active day')}.`}${identity ? ` ${identity[0]}. ${identity[1]}.` : ''}`,
+    draw(c) {
+      frame(c, { title }, meta);
+      poster(c, 441, YELLOW);
+      text(c, meta.group, LEAD, 522, { max: LEAD_WIDTH, size: 96, min: 50, weight: 900 });
+      text(c, fmt(stats.total), LEAD, 710, { max: LEAD_WIDTH, size: 197, min: 92, weight: 900 });
+      text(c, stats.total === 1 ? 'message sent' : 'messages sent', LEAD, 777, { max: LEAD_WIDTH, size: 48 });
+
+      box(c, PAD, 882, INNER, 219, 27, PINK);
+      text(c, leaderLabel, PAD + 36, 965, { size: 44 });
+      text(c, speaker, PAD + 36, 1053, { max: INNER - 72, size: 78, min: 45, weight: 900 });
+
+      const half = (INNER - 24) / 2, right = PAD + half + 24;
+      box(c, PAD, 1141, half, 230, 27, BLUE);
+      text(c, 'Busiest hour', PAD + 30, 1225, { max: half - 60, size: 44 });
+      text(c, peak, PAD + 30, 1320, { max: half - 60, size: 70, min: 42, weight: 900 });
+      box(c, right, 1141, half, 230, 27, '#ffdfc2');
+      text(c, emoji ? 'Favourite emoji' : 'Active days', right + 30, 1225, { max: half - 60, size: 44 });
+      text(c, emoji || fmt(stats.activeDays), right + 30, 1320,
+        { max: half - 60, size: 79, min: 45, weight: emoji ? 400 : 900 });
+
+      if (identity) {
+        box(c, PAD, 1414, INNER, 249, 27, INK);
+        text(c, identity[0], PAD + 36, 1522, { max: INNER - 72, size: 73, min: 48, weight: 900, color: YELLOW });
+        text(c, identity[1], PAD + 36, 1598, { max: INNER - 72, size: 45, min: 35, color: PAPER });
+      }
+    },
+  };
+}
+
+const order = (list, score, min) => list.filter(p => score(p) >= min).sort((a, b) => score(b) - score(a));
+
+function buildCards(stats, meta, show, pack = 'none') {
+  const cards = [];
+  const add = (title, alt, layout, theme) => cards.push({ title, alt, layout, theme });
+  const share = n => Math.round(n / stats.total * 100);
+
+  function personCard(title, people, scoreText, unit, definition, color, mark) {
+    if (!people.length) return;
+    const [winner, ...rest] = people;
+    const runners = rest.slice(0, 3);
+    const result = scoreText(winner);
+    const details = definition ? ` ${definition}` : '';
+    const others = runners.map(person => `${show(person.a)} ${scoreText(person)}`).join(', ');
+    add(title, `${title}. ${show(winner.a)}, ${result} ${unit(winner)}.${others ? ` Also ranked: ${others}.` : ''}${details}`, c => {
+      winnerLead(c, show(winner.a), result, unit(winner), color, mark);
+      if (runners.length) {
+        text(c, 'Also ranked', PAD, 1133, { size: 45, color: MUTED });
+        ranks(c, runners.map((person, i) => [show(person.a), scoreText(person), i + 2]), 1240);
+      }
+      if (definition) text(c, definition, PAD, 1674, { size: 41, min: 35, weight: 590, color: MUTED });
+    });
+  }
+
+  const busiestDay = dayLabel(stats.busiest.day);
+  add('Messages sent', `${count(stats.total, 'message')} ${meta.when}. Busiest day ${busiestDay}, ${count(stats.busiest.n, 'message')}. ${count(stats.activeDays, 'active day')}, ${count(stats.members.length, 'sender')}.`,
+    c => totalCard(c, stats, meta.when, busiestDay));
+
+  const [leader, ...talkers] = stats.members.slice(0, 5);
+  add('Top talkers', `${show(leader.a)} sent ${count(leader.n, 'message')}, ${share(leader.n)}% of the chat. ${talkers.map(p => `${show(p.a)} sent ${count(p.n, 'message')}.`).join(' ')}`,
+    c => topTalkersCard(c, leader, talkers, stats.total, show));
+
+  const owl = best(stats.members, p => p.night);
+  add('Busiest hour', `${hourLabel(stats.peak)} to ${hourLabel(stats.peak + 1)}. ${count(stats.hours[stats.peak], 'message')} in that hour.${owl ? ` Night owl: ${show(owl.a)}, ${count(owl.night, 'message')} from midnight to 5am.` : ''}`,
+    c => busiestCard(c, stats, owl, show), NIGHT);
+
+  if (stats.burst) {
+    const burst = stats.burst;
+    add('The chat blew up', `Peak ten-minute stretch: ${count(burst.size, 'message')}, starting ${burst.day} at ${burst.time}. ${show(burst.sender)} sent ${count(burst.sent, 'message')} in that stretch.`,
+      c => burstCard(c, burst, show));
+  }
+
+  if (stats.emoji.length) {
+    const [[emoji, uses], ...runners] = stats.emoji;
+    add('Favourite emojis', `${emoji} appeared ${count(uses, 'time')}. ${runners.map(([e, n]) => `${e} appeared ${count(n, 'time')}.`).join(' ')}`, c => {
+      emojiLead(c, emoji, uses);
+      if (runners.length) {
+        text(c, 'Also in heavy rotation', PAD, 1118, { size: 45, color: MUTED });
+        text(c, 'Uses', W - PAD, 1118, { size: 45, align: 'right', color: MUTED });
+        ranks(c, runners.map(([e, n], i) => [e, fmt(n), i + 2]), 1222);
+      }
+    }, EMOJI_FRAME);
+  }
+
+  personCard('Chat starter', order(stats.members, p => p.starts, 2), p => fmt(p.starts),
+    p => p.starts === 1 ? 'conversation started' : 'conversations started', 'A conversation starts after 6+ hours of quiet.', YELLOW, 'chat');
+  personCard('Fastest replier', order(stats.members, p => p.med === null ? -1 : 1e12 - p.med, 0), p => dur(p.med),
+    () => 'typical reply time', `Median time to answer. At least ${MIN_REPLIES} replies to rank.`, BLUE, 'reply');
+  personCard('Double texter', order(stats.members, p => p.runs, 2), p => fmt(p.runs),
+    () => 'runs of 2+ messages in a row', `Longest run in the group: ${count(stats.longestRun, 'message')}.`, PINK, 'double');
+  personCard('Message eraser', order(stats.members, p => p.deleted, 1), p => fmt(p.deleted),
+    p => p.deleted === 1 ? 'message deleted' : 'messages deleted', 'Counted from deleted-message notices in the export.', ORANGE, 'erase');
+
+  if (stats.words.length > 2) {
+    const [[word, uses], ...rest] = stats.words;
+    const runners = rest.slice(0, 4);
+    add('Most-used words', `“${word}” appeared ${count(uses, 'time')}. ${runners.map(([w, n]) => `“${w}” appeared ${count(n, 'time')}.`).join(' ')} Common English words are left out.`, c => {
+      wordsLead(c, word, uses);
+      text(c, 'Other favourites', PAD, 1027, { size: 45, color: MUTED });
+      text(c, 'Uses', W - PAD, 1027, { size: 45, align: 'right', color: MUTED });
+      ranks(c, runners.map(([w, n], i) => [w, fmt(n), i + 2]), 1124);
+      text(c, 'Common words like “the” and “and” are left out.', PAD, 1655, { size: 42, min: 38, color: MUTED });
+    });
+  }
+
+  if (stats.streak.len > 1) {
+    const from = dayLabel(stats.streak.from), to = dayLabel(stats.streak.to);
+    add('Longest streak', `${stats.streak.len} days in a row with a message, ${from} to ${to}.`, c => streakCard(c, stats.streak.len, from, to));
+  }
+
+  const given = assignAwards(stats);
+  const awards = given.map(a => ({ name: show(a.a), title: a.title, line: a.line }));
+  const pages = Math.ceil(awards.length / 6);
+  const size = Math.ceil(awards.length / pages);
+  for (let start = 0; start < awards.length; start += size) {
+    const rows = awards.slice(start, start + size);
+    const title = pages > 1 ? `Group awards ${start / size + 1}/${pages}` : 'Group awards';
+    add(title, `${title}. ${rows.map(r => `${r.title}: ${r.name}, ${r.line}.`).join(' ')}`, c => awardsCard(c, rows), AWARD);
+  }
+
+  // Full recap: five more rankings, then a personal card each. Before it is bought, the top talker's card is a free sample.
+  if (pack === 'full') {
+    const slow = order(stats.members, p => p.med ?? -1, 0);
+    if (slow.length > 1) personCard('Slowest replier', slow, p => dur(p.med), () => 'typical reply time', `Median time to answer. At least ${MIN_REPLIES} replies to rank.`, ORANGE, 'reply');
+    personCard('Night owl', order(stats.members, p => p.night, 3), p => fmt(p.night), () => 'messages between midnight and 5am', '', BLUE, 'chat');
+    personCard('Biggest laugher', order(stats.members, p => p.laughs, 3), p => fmt(p.laughs), () => 'messages with haha, lol or 😂', '', YELLOW, 'chat');
+    personCard('Question asker', order(stats.members, p => p.q, 3), p => fmt(p.q), () => 'messages with a question mark', '', PINK, 'chat');
+    personCard('Longest monologue', order(stats.members, p => p.maxRun, 5), p => fmt(p.maxRun), () => 'messages in a row, uninterrupted', '', ORANGE, 'double');
+  }
+  const personal = pack === 'full' ? stats.members.slice(0, PACK_PEOPLE) : pack === 'sample' ? stats.members.slice(0, 1) : [];
+  personal.forEach((p, i) => {
+    const award = given.find(a => a.a === p.a);
+    const hour = p.hours.indexOf(Math.max(...p.hours)), weekday = p.wd.indexOf(Math.max(...p.wd)), favourite = top(p.emoji, 1)[0];
+    const tiles = [
+      ['Peak hour', `${hourLabel(hour)}–${hourLabel(hour + 1)}`],
+      favourite ? ['Favourite emoji', favourite[0], 400] : ['Busiest day', DAYS[weekday]],
+      p.med !== null ? ['Typical reply', dur(p.med)] : ['Chats started', fmt(p.starts)],
+      p.text ? ['Words per message', (p.words / p.text).toFixed(1)] : ['Media sent', fmt(p.media)],
+    ];
+    const name = show(p.a), percent = share(p.n);
+    add(name, `${name}: ${award.title}, ${award.line}. ${count(p.n, 'message')}, ${percent}% of the chat. ${tiles.map(([label, value]) => `${label}: ${value}`).join('. ')}.`,
+      c => personalCard(c, p, award, percent, tiles, [YELLOW, PINK, BLUE, ORANGE][i % 4]));
+  });
+
+  return cards.map((card, index) => ({
+    title: card.title,
+    alt: `${card.alt} ${meta.group}, ${meta.period}.`,
+    draw(c) {
+      frame(c, card, meta, index, cards.length);
+      card.layout(c);
+    },
+  }));
+}
+
+/* ---------- page ---------- */
+const $ = id => document.getElementById(id);
+const canvas = Object.assign(document.createElement('canvas'), { width: W, height: H });
+const stripView = $('cards');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const state = { chat: null, names: new Map(), group: '', cards: [], highlights: null, prediction: null, job: 0, sent: 0, index: -1 };
+const viewedCards = new Set();
+let nameTimer;
+let drag = null;
+let settle = null;
+let requestedIndex = null;
+let edgeCard = null;
+let galleryFlight = null;
+let galleryExit = [];
+const warmedImages = new WeakSet();
+let galleryTrigger;
+let instagramArchive = null;
+
+function paint(card) {
+  card.draw(canvas.getContext('2d'));
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Could not draw card')), 'image/png');
+  });
+}
+
+function recapFor(chat, year, group, show, mode = packMode()) {
+  const stats = chat.stats?.get(year) ?? computeStats(chat.messages, year, chat.localTime);
+  chat.stats?.set(year, stats);
+  const first = new Date(stats.first * 864e5).getUTCFullYear();
+  const last = new Date(stats.last * 864e5).getUTCFullYear();
+  const singleYear = year || first === last;
+  const meta = {
+    group: group || 'Our group chat',
+    period: singleYear ? String(year || first) : `${first}–${last}`,
+    when: singleYear ? `in ${year || first}` : 'in this export',
+  };
+  const frontRunners = stats.members.slice(0, 4).map(person => show(person.a));
+  const canPredict = frontRunners.length >= 3 && stats.members[0].n > stats.members[1].n &&
+    new Set(frontRunners).size === frontRunners.length;
+  const prediction = canPredict ? {
+    answer: frontRunners[0],
+    choices: frontRunners.sort((a, b) => a.localeCompare(b)),
+  } : null;
+  const cards = buildCards(stats, meta, show, mode);
+  const people = stats.members.slice(0, PACK_PEOPLE).map(person => show(person.a));
+  // What buying would add: the full set is the free cards, then the extra rankings, then one personal card each.
+  const full = mode === 'sample' ? buildCards(stats, meta, show, 'full') : cards;
+  const rankings = full.slice(cards.length - 1, full.length - people.length).map(card => card.title);
+  return { cards, highlights: buildHighlights(stats, meta, show), prediction, locked: full.length - cards.length, people, rankings };
+}
+
+const storyEase = 'cubic-bezier(.2,.75,.25,1)';
+
+const currentCard = () => state.index === state.cards.length ? state.highlights : state.cards[state.index];
+const lastSlide = () => stripView.children.length - 1;
+
+function canShareCard(card) {
+  return Boolean(card && navigator.share && navigator.canShare?.({ files: [card.file] }));
+}
+
+function activate(index) {
+  if (index === state.index || !stripView.children[index]) return;
+  const previous = stripView.children[state.index];
+  if (previous) {
+    previous.setAttribute('aria-hidden', 'true');
+    previous.inert = true;
+  }
+  state.index = index;
+  const slide = stripView.children[index];
+  slide.removeAttribute('aria-hidden');
+  slide.inert = false;
+
+  const isHighlights = index === state.cards.length;
+  const isOffer = index > state.cards.length;
+  $('viewer').toggleAttribute('data-offer', isOffer);
+  viewedCards.add(index);
+  const card = currentCard();
+  const numberedViews = state.cards.reduce((total, _, i) => total + Number(viewedCards.has(i)), 0);
+  const allViewed = numberedViews === state.cards.length;
+  $('storyCount').textContent = isOffer ? 'Full recap' : isHighlights
+    ? 'Chat highlights'
+    : `${index + 1} of ${state.cards.length} — ${card.title}`;
+  $('prev').disabled = index === 0;
+  $('next').disabled = index === lastSlide();
+  $('next').setAttribute('aria-label', index === lastSlide() - 1 && !$('pack').hidden
+    ? 'Next: full recap offer' : 'Next card');
+
+  const hint = $('storyHint');
+  hint.hidden = !isHighlights || allViewed;
+  if (!hint.hidden) {
+    hint.textContent = `${numberedViews} of ${state.cards.length} cards viewed. Open the rest to save the full set.`;
+  }
+  $('bulkActions').hidden = !allViewed || index !== lastSlide();
+  $('packCue').hidden = index !== 0 || $('pack').hidden;
+  $('storyTools').hidden = isOffer;
+  $('openGallery').hidden = index === 0;
+  $('guessTalker').hidden = index !== 0 || !state.prediction || typeof $('prediction').showModal !== 'function';
+  const shareCard = $('shareCard');
+  const saveCard = $('saveCard');
+  if (card) {
+    shareCard.textContent = isHighlights ? 'Share highlights' : 'Share this card';
+    saveCard.textContent = isHighlights ? 'Save highlights' : 'Save this card';
+    saveCard.href = card.url;
+    saveCard.download = card.file.name;
+  }
+  $('sendNote').textContent = '';
+  Array.from($('progress').children).forEach((segment, i) => {
+    segment.classList.toggle('seen', viewedCards.has(i));
+    segment.classList.toggle('current', i === index);
+  });
+  for (const i of [index - 1, index, index + 1]) warmCard(i);
+}
+
+function cancelSettle() {
+  if (!settle) return;
+  cancelAnimationFrame(settle.frame);
+  settle = null;
+  stripView.classList.remove('settling');
+}
+
+function warmCard(index) {
+  const image = stripView.children[index]?.querySelector('img');
+  if (!image || warmedImages.has(image)) return;
+  warmedImages.add(image);
+  image.loading = 'eager';
+  image.decode?.().catch(() => {});
+}
+
+function go(index, smooth = true, velocity = 0) {
+  requestedIndex = null;
+  settleTo(index, smooth, velocity);
+}
+
+function settleTo(index, smooth = true, velocity = 0) {
+  const width = stripView.clientWidth;
+  if (!width || !state.cards.length) return;
+  endGalleryFlight();
+  index = clamp(index, 0, lastSlide());
+  warmCard(index);
+  const start = stripView.scrollLeft;
+  const target = index * width;
+  const distance = target - start;
+  if (!smooth || reducedMotion.matches || Math.abs(distance) < 1) {
+    cancelSettle();
+    stripView.scrollTo({ left: target, behavior: 'instant' });
+    activate(index);
+    return;
+  }
+  if (settle) cancelAnimationFrame(settle.frame);
+  stripView.classList.add('settling');
+  const started = performance.now();
+  const following = requestedIndex !== null && requestedIndex !== index;
+  const duration = following ? 135 : clamp(250 + 110 * Math.abs(distance) / width, 260, 450);
+  const slope = clamp(velocity * duration / distance, 0, 2.65);
+  function step(now) {
+    const t = clamp((now - started) / duration, 0, 1);
+    const eased = t * t * (3 - 2 * t) + slope * t * (1 - t) ** 2;
+    stripView.scrollLeft = start + distance * eased;
+    if (t < 1) {
+      settle.frame = requestAnimationFrame(step);
+    } else {
+      cancelSettle();
+      activate(index);
+      continueNavigation();
+    }
+  }
+  settle = { index, frame: requestAnimationFrame(step) };
+}
+
+stripView.addEventListener('scroll', () => {
+  if (!stripView.clientWidth || drag || settle) return;
+  const position = stripView.scrollLeft / stripView.clientWidth;
+  const index = Math.round(position);
+  if (Math.abs(position - index) < .16) activate(index);
+}, { passive: true });
+stripView.addEventListener('wheel', event => {
+  if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+  requestedIndex = null;
+  cancelSettle();
+}, { passive: true });
+
+function continueNavigation() {
+  if (settle || requestedIndex === null) return;
+  if (state.index === requestedIndex) {
+    requestedIndex = null;
+    return;
+  }
+  settleTo(state.index + Math.sign(requestedIndex - state.index));
+  if (!settle) continueNavigation();
+}
+
+function moveBy(delta) {
+  if (state.index < 0) return;
+  requestedIndex = clamp((requestedIndex ?? settle?.index ?? state.index) + delta, 0, lastSlide());
+  continueNavigation();
+}
+
+$('prev').addEventListener('click', () => moveBy(-1));
+$('next').addEventListener('click', () => moveBy(1));
+$('viewer').addEventListener('keydown', event => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') moveBy(event.key === 'ArrowLeft' ? -1 : 1);
+  else go(event.key === 'Home' ? 0 : lastSlide());
+});
+let stripWidth = 0;
+new ResizeObserver(() => {
+  const width = stripView.clientWidth;
+  if (!width || width === stripWidth) return;
+  stripWidth = width;
+  if (state.index < 0 || drag) return;
+  settleTo(settle?.index ?? state.index, false);
+  continueNavigation();
+}).observe(stripView);
+
+// Horizontal drags follow the pointer. Vertical touch gestures still scroll the page.
+stripView.addEventListener('pointerdown', event => {
+  if (drag || event.isPrimary === false || event.button !== 0 || event.target.closest('button, a')) return;
+  endGalleryFlight();
+  const now = performance.now();
+  drag = { id: event.pointerId, start: event.clientX, startY: event.clientY, startedAt: now,
+    lastX: event.clientX, lastAt: now, velocity: 0, target: event.target, moved: false };
+});
+stripView.addEventListener('pointermove', event => {
+  if (!drag || event.pointerId !== drag.id) return;
+  if (event.pointerType === 'mouse' && !event.buttons) {
+    finishDrag(event);
+    return;
+  }
+  const delta = event.clientX - drag.start;
+  if (!drag.moved) {
+    if (Math.abs(delta) < 7 || Math.abs(delta) < Math.abs(event.clientY - drag.startY)) return;
+    drag.moved = true;
+    drag.scroll = stripView.scrollLeft;
+    drag.index = clamp(Math.round(drag.scroll / stripView.clientWidth), 0, lastSlide());
+    requestedIndex = null;
+    stripView.classList.add('dragging');
+    cancelSettle();
+    stripView.setPointerCapture(event.pointerId);
+  }
+  const width = stripView.clientWidth;
+  const now = performance.now();
+  const interval = now - drag.lastAt;
+  if (interval >= 6) {
+    const sample = clamp((event.clientX - drag.lastX) / interval, -2.5, 2.5);
+    drag.velocity = interval > 90 ? sample : drag.velocity * .32 + sample * .68;
+    drag.lastAt = now;
+    drag.lastX = event.clientX;
+  }
+  const position = drag.scroll - clamp(delta * .88, -width, width);
+  const bounded = clamp(position, 0, lastSlide() * width);
+  stripView.scrollLeft = bounded;
+  const overshoot = bounded - position;
+  if (overshoot && !reducedMotion.matches) {
+    const image = stripView.children[Math.round(bounded / width)]?.querySelector('img');
+    if (edgeCard && edgeCard !== image) edgeCard.style.translate = '';
+    edgeCard = image;
+    if (image) image.style.translate = `${22 * overshoot / (Math.abs(overshoot) + 105)}px`;
+  } else if (edgeCard) {
+    edgeCard.style.translate = '';
+    edgeCard = null;
+  }
+});
+function finishDrag(event) {
+  if (!drag || event.pointerId !== drag.id) return;
+  const delta = event.clientX - drag.start;
+  const threshold = clamp(stripView.clientWidth * .11, 32, 48);
+  const velocity = performance.now() - drag.lastAt < 95 ? drag.velocity : 0;
+  const flick = Math.abs(delta) >= 19 && Math.sign(velocity) === Math.sign(delta) && Math.abs(velocity) >= .4;
+  const advance = event.type === 'pointerup' && (Math.abs(delta) >= threshold || flick);
+  const index = drag.index + (advance ? -Math.sign(delta) : 0);
+  const { moved, target, startY, startedAt } = drag;
+  drag = null;
+  if (moved) {
+    go(index, true, event.type === 'pointerup' ? -.88 * velocity : 0);
+  } else if (!settle && event.type === 'pointerup' && event.target === target &&
+    target === stripView.children[state.index]?.firstElementChild &&
+    Math.hypot(delta, event.clientY - startY) < 8 && performance.now() - startedAt < 450) {
+    const rect = target.getBoundingClientRect();
+    moveBy(event.clientX < rect.left + rect.width / 2 ? -1 : 1);
+  }
+  stripView.classList.remove('dragging');
+  if (edgeCard) {
+    edgeCard.style.translate = '';
+    edgeCard = null;
+  }
+}
+stripView.addEventListener('dragstart', event => event.preventDefault());
+window.addEventListener('pointerup', finishDrag);
+window.addEventListener('pointercancel', finishDrag);
+
+function imageFor(card, lazy = false) {
+  return Object.assign(new Image(W, H), {
+    loading: lazy ? 'lazy' : 'eager', decoding: 'async', src: card.url, alt: card.alt, className: 'card', draggable: false,
+  });
+}
+
+function showGallery(event) {
+  if (!$('gallery').hidden && $('viewer').hidden) return;
+  go(state.index, false);
+  const current = stripView.children[state.index]?.querySelector('img');
+  const origin = reducedMotion.matches ? null : current?.getBoundingClientRect();
+  galleryTrigger = event?.currentTarget ?? document.activeElement;
+  $('galleryGrid').replaceChildren(...[...state.cards, state.highlights].map((card, index) => {
+    const figure = document.createElement('figure');
+    figure.className = 'gallery-item';
+    const caption = document.createElement('figcaption');
+    const link = document.createElement('a');
+    link.href = card.url;
+    link.download = card.file.name;
+    link.textContent = `Save ${card.title.toLowerCase()}`;
+    caption.append(link);
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'gallery-open';
+    open.setAttribute('aria-label', `Open card ${index + 1}: ${card.title}`);
+    const thumbnail = imageFor(card, true);
+    open.append(thumbnail);
+    open.addEventListener('click', () => openGalleryCard(index, card, thumbnail));
+    figure.append(open, caption);
+    return figure;
+  }));
+  $('viewer').hidden = true;
+  $('gallery').hidden = false;
+  $('galleryTitle').focus({ preventScroll: true });
+  scrollTo(0, 0);
+  if (!reducedMotion.matches) arrangeGallery(origin);
+}
+
+function endGalleryFlight() {
+  for (const { floating, animation } of galleryExit) {
+    animation.cancel();
+    floating.remove();
+  }
+  galleryExit = [];
+  if (!galleryFlight) return;
+  const { floating, travel, reveal } = galleryFlight;
+  galleryFlight = null;
+  travel.cancel();
+  reveal.cancel();
+  floating.remove();
+}
+
+function openGalleryCard(index, card, thumbnail) {
+  const origin = reducedMotion.matches ? null : thumbnail.getBoundingClientRect();
+  hideGallery();
+  go(index, false);
+  stripView.focus({ preventScroll: true });
+  scrollTo(0, 0);
+  flyToStory(index, card, origin);
+}
+
+function flyToStory(index, card, origin) {
+  if (!card || !origin?.width || origin.bottom <= 0 || origin.top >= window.innerHeight) return;
+  const image = stripView.children[index]?.querySelector('img');
+  const target = image?.getBoundingClientRect();
+  if (!target?.width) return;
+
+  const floating = imageFor(card);
+  floating.className = 'card gallery-flight';
+  floating.alt = '';
+  floating.setAttribute('aria-hidden', 'true');
+  Object.assign(floating.style, {
+    left: `${origin.left}px`, top: `${origin.top}px`, width: `${origin.width}px`, height: `${origin.height}px`,
+  });
+  document.body.append(floating);
+  const scale = target.width / origin.width;
+  const travel = floating.animate([
+    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+    { transform: `translate(${target.left - origin.left}px, ${target.top - origin.top}px) scale(${scale})`, opacity: .94 },
+  ], { duration: 410, easing: storyEase, fill: 'both' });
+  const reveal = image.animate([{ opacity: 0 }, { opacity: 0, offset: .78 }, { opacity: 1 }],
+    { duration: 410, easing: 'linear', fill: 'both' });
+  galleryFlight = { floating, travel, reveal };
+  travel.onfinish = endGalleryFlight;
+}
+
+function backToRecap() {
+  const index = state.index;
+  const card = currentCard();
+  const grid = $('galleryGrid');
+  const center = grid.getBoundingClientRect().left + grid.clientWidth / 2;
+  const tiles = reducedMotion.matches ? [] : Array.from(grid.children, (tile, i) => {
+    const image = tile.querySelector('img');
+    const rect = image.getBoundingClientRect();
+    return { image, rect, active: i === index };
+  }).filter(({ rect }) => rect.width && rect.top < innerHeight && rect.bottom > 0);
+  hideGallery(true);
+  for (const { image, rect, active } of tiles) {
+    if (active) {
+      flyToStory(index, card, rect);
+      continue;
+    }
+    const floating = image.cloneNode();
+    floating.className = 'gallery-flight';
+    floating.alt = '';
+    floating.loading = 'eager';
+    floating.setAttribute('aria-hidden', 'true');
+    Object.assign(floating.style, {
+      left: `${rect.left}px`, top: `${rect.top}px`, width: `${rect.width}px`, height: `${rect.height}px`,
+    });
+    document.body.append(floating);
+    const x = (center - rect.left - rect.width / 2) * .17;
+    const animation = floating.animate([
+      { opacity: 1, transform: 'translate(0, 0) scale(1)' },
+      { opacity: 0, transform: `translate(${x}px, 35px) scale(.94)` },
+    ], { duration: 320, easing: storyEase, fill: 'both' });
+    galleryExit.push({ floating, animation });
+    animation.onfinish = () => {
+      floating.remove();
+      galleryExit = galleryExit.filter(item => item.floating !== floating);
+    };
+  }
+}
+
+function arrangeGallery(origin) {
+  const grid = $('galleryGrid');
+  const gridRect = grid.getBoundingClientRect();
+  const center = (gridRect.left + gridRect.right) / 2;
+  // Measure together before animating. Cards below the first screen stay ready to scroll into view.
+  const tiles = [];
+  for (const [index, tile] of Array.from(grid.children).entries()) {
+    const rect = tile.getBoundingClientRect();
+    if (rect.top >= window.innerHeight + 120) break;
+    tiles.push({ tile, index, rect });
+  }
+  for (const { tile, index, rect } of tiles) {
+    const active = index === state.index && origin?.width && origin.bottom > 0 && origin.top < window.innerHeight && rect.width;
+    const x = active ? origin.left - rect.left : (center - (rect.left + rect.right) / 2) * .17;
+    const y = active ? origin.top - rect.top : 28 + Math.min(index, 8) * 4;
+    const scale = active ? Math.min(2.6, origin.width / rect.width) : .94;
+    tile.animate([
+      { opacity: active ? 1 : 0, transformOrigin: 'top left', transform: `translate(${x}px, ${y}px) scale(${scale})` },
+      { opacity: 1, transformOrigin: 'top left', transform: 'translate(0, 0) scale(1)' },
+    ], { duration: 440, delay: active ? 0 : Math.min(index * 32, 170), easing: storyEase, fill: 'backwards' });
+  }
+}
+
+function hideGallery(focus = false) {
+  $('gallery').hidden = true;
+  $('viewer').hidden = false;
+  if (focus) {
+    go(state.index, false);
+    if (galleryTrigger?.isConnected) galleryTrigger.focus({ preventScroll: true });
+    else stripView.focus({ preventScroll: true });
+    scrollTo(0, 0);
+  }
+}
+
+function closePrediction() {
+  if ($('prediction').open) $('prediction').close();
+  $('guessChoices').replaceChildren();
+  $('guessStatus').textContent = 'Pick a name before you see the leaderboard.';
+  $('guessReveal').hidden = true;
+}
+
+function openPrediction() {
+  const quiz = state.prediction;
+  if (!quiz || state.index !== 0 || $('prediction').open) return;
+  closePrediction();
+  const choices = quiz.choices.map(name => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn ghost';
+    button.textContent = name;
+    button.addEventListener('click', () => {
+      if (choices.some(choice => choice.disabled)) return;
+      for (const choice of choices) choice.disabled = true;
+      button.classList.add('selected');
+      $('guessStatus').textContent = name === quiz.answer ? 'You called it.' : 'Good guess. See who came first.';
+      if (!reducedMotion.matches) {
+        $('guessStatus').animate([{ opacity: .35, transform: 'translateY(4px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 230, easing: storyEase });
+      }
+      $('guessReveal').hidden = false;
+      $('guessReveal').focus({ preventScroll: true });
+    });
+    return button;
+  });
+  $('guessChoices').replaceChildren(...choices);
+  $('prediction').showModal();
+}
+
+function mountStory(cards, highlights, recap) {
+  requestedIndex = null;
+  cancelSettle();
+  endGalleryFlight();
+  edgeCard = null;
+  drag = null;
+  stripView.classList.remove('dragging');
+  $('galleryGrid').replaceChildren();
+  hideGallery();
+  viewedCards.clear();
+  state.index = -1;
+  const content = [...cards, highlights].map((card, index) => imageFor(card, index > 1));
+  if (recap.locked) {
+    const offer = document.createElement('div');
+    offer.className = 'pack pack--slide';
+    fillPackOffer(offer, recap);
+    content.push(offer);
+  }
+  const slides = content.map(item => {
+    const slide = document.createElement('div');
+    slide.className = item.classList.contains('pack--slide') ? 'slide slide--offer' : 'slide';
+    slide.setAttribute('aria-hidden', 'true');
+    slide.inert = true;
+    slide.append(item);
+    return slide;
+  });
+  stripView.replaceChildren(...slides);
+  $('progress').replaceChildren(...slides.map(() => document.createElement('span')));
+  go(0, false);
+}
+
+function disposeCards(cards) {
+  for (const card of cards) URL.revokeObjectURL(card.url);
+}
+
+function setLoadingProgress(progress) {
+  $('loadingProgress').value = progress;
+  $('loadingFill').style.transform = `scaleX(${progress / 100})`;
+}
+
+function loading(phase, message, progress) {
+  $('loading').setAttribute('data-phase', phase);
+  $('loadingStatus').textContent = message;
+  setLoadingProgress(progress);
+}
+
+function screen(id) {
+  for (const view of ['landing', 'loading', 'threads', 'result']) $(view).hidden = view !== id;
+  $('exportLink').style.visibility = id === 'landing' ? '' : 'hidden';
+}
+
+const afterPaint = () => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+// Keep the beats legible on fast imports. Slow imports spend that time doing real work.
+async function waitForBeat(startedAt, offset) {
+  if (reducedMotion.matches) return;
+  const delay = offset - (performance.now() - startedAt);
+  if (delay > 0) await new Promise(resolve => setTimeout(resolve, delay));
+}
+
+async function render(uploadStartedAt = null) {
+  const fromUpload = uploadStartedAt !== null;
+  const job = ++state.job;
+  const cards = [];
+  $('send').disabled = $('save').disabled = true;
+  $('sendNote').textContent = fromUpload ? '' : 'Updating your cards…';
+  try {
+    if (fromUpload) {
+      loading('counting', 'Counting messages and finding the highlights…', 28);
+      await afterPaint();
+    }
+    if (job !== state.job) return;
+    const group = state.group;
+    const year = +$('year').value;
+    const names = new Map(state.names);
+    const recap = recapFor(state.chat, year, group, name => names.get(name) || name);
+    const draft = [...recap.cards, recap.highlights];
+    if (fromUpload) {
+      await waitForBeat(uploadStartedAt, 770);
+      if (job !== state.job) return;
+      loading('building', 'Creating your cards…', 44);
+      await afterPaint();
+    }
+    for (const [index, card] of draft.entries()) {
+      if (job !== state.job) break;
+      const blob = await paint(card);
+      if (job !== state.job) break;
+      const number = String(index + 1).padStart(2, '0');
+      const slug = card.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const filename = card === recap.highlights ? 'yapstats-chat-highlights.png' : `recap-${number}-${slug}.png`;
+      const file = new File([blob], filename, { type: 'image/png' });
+      cards.push({ ...card, file, url: URL.createObjectURL(file) });
+      if (fromUpload) setLoadingProgress(44 + 50 * cards.length / draft.length);
+    }
+    if (fromUpload && job === state.job) {
+      await waitForBeat(uploadStartedAt, 1760);
+      if (job !== state.job) return;
+      loading('ready', 'Your recap is ready.', 100);
+      await waitForBeat(uploadStartedAt, Math.max(2050, performance.now() - uploadStartedAt + 230));
+    }
+    if (job !== state.job) return;
+    const oldCards = state.cards;
+    const oldHighlights = state.highlights;
+    const highlights = cards.pop();
+    closePrediction();
+    state.cards = cards;
+    state.highlights = highlights;
+    state.prediction = recap.prediction;
+    state.sent = 0;
+    $('groupTitle').textContent = group || 'Your group chat';
+    $('send').textContent = 'Share recap';
+    $('sendNote').textContent = '';
+    showPack(recap);
+    screen('result');
+    mountStory(cards, highlights, recap);
+    disposeCards(oldCards);
+    if (oldHighlights) disposeCards([oldHighlights]);
+    $('send').disabled = $('save').disabled = false;
+    if (fromUpload) {
+      scrollTo(0, 0);
+      $('groupTitle').focus({ preventScroll: true });
+      if (!reducedMotion.matches) {
+        stripView.animate(
+          [{ transform: 'translateY(14px) scale(.985)', opacity: .68 }, { transform: 'none', opacity: 1 }],
+          { duration: 430, easing: storyEase }
+        );
+      }
+    }
+  } catch (error) {
+    if (job !== state.job) return;
+    if (fromUpload) throw error;
+    $('sendNote').textContent = 'Couldn’t update the cards. Try changing the date range or names again.';
+    $('send').disabled = $('save').disabled = !state.cards.length;
+  } finally {
+    if (state.cards !== cards) disposeCards(cards);
+  }
+}
+
+function fillPackOffer(container, { locked, people, rankings }) {
+  container.replaceChildren($('packTemplate').content.cloneNode(true));
+  container.querySelector('h3').textContent = `Unlock ${count(locked, 'more card')}`;
+
+  const personal = people.slice(1);
+  const listed = personal.slice(0, 3);
+  if (personal.length > listed.length) listed.push(count(personal.length - listed.length, 'other'));
+  const formatList = items => new Intl.ListFormat('en-GB', { style: 'long', type: 'conjunction' }).format(items);
+  const lines = [];
+  if (personal.length) lines.push(`Personal stats and awards for ${formatList(listed)}.`);
+  if (rankings.length) lines.push(`Bonus rankings: ${formatList(rankings)}.`);
+  container.querySelector('.pack-details').replaceChildren(...lines.map(line => {
+    const detail = document.createElement('li');
+    detail.textContent = line;
+    return detail;
+  }));
+  const tickets = container.querySelectorAll('.pack-ticket b');
+  tickets[0].textContent = rankings[0] || 'Peak hour';
+  tickets[1].textContent = rankings[1] || 'Favourite emoji';
+  if (!rankings.length) {
+    tickets[0].previousElementSibling.textContent = 'Personal stats';
+    tickets[1].previousElementSibling.textContent = 'Personal stats';
+  } else if (rankings.length === 1) {
+    tickets[1].previousElementSibling.textContent = 'Personal stats';
+  }
+  tickets[2].textContent = personal.length ? 'Your own card' : 'Group chat awards';
+  const buy = container.querySelector('.pack-buy');
+  buy.href = CHECKOUT_URL;
+  buy.addEventListener('click', event => {
+    if (!emailDeliveryEnabled || !state.chat || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    openEmailRecap();
+  });
+  buy.append(`Unlock for ${PACK_PRICE}`);
+  const arrow = document.createElement('span');
+  arrow.setAttribute('aria-hidden', 'true');
+  arrow.textContent = '↗';
+  buy.append(arrow);
+}
+
+function showPack(recap) {
+  const pack = $('pack');
+  pack.hidden = !recap.locked;
+  if (!recap.locked) {
+    pack.replaceChildren();
+    return;
+  }
+  fillPackOffer(pack, recap);
+  $('packCueText').textContent = `See ${count(recap.locked, 'bonus card')} · ${PACK_PRICE}`;
+}
+
+function syncLandingOffer() {
+  for (const id of ['heroOffer', 'fullOption']) $(id).hidden = !CHECKOUT_URL || packOwned;
+}
+
+function nameField(id, label, value, onChange) {
+  const field = Object.assign(document.createElement('div'), { className: 'field' });
+  const text = Object.assign(document.createElement('label'), { htmlFor: id, textContent: label });
+  const input = Object.assign(document.createElement('input'), { id, type: 'text', value, maxLength: 40, autocomplete: 'off' });
+  input.addEventListener('input', () => {
+    onChange(input.value.trim());
+    clearTimeout(nameTimer);
+    nameTimer = setTimeout(() => render(), 350);
+  });
+  field.append(text, input);
+  return field;
+}
+
+function setupChat(chat, group) {
+  chat.stats = new Map();
+  Object.assign(state, { chat, group, names: new Map() });
+  const years = [...new Set(chat.messages.map(message => messageYear(message, chat.localTime)))].sort((a, b) => b - a);
+  const now = new Date().getFullYear();
+  $('year').replaceChildren(...years.map(year => new Option(year, year)), new Option('All time', 0));
+  $('year').value = years.includes(now) ? now : years[0];
+  $('nameList').replaceChildren(
+    nameField('name-group', 'Chat name', group, value => { state.group = value; }),
+    ...[...new Set(chat.messages.map(message => message.a))].sort((a, b) => a.localeCompare(b)).map((name, i) =>
+      nameField(`name-${i}`, name, name, value => {
+        if (value && value !== name) state.names.set(name, value);
+        else state.names.delete(name);
+      }))
+  );
+}
+
+function goHome() {
+  state.job++;
+  clearTimeout(nameTimer);
+  galleryTrigger = null;
+  requestedIndex = null;
+  instagramArchive = null;
+  viewedCards.clear();
+  cancelSettle();
+  endGalleryFlight();
+  edgeCard = null;
+  drag = null;
+  stripView.classList.remove('dragging');
+  closePrediction();
+  disposeCards(state.cards);
+  if (state.highlights) disposeCards([state.highlights]);
+  Object.assign(state, { chat: null, cards: [], highlights: null, prediction: null, names: new Map(), group: '', index: -1, sent: 0 });
+  stripView.replaceChildren();
+  $('galleryGrid').replaceChildren();
+  $('nameList').replaceChildren();
+  $('threadSelect').replaceChildren();
+  $('settings').open = false;
+  $('file').value = '';
+  $('hero').classList.remove('is-drop');
+  fail('');
+  screen('landing');
+  scrollTo(0, 0);
+}
+
+function fail(message) {
+  $('error').textContent = message;
+  $('error').hidden = !message;
+}
+
+function take(file) {
+  if (file && !$('landing').hidden) return importChat(() => readChatExport(file));
+}
+
+function filterThreads() {
+  if (!instagramArchive) return;
+  const query = $('threadFilter').value.trim().toLowerCase();
+  const select = $('threadSelect');
+  const previous = select.value;
+  const options = [];
+  instagramArchive.threads.forEach((thread, index) => {
+    if (thread.label.toLowerCase().includes(query)) options.push(new Option(thread.label, String(index)));
+  });
+  select.replaceChildren(new Option(options.length ? 'Select a conversation' : 'No matching conversations', ''), ...options);
+  select.value = options.some(option => option.value === previous) ? previous : '';
+  $('openThread').disabled = select.value === '';
+}
+
+function chooseInstagramThread() {
+  const select = $('threadSelect');
+  if (!instagramArchive || $('threads').hidden || select.value === '') return;
+  const archive = instagramArchive;
+  const thread = archive.threads[Number(select.value)];
+  if (!thread) return;
+  $('threadError').hidden = true;
+  return importChat(() => archive.openThread(thread), error => {
+    $('threadError').textContent = error;
+    $('threadError').hidden = false;
+    screen('threads');
+    select.focus({ preventScroll: true });
+  });
+}
+
+async function importChat(read, recover) {
+  const job = ++state.job;
+  const startedAt = performance.now();
+  fail('');
+  $('hero').classList.remove('is-drop');
+  screen('loading');
+  scrollTo(0, 0);
+  $('loadingTitle').focus({ preventScroll: true });
+  loading('reading', recover ? 'Reading your Instagram chat…' : 'Reading your export…', 10);
+  try {
+    await afterPaint();
+    if (job !== state.job) return;
+    const result = await read();
+    if (job !== state.job) return;
+    $('file').value = '';
+    if (result.threads) {
+      instagramArchive = result;
+      $('threadFilter').value = '';
+      $('threadSelect').value = '';
+      $('threadError').hidden = true;
+      filterThreads();
+      screen('threads');
+      $('threadTitle').focus({ preventScroll: true });
+      return;
+    }
+    setupChat(result.chat, result.group);
+    instagramArchive = null;
+    $('threadSelect').replaceChildren();
+  } catch (error) {
+    if (job !== state.job) return;
+    const message = error instanceof ChatError ? error.message : 'Couldn’t read that file. Export the chat again and try the new file.';
+    if (recover) {
+      recover(message);
+      return;
+    }
+    goHome();
+    fail(message);
+    $('file').focus({ preventScroll: true });
+    return;
+  }
+  $('file').value = '';
+  await waitForBeat(startedAt, 390);
+  if (job !== state.job) return;
+  try {
+    await render(startedAt);
+  } catch {
+    goHome();
+    fail('Couldn’t create the cards. Try again in a current version of Safari, Chrome or Firefox.');
+    $('file').focus({ preventScroll: true });
+  }
+}
+
+function save() {
+  const cards = state.cards;
+  [...cards, state.highlights].forEach((card, i) => setTimeout(() => {
+    if (cards !== state.cards) return;
+    Object.assign(document.createElement('a'), { href: card.url, download: card.file.name }).click();
+  }, i * 250));
+  $('sendNote').textContent = 'If your browser blocks multiple downloads, use View all cards to save them individually.';
+}
+
+async function shareCurrentCard() {
+  const card = currentCard();
+  if (!card) return;
+  const button = $('shareCard');
+  if (button.disabled) return;
+  button.disabled = true;
+  try {
+    if (canShareCard(card)) {
+      try {
+        await navigator.share({ files: [card.file] });
+        return;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+      }
+    }
+    if (state.highlights !== card && !state.cards.includes(card)) return;
+    Object.assign(document.createElement('a'), { href: card.url, download: card.file.name }).click();
+    $('sendNote').textContent = 'Image download started. Attach it to a message to share.';
+  } finally {
+    button.disabled = false;
+  }
+}
+
+const SHARE_MAX = navigator.userAgentData ? 10 : Infinity;
+async function send() {
+  const cards = state.cards;
+  const files = [...cards, state.highlights].map(card => card.file);
+  const from = state.sent < files.length ? state.sent : 0;
+  const batch = files.slice(from, from + SHARE_MAX);
+  if (navigator.canShare && navigator.canShare({ files: batch })) {
+    try {
+      await navigator.share({ files: batch });
+      if (cards !== state.cards) return;
+      state.sent = from + batch.length;
+      const left = files.length - state.sent;
+      $('send').textContent = left ? `Share ${left} more` : 'Share recap';
+      $('sendNote').textContent = left ? `${state.sent} shared. Tap again for the remaining cards.` : '';
+      return;
+    } catch (error) {
+      if (error.name === 'AbortError' || cards !== state.cards) return;
+    }
+  }
+  showGallery();
+  $('sendNote').textContent = 'Save the cards you want, then share them from your device.';
+}
+
+$('file').addEventListener('change', event => take(event.target.files[0]));
+$('threadFilter').addEventListener('input', filterThreads);
+$('threadSelect').addEventListener('change', () => {
+  $('openThread').disabled = $('threadSelect').value === '';
+  $('threadError').hidden = true;
+});
+$('openThread').addEventListener('click', chooseInstagramThread);
+$('year').addEventListener('change', () => {
+  clearTimeout(nameTimer);
+  render();
+});
+$('send').addEventListener('click', send);
+$('save').addEventListener('click', save);
+$('shareCard').addEventListener('click', shareCurrentCard);
+$('guessTalker').addEventListener('click', openPrediction);
+$('guessClose').addEventListener('click', closePrediction);
+$('guessReveal').addEventListener('click', () => {
+  closePrediction();
+  stripView.focus({ preventScroll: true });
+  go(1);
+});
+$('openGallery').addEventListener('click', showGallery);
+$('packCue').addEventListener('click', () => {
+  const heading = $('pack').querySelector('h3');
+  heading?.focus({ preventScroll: true });
+  $('pack').scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'start' });
+});
+$('backToStory').addEventListener('click', backToRecap);
+function returnToUpload() {
+  goHome();
+  $('file').focus({ preventScroll: true });
+}
+$('again').addEventListener('click', returnToUpload);
+$('changeExport').addEventListener('click', returnToUpload);
+$('brand').addEventListener('click', event => {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  if (location.hash) history.replaceState(null, '', location.href.split('#')[0]);
+  goHome();
+});
+window.addEventListener('dragover', event => {
+  if (!event.dataTransfer.types.includes('Files')) return;
+  event.preventDefault();
+  if (!$('landing').hidden) $('hero').classList.add('is-drop');
+});
+window.addEventListener('dragleave', event => {
+  if (!event.relatedTarget) $('hero').classList.remove('is-drop');
+});
+window.addEventListener('drop', event => {
+  if (!event.dataTransfer.types.includes('Files')) return;
+  event.preventDefault();
+  $('hero').classList.remove('is-drop');
+  take(event.dataTransfer.files[0]);
+});
+
+if (TIP_URL) {
+  $('tipLink').href = TIP_URL;
+  $('tipLink').hidden = false;
+}
+if (CHECKOUT_URL) {
+  for (const link of document.querySelectorAll('.checkout-link')) link.href = CHECKOUT_URL;
+  for (const price of document.querySelectorAll('.offer-price')) price.textContent = PACK_PRICE;
+  // The payment page sends buyers back with the code after ? or #. Either works, whatever else it adds to the link.
+  if (location.hash === `#unlock=${UNLOCK_CODE}` || new URLSearchParams(location.search).get('unlock') === UNLOCK_CODE) {
+    packOwned = true;
+    try { localStorage.setItem(PACK_KEY, UNLOCK_CODE); } catch { /* storage blocked: the unlock lasts for this visit */ }
+    history.replaceState(null, '', location.pathname);
+    $('unlocked').hidden = false;
+  }
+  // The payment page opens in a new tab. When it comes back unlocked, redraw the recap that is still open here.
+  window.addEventListener('storage', event => {
+    if (event.key !== PACK_KEY || event.newValue !== UNLOCK_CODE || packOwned) return;
+    packOwned = true;
+    syncLandingOffer();
+    $('unlocked').hidden = false;
+    if (state.chat) render();
+  });
+}
+
+syncLandingOffer();
+
+const emailApi = '/recap-email/';
+const emailZipLimit = 16 * 1024 * 1024;
+let emailDeliveryEnabled = false;
+let preparingEmail = null;
+
+// PNGs are already compressed. Store them directly in a standard ZIP with neutral filenames.
+async function recapZip(files) {
+  const table = Uint32Array.from({ length: 256 }, (_, n) => {
+    for (let bit = 0; bit < 8; bit++) n = n & 1 ? (n >>> 1) ^ 0xedb88320 : n >>> 1;
+    return n;
+  });
+  const contents = [], directory = [];
+  const encoder = new TextEncoder();
+  let offset = 0, directorySize = 0;
+  for (const [index, file] of files.entries()) {
+    const name = encoder.encode(index === files.length - 1 ? 'chat-highlights.png' : `recap-${String(index + 1).padStart(2, '0')}.png`);
+    const data = new Uint8Array(await file.arrayBuffer());
+    let checksum = 0xffffffff;
+    for (const byte of data) checksum = (checksum >>> 8) ^ table[(checksum ^ byte) & 0xff];
+    checksum = (checksum ^ 0xffffffff) >>> 0;
+
+    const local = new DataView(new ArrayBuffer(30 + name.length));
+    local.setUint32(0, 0x04034b50, true);
+    local.setUint16(4, 20, true);
+    local.setUint16(12, 33, true); // ZIP's minimum DOS date, 1 January 1980.
+    local.setUint32(14, checksum, true);
+    local.setUint32(18, data.length, true);
+    local.setUint32(22, data.length, true);
+    local.setUint16(26, name.length, true);
+    new Uint8Array(local.buffer, 30).set(name);
+
+    const central = new DataView(new ArrayBuffer(46 + name.length));
+    central.setUint32(0, 0x02014b50, true);
+    central.setUint16(4, 20, true);
+    new Uint8Array(central.buffer, 6, 24).set(new Uint8Array(local.buffer, 4, 24));
+    central.setUint32(42, offset, true);
+    new Uint8Array(central.buffer, 46).set(name);
+    contents.push(local.buffer, file);
+    directory.push(central.buffer);
+    offset += local.byteLength + file.size;
+    directorySize += central.byteLength;
+  }
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, files.length, true);
+  end.setUint16(10, files.length, true);
+  end.setUint32(12, directorySize, true);
+  end.setUint32(16, offset, true);
+  return new Blob([...contents, ...directory, end.buffer], { type: 'application/zip' });
+}
+
+function openEmailRecap() {
+  const dialog = $('emailRecap');
+  if (dialog.open) return;
+  $('emailRecapStatus').hidden = true;
+  $('prepareEmailRecap').hidden = false;
+  $('prepareEmailRecap').disabled = false;
+  $('emailCheckout').hidden = true;
+  $('skipEmailRecap').href = CHECKOUT_URL;
+  dialog.showModal();
+}
+
+function deliveryNote(message) {
+  $('emailRecapStatus').hidden = false;
+  $('emailRecapStatus').textContent = message;
+}
+
+async function prepareEmailRecap() {
+  if (preparingEmail || !state.chat) return;
+  const task = new AbortController();
+  preparingEmail = task;
+  $('prepareEmailRecap').disabled = true;
+  $('skipEmailRecap').hidden = true;
+  const { chat, group, names } = state;
+  const recap = recapFor(chat, +$('year').value, group, name => names.get(name) || name, 'full');
+  const cards = [...recap.cards, recap.highlights];
+  try {
+    deliveryNote('Preparing your recap images…');
+    const files = [];
+    let size = 0;
+    for (const card of cards) {
+      task.signal.throwIfAborted();
+      const image = await paint(card);
+      size += image.size;
+      if (size > emailZipLimit) throw new Error('This recap is too large to email. You can still buy and save your cards.');
+      files.push(image);
+    }
+    const archive = await recapZip(files);
+    if (archive.size > emailZipLimit) throw new Error('This recap is too large to email. You can still buy and save your cards.');
+    deliveryNote('Saving your card ZIP for delivery…');
+    const response = await fetch(emailApi + 'start', { method: 'POST', body: archive, signal: task.signal });
+    const result = await response.json();
+    if (!response.ok || !result.checkoutUrl) throw new Error(result.error || 'Couldn’t start Polar checkout. Try again.');
+    task.signal.throwIfAborted();
+    $('emailCheckout').href = result.checkoutUrl;
+    $('emailCheckout').hidden = false;
+    $('prepareEmailRecap').hidden = true;
+    deliveryNote('Your cards are ready. Open Polar to complete your purchase.');
+    $('emailCheckout').focus({ preventScroll: true });
+  } catch (error) {
+    if (!task.signal.aborted) deliveryNote(error instanceof TypeError ? 'Couldn’t reach checkout. Try again.' : error.message);
+  } finally {
+    if (preparingEmail === task) {
+      preparingEmail = null;
+      $('prepareEmailRecap').disabled = false;
+      $('skipEmailRecap').hidden = false;
+    }
+  }
+}
+
+$('prepareEmailRecap').addEventListener('click', prepareEmailRecap);
+$('closeEmailRecap').addEventListener('click', () => $('emailRecap').close());
+$('emailRecap').addEventListener('close', () => {
+  preparingEmail?.abort();
+  preparingEmail = null;
+  $('skipEmailRecap').hidden = false;
+});
+$('emailCheckout').addEventListener('click', () => $('emailRecap').close());
+for (const link of document.querySelectorAll('.checkout-link')) {
+  link.addEventListener('click', event => {
+    if (!emailDeliveryEnabled || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    $('file').click();
+  });
+}
+
+if (location.protocol !== 'file:') {
+  fetch(emailApi + 'available').then(response => response.ok ? response.json() : {}).then(({ enabled }) => {
+    emailDeliveryEnabled = enabled === true && typeof $('emailRecap').showModal === 'function';
+    if (emailDeliveryEnabled) {
+      for (const link of document.querySelectorAll('.checkout-link')) link.textContent = 'Start a recap';
+    }
+  }).catch(() => {});
+}
+
+async function restoreEmailPurchase() {
+  if (new URLSearchParams(location.search).get('recap-email') !== 'return') return;
+  const [id, key] = location.hash.slice(1).split('.');
+  $('deliveryReturn').hidden = false;
+  const message = $('deliveryReturnText');
+  if (!id || !key) {
+    message.textContent = 'This checkout link is incomplete. Check your Polar receipt.';
+    return;
+  }
+  for (let i = 0; i < 12; i++) {
+    try {
+      const response = await fetch(emailApi + 'status', { method: 'POST', body: new URLSearchParams({ id, key }) });
+      if (response.status === 404) {
+        message.textContent = 'This checkout has expired. If you paid, contact hello@yapstats.tech with your Polar receipt.';
+        return;
+      }
+      const status = await response.json();
+      if (status.state === 'paid') {
+        packOwned = true;
+        try { localStorage.setItem(PACK_KEY, UNLOCK_CODE); } catch { /* Browser storage is optional. */ }
+        syncLandingOffer();
+        history.replaceState(null, '', location.pathname);
+        const download = $('deliveryDownload');
+        if (status.downloadUrl) {
+          download.href = status.downloadUrl;
+          download.hidden = false;
+        }
+        message.textContent = status.mail === 'sent'
+          ? 'Full recap unlocked. We emailed your download link.'
+          : status.mail === 'unavailable' ? 'Full recap unlocked. You can download your cards here.'
+          : 'Full recap unlocked. You can download now while we send your email.';
+        if (state.chat) render();
+        return;
+      }
+    } catch { /* Retry briefly while payment settles. */ }
+    await new Promise(resolve => setTimeout(resolve, 2500));
+  }
+  message.textContent = 'Polar is still confirming your checkout. Refresh this page in a minute, or check your email for the recap.';
+}
+restoreEmailPurchase();
+
+(async function showSamples() {
+  const { cards } = recapFor(parseChat(demoChat()), 2026, 'Flat 12', name => name);
+  const fan = $('fan');
+  for (const index of [0, 1, 2]) {
+    const card = cards[index];
+    const url = URL.createObjectURL(await paint(card));
+    const button = document.createElement('button');
+    button.className = 'sample';
+    button.type = 'button';
+    button.setAttribute('aria-label', `Enlarge sample: ${card.title}`);
+    button.setAttribute('aria-pressed', 'false');
+    button.append(imageFor({ ...card, url }));
+    button.addEventListener('click', () => {
+      const pressed = button.getAttribute('aria-pressed') === 'true';
+      for (const sample of fan.children) sample.setAttribute('aria-pressed', 'false');
+      if (!pressed) button.setAttribute('aria-pressed', 'true');
+    });
+    fan.append(button);
+  }
+})().catch(() => {});
+})();</script>
+</body>
+</html>

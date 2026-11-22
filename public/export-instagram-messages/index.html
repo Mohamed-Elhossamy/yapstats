@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Step-by-step: download your Instagram messages in JSON format from Accounts Centre and open one conversation as a recap.">
+<meta property="og:title" content="How to export your Instagram DMs as JSON">
+<meta property="og:description" content="Step-by-step: download your Instagram messages in JSON format from Accounts Centre and open one conversation as a recap.">
+<meta property="og:image" content="https://yapstats.tech/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://yapstats.tech/export-instagram-messages/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" type="image/svg+xml">
+
+<title>How to export your Instagram DMs as JSON | Yapstats</title>
+<style>
+:root { color-scheme: light dark; --ink: #f3f5f2; --surface: #fff; --text: #17171c; --muted: #575a63; --line: #d6d9d3; --accent: #ffd92e; --action: #17171c; --on-action: #fff; }
+@media (prefers-color-scheme: dark) { :root { --ink: #131317; --surface: #1e1e25; --text: #f1f2ee; --muted: #a6a8b2; --line: #34353f; --action: #ffd92e; --on-action: #17171c; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ink); color: var(--text); font: 1.0625rem/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: inherit; }
+.wrap { width: min(100% - 40px, 720px); margin-inline: auto; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; border-bottom: 1px solid var(--line); }
+.brand { font-weight: 850; font-size: 1.2rem; text-decoration: none; }
+.btn { display: inline-flex; align-items: center; min-height: 46px; padding: 9px 18px; border-radius: 12px; background: var(--action); color: var(--on-action); font-weight: 700; text-decoration: none; }
+main { padding-block: 34px 48px; }
+h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.08; letter-spacing: -.02em; margin: 0 0 18px; text-wrap: balance; }
+h2 { font-size: 1.45rem; line-height: 1.2; margin: 38px 0 10px; }
+h3 { font-size: 1.1rem; margin: 22px 0 6px; }
+p, li { color: var(--muted); }
+p b, li b { color: var(--text); }
+ol, ul { padding-left: 1.3em; }
+li { margin-block: 7px; }
+.lede { font-size: 1.15rem; color: var(--text); }
+.cta { margin-top: 34px; padding: 22px; border: 2px solid var(--text); border-radius: 18px; background: var(--surface); }
+.cta p { margin-top: 0; color: var(--text); font-weight: 650; }
+footer { padding-block: 20px 34px; border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
+footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<header class="wrap"><a class="brand" href="/">Yapstats</a><a class="btn" href="/">Make a recap</a></header>
+<main class="wrap">
+<h1>How to export your Instagram DMs</h1>
+<p class="lede">Instagram does not export one chat at a time. You ask Meta for a download of your messages, wait for it to be prepared, then pick the conversation you want. The one setting that matters is the format: it must be <b>JSON</b>.</p>
+
+<h2>Request the download</h2>
+<ol>
+<li>Open your Instagram profile, open the menu, and go to <b>Accounts Centre</b> (some accounts show <b>Meta Account settings</b>).</li>
+<li>Under <b>Your information and permissions</b>, open <b>Export your information</b> and select <b>Create export</b>.</li>
+<li>Choose your Instagram profile, then <b>Export to device</b>.</li>
+<li>Select <b>Messages</b> only. Leaving everything else out keeps the download small.</li>
+<li>Set the format to <b>JSON</b>, choose a date range, and start the export.</li>
+</ol>
+
+<h2>Wait, then download</h2>
+<p>Meta prepares the file in the background and tells you when it is ready. A small account can take minutes. A busy one can take much longer. When it is ready, download the <b>.zip</b> from the same screen and keep it zipped.</p>
+
+<h2>Open it in Yapstats</h2>
+<ol>
+<li>On the Yapstats home page, tap <b>Upload chat export</b> and choose the .zip.</li>
+<li>Your download holds many conversations. Search the list and pick the group or chat you want.</li>
+<li>Tap <b>Create recap</b>.</li>
+</ol>
+<p>If you have already unzipped the download, open the folder for one conversation and choose its <b>message_1.json</b> file instead.</p>
+
+<h2>Common problems</h2>
+<h3>Yapstats says it cannot read the file</h3>
+<p>The most common cause is choosing <b>HTML</b> as the format. Request the export again and set the format to JSON.</p>
+<h3>The download is huge</h3>
+<p>That happens when everything is selected. Request a new export with only <b>Messages</b> ticked and a shorter date range.</p>
+<h3>A conversation is missing</h3>
+<p>Check the date range you picked. Conversations with no messages in that range are left out.</p>
+<h3>Names look different from what I see in the app</h3>
+<p>The export uses each person’s account name. Open <b>Recap settings</b>, then <b>Edit names</b>, to change what the cards show.</p>
+
+<h2>Is my chat private?</h2>
+<p>Your browser reads the download on your own device. The export stays on your device, and Yapstats has no accounts or logins. Delete the download when you are done, because it holds all the conversations you exported.</p>
+<div class="cta"><p>Got your file? Turn it into recap cards. Start free. Your export stays on your device.</p><a class="btn" href="/">Make your recap</a></div>
+</main>
+<footer class="wrap">
+<p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
+<nav aria-label="Site"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+</footer>
+</body>
+</html>
