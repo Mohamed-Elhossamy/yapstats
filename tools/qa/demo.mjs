@@ -1,0 +1,10 @@
+import { core } from './extract.mjs';
+import { writeFileSync } from 'node:fs';
+const c = core();
+const raw = c.demoChat();
+writeFileSync('demo-chat.txt', raw);
+const chat = c.parseChat(raw);
+const s = c.computeStats(chat.messages, 0);
+console.log(raw.split('\n').slice(0, 3).join('\n'));
+console.log('messages', chat.messages.length, 'words', JSON.stringify(s.words));
+const years = new Set(chat.messages.map(m => new Date(m.t).getUTCFullYear())); console.log([...years]);
