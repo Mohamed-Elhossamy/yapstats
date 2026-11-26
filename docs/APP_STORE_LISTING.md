@@ -4,7 +4,7 @@ Written 26 Nov 2026. Mohamed joined the Apple Developer Program that day (indivi
 
 ## Status in App Store Connect (26 Nov 2026)
 
-Everything below is entered and saved. Nothing has been submitted for review.
+Submitted for review on 26 Nov 2026 at 15:03: iOS version 1.0 (build 1) and the Full recap purchase, in one submission. Both show "Waiting for Review". Release is manual, so the app goes live only when Mohamed releases it.
 
 - App record: Yapstats, Apple ID `6839611903`, SKU `yapstats-ios`, bundle ID `tech.yapstats.app`, primary language English (U.K.).
 - App Information: subtitle, categories, content rights (no third-party content), age rating (calculated 4+).
@@ -12,12 +12,12 @@ Everything below is entered and saved. Nothing has been submitted for review.
 - Screenshots: the five 1320 x 2868 pictures are in the Asset Library and on the large iPhone slot, in order 1 to 5. The required medium slot uses the same pictures, scaled by Apple.
 - Pricing: free (base United Kingdom). Availability: 174 countries and regions. China mainland is left out because it needs a security assessment and an AI-content filing.
 - App Privacy: policy URL and "Data Not Collected" published.
-- In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, GBP 2.99 (base United Kingdom), display name, description, review note and review screenshot. Status "Prepare for Submission"; it goes to review together with version 1.0.
+- In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, GBP 2.99 (base United Kingdom), display name, description, review note and review screenshot. Submitted together with version 1.0.
 - Business: Paid Apps Agreement, bank account, both US tax forms, Digital Services Act trader status and MRDP are all Active.
 - TestFlight: build 1.0 (1) uploaded; internal group "Me" with Mohamed as tester. The sandbox purchase sheet shows the real price.
 
 Still open:
-- Mohamed decides when to press Add for Review (version 1.0 and the Full recap purchase together).
+- Wait for Apple's review email (up to 48 hours). If approved, Mohamed presses Release. If rejected, read the cited guideline and fix before resubmitting.
 - After release: point the website's TikTok note at the App Store page.
 
 The listing follows the project rule that no other company's brand appears in the name, text or pictures.
