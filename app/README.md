@@ -22,9 +22,10 @@ Then open `ios/App/App.xcodeproj` in Xcode, choose your iPhone and press Run. Xc
 
 `public/index.html` adds the class `is-app` to `<html>` when it runs inside the shell (`IN_APP`). That one flag gives the app its own layout on the same cards and colours:
 
-- **Home:** one screen. Short pitch, floating sample cards that take turns coming forward, one large glowing button low on the screen, a "Get the full recap" button under it, a one-line footer. The export guide opens as its own screen.
-- **Story:** no header and no arrow buttons (they stay for VoiceOver). A back button to home, a lit progress bar whose new segment pops, a glow behind the cards that warms as you go, a haptic tick per card. Until the first move, the deck tugs the top card aside to show the swipe; there is no text hint.
-- **Unlock slide:** the last slide, card-sized, dark with a lit border. Its button and the home button send `{ type: 'buy' }` to the native side, which does nothing yet.
+- **Startup:** about 1.3s, once per launch: the logo lands, three cards in the brand colours deal out from it, and the home screen's own sample cards take their place. A haptic tick as they deal. Skipped with Reduce Motion and when a shared chat arrives.
+- **Home:** one screen. Title, tilted sample cards that float, glow and take turns coming forward, one large glowing button low on the screen, a "Get the full recap" button under it, the one-line pitch and a one-line footer. The export guide opens as its own screen.
+- **Story:** no header and no arrow buttons (they stay for VoiceOver). A back button to home, a lit progress bar whose new segment pops, a glow over the whole screen that grows and warms from yellow to pink as you go, a haptic tick per card. Until the first move, the deck tugs the top card aside to show the swipe; there is no text hint.
+- **Unlock slide:** the last slide, as tall as a card and full width, dark with a turning gold border and gold light inside the edge (the strip clips anything drawn outside it). Its button and the home button send `{ type: 'buy' }` to the native side, which does nothing yet.
 - **Off in the app:** web checkout, unlock link, tip link, email delivery, Save buttons (the share sheet has Save Image), Android steps.
 
 Two traps found the hard way:
@@ -42,9 +43,11 @@ Tested on an iPhone 16 Pro (iOS 27.2.1, Xcode 27.2, free Personal Team signing),
 - **Taps** move one card at a time through all 12 cards, the highlights and the unlock slide.
 - **Share this card works** (system share sheet with the PNG, including Save Image).
 
-Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (9) from `app/`.
+Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (10) from `app/`.
 
-Not tested yet: his own finger on the fixed build, the haptics, WhatsApp's own "Export chat" sheet, Save Image and the Photos prompt, the sub-pages, the Instagram picker, the guess game, the gallery, light mode on the device, a cold start from the share sheet, VoiceOver, smaller iPhones.
+Mohamed confirmed on 26 Nov that finger swipes work on the fixed build.
+
+Not tested yet: the haptics, WhatsApp's own "Export chat" sheet, Save Image and the Photos prompt, the sub-pages, the Instagram picker, the guess game, the gallery, light mode on the device, a cold start from the share sheet, VoiceOver, smaller iPhones.
 
 Known gaps: the unlock buttons do nothing until the StoreKit step; the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
 

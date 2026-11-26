@@ -1,4 +1,4 @@
-// Checks the story deck in app mode in headless Chrome: fast flicks and taps move exactly one card,
+// Checks the app's home screen and story deck in headless Chrome: fast flicks and taps move exactly one card,
 // the strip cannot scroll on its own, and a newly shown card is never see-through.
 // Chrome is not an iPhone: the pointercancel that iOS sent on fast flicks only shows on a real device.
 //
@@ -32,9 +32,12 @@ const page = await context.newPage();
 const errors = []; page.on('pageerror', error => errors.push(String(error)));
 await page.addInitScript(() => { window.Capacitor = { isNativePlatform: () => true }; });
 await page.goto(`http://127.0.0.1:${server.address().port}/`);
+let passed = 0; const ok = name => { passed++; console.log('ok', name); };
+await page.waitForTimeout(2300); // the startup animation takes about 1.3s
+assert.deepEqual(await page.evaluate(() => [!document.getElementById('intro'), document.documentElement.scrollWidth <= innerWidth, document.documentElement.scrollHeight <= innerHeight]), [true, true, true]);
+ok('the startup animation ends and the home screen fits with no scrolling either way');
 await page.setInputFiles('#file', join(work, 'flat7-chat.txt'));
 await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
-let passed = 0; const ok = name => { passed++; console.log('ok', name); };
 
 const cdp = await context.newCDPSession(page);
 const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
