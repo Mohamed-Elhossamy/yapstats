@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lfSTaLf21czXYvu4jdbcCsvy/zTd9V1t78/Ji9Px/FI='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-L5h0+gRqlqFmAx1yD8KUpGOBhz9LkaaBP4AqsnAfFy4='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -224,7 +224,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .progress span.seen { background: #d9a500; }
 .progress span.current { background: var(--action); }
 @media (prefers-color-scheme: dark) { .progress span.seen { background: var(--accent); } .progress span.current { background: var(--text); } }
-.cards { display: flex; isolation: isolate; transition: opacity 180ms var(--ease); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
+/* overflow-x is hidden, not auto: the script moves the strip. A scrollable strip lets iOS start its own pan on a fast flick, which cancels the pointer and leaves the deck out of step with the cards. */
+.cards { display: flex; isolation: isolate; transition: opacity 180ms var(--ease); overflow-x: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
 .cards::-webkit-scrollbar { display: none; }
 .cards.dragging, .cards.settling { scroll-snap-type: none; }
 .cards.dragging { cursor: grabbing; user-select: none; }
@@ -309,16 +310,16 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .lede:not(.app-only), .is-app .foot p:nth-child(2) { display: none; }
 .is-app .hero { gap: 12px; padding-block: 4px 10px; }
 .is-app .hero h1 { font-size: clamp(2.3rem, 11.5vw, 3.5rem); }
-.is-app .fan { order: 1; width: min(80%, 350px, 41svh); margin-block: 4px 0; }
+.is-app .fan { order: 1; width: min(82%, 365px, 41svh); margin-block: 20px 4px; } /* room above: the sample in front grows and floats */
 .is-app .actions, .is-app .error { order: 2; }
 .is-app .actions { justify-content: center; text-align: center; gap: 8px; }
 .is-app .actions .btn { width: 100%; min-height: 60px; font-size: 1.08rem; }
-.is-app .app-offer, .is-app .unlocked { order: 3; }
-.is-app .app-offer { text-align: center; color: var(--muted); font-size: .86rem; text-wrap: balance; }
-.is-app .app-offer strong, .is-app .app-offer .offer-price { color: var(--text); font-weight: 750; }
-.is-app .foot { border-top: 0; justify-items: center; gap: 2px; text-align: center; font-size: .72rem; line-height: 1.35; padding-block: 2px 8px; }
+.is-app .buy-full, .is-app .unlocked { order: 3; }
+.is-app .buy-full { display: grid; gap: 1px; width: 100%; min-height: 54px; padding: 8px 16px; border: 1.5px solid var(--accent); border-radius: 18px; background: color-mix(in srgb, var(--accent) 9%, transparent); font-size: .98rem; }
+.is-app .buy-full small { color: var(--muted); font-size: .74rem; font-weight: 560; }
+.is-app .foot { border-top: 0; justify-items: center; gap: 0; text-align: center; font-size: .62rem; line-height: 1.3; padding-block: 0 4px; opacity: .78; }
 .is-app .foot-links a[href*="export"] { display: none; } /* the guide opens from How to export */
-.is-app .foot-links a { padding-block: 4px; }
+.is-app .foot-links { gap: 0 14px; } .is-app .foot-links a { padding-block: 5px; }
 .is-app .foot-links { justify-content: center; }
 .is-app.guide-open .hero, .is-app.guide-open .foot { display: none; }
 .is-app .howto .panel:nth-child(2), .is-app:has(#landing[hidden]) .foot { display: none; } /* no Android steps on an iPhone; the footer belongs to the home screen */
@@ -327,29 +328,54 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app #landing .hero-copy > .lede { animation-delay: 70ms; }
 .is-app #landing .hero > .fan { animation-delay: 150ms; }
 .is-app #landing .hero-copy > .actions { animation-delay: 240ms; }
-.is-app #landing .hero-copy > .app-offer { animation-delay: 320ms; }
-.is-app #landing .actions .btn.primary { animation: cta-glow 1500ms 1100ms ease-out 2; }
+.is-app #landing .hero-copy > .buy-full { animation-delay: 320ms; }
+.is-app #landing .actions .btn.primary { animation: cta-glow 1900ms 900ms ease-out infinite; }
 .is-app .brand-icon { animation: app-pop 640ms cubic-bezier(.34,1.56,.64,1) both; }
 @keyframes app-rise { from { opacity: 0; translate: 0 16px; scale: .985; } }
 @keyframes app-pop { from { opacity: 0; scale: .4; rotate: -14deg; } }
-@keyframes cta-glow { from { box-shadow: 0 0 0 0 #ffd92e99; } to { box-shadow: 0 0 0 18px #ffd92e00; } }
+@keyframes cta-glow { 0% { box-shadow: 0 4px 0 var(--edge), 0 0 0 0 #ffd92e99, 0 0 22px #ffd92e55; } 70%, 100% { box-shadow: 0 4px 0 var(--edge), 0 0 0 16px #ffd92e00, 0 0 22px #ffd92e55; } }
 /* Story: no arrow buttons to look at. They stay in the page for VoiceOver; taps and swipes do the moving. */
 .is-app:has(#landing[hidden]) .top { display: none; } /* in the story the cards carry the name; the screen is theirs */
 .is-app .result { --story-chrome: 262px; padding-block: 8px 10px; }
+.is-app .back-home { display: inline-flex; flex: none; width: 44px; min-height: 44px; padding: 0; border-radius: 50%; background: var(--surface-raised); border-color: transparent; }
 .is-app .result > .pack, .is-app .pack-cue { display: none; } /* the offer is the last slide of the story */
-.is-app .progress { width: 100%; gap: 4px; margin-bottom: 10px; }
-.is-app .progress span { height: 3px; }
+.is-app { --action: var(--accent); --on-action: var(--on-accent); }
+/* Progress you can feel: the bar is thicker and lit, each new segment pops, and a glow behind the cards warms from yellow to pink as --p (0 to 1, set by the script) rises. */
+.is-app .progress { width: 100%; gap: 4px; margin-bottom: 11px; }
+.is-app .progress span { height: 5px; border-radius: 6px; }
+.is-app .progress span.seen { background: var(--accent); box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 55%, transparent); }
+.is-app .progress span.current { background: var(--text); box-shadow: 0 0 12px color-mix(in srgb, var(--text) 60%, transparent); animation: seg-pop 520ms var(--ease) both; transform-origin: left center; }
+@keyframes seg-pop { 0% { scale: .2 1; } 55% { scale: 1 2.1; } 100% { scale: 1 1; } }
+.is-app .viewer { position: relative; isolation: isolate; }
+.is-app .viewer::before { content: ""; position: absolute; z-index: -1; inset: 6% -6% 16%; border-radius: 50%; pointer-events: none; filter: blur(34px);
+  background: color-mix(in oklab, #ffd92e, #ff7eb6 calc(var(--p, 0) * 100%)); opacity: calc(.1 + var(--p, 0) * .34); transition: opacity 500ms var(--ease), background-color 500ms var(--ease); }
+.is-app .story-count { transition: color 200ms var(--ease); }
 .is-app .story-nav { display: block; position: relative; }
 .is-app .story-nav .arrow { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
+.is-app .cards { touch-action: none; }
 .is-app .slide .card { box-shadow: 0 14px 38px var(--shadow); }
-.is-app .slide:not([aria-hidden]) .card { animation: app-card 380ms var(--ease) both; }
-@keyframes app-card { from { opacity: .55; scale: .962; } }
-.is-app .story-count.swipe-cue { color: var(--text); font-size: .98rem; font-weight: 800; letter-spacing: .01em; animation: swipe-cue 1150ms var(--ease) infinite; }
-@keyframes swipe-cue { 50% { translate: -12px 0; } }
-.is-app .story-tools { gap: 8px; padding: 0; border: 0; background: transparent; }
-.is-app .story-tools .btn { min-height: 52px; border-radius: 999px; font-size: .9rem; }
-.is-app .story-tools .btn:not(.story-guess) { background: var(--surface); }
-.is-app .result-actions .btn { min-height: 52px; border-radius: 999px; }
+.is-app .slide:not([aria-hidden]) .card { animation: app-card 420ms var(--ease); }
+@keyframes app-card { 45% { scale: 1.03; } } /* each new card swells and settles; it never shrinks or fades, so the card under it stays hidden */
+.is-app .story-tools { gap: 10px; padding: 0 0 5px; border: 0; background: transparent; }
+/* Buttons you want to press: a solid edge underneath that the button sinks into, and an icon that says what it does. */
+.is-app .story-tools .btn, .is-app .result-actions .btn, .is-app .actions .btn.primary, .is-app .buy-full, .is-app .pack--slide .pack-buy {
+  --edge: color-mix(in srgb, var(--text) 22%, var(--ink)); border-color: transparent; font-weight: 820; box-shadow: 0 4px 0 var(--edge); transition: translate 90ms var(--ease), box-shadow 90ms var(--ease); }
+.is-app .story-tools .btn:active, .is-app .result-actions .btn:active, .is-app .actions .btn.primary:active, .is-app .buy-full:active, .is-app .pack--slide .pack-buy:active { scale: 1; transform: none; translate: 0 3px; box-shadow: 0 1px 0 var(--edge); }
+.is-app .story-tools .btn { min-height: 54px; border-radius: 18px; font-size: .92rem; gap: 8px; }
+.is-app .story-tools .btn:not(.story-guess) { background: var(--surface-raised); }
+.is-app .story-tools .story-guess, .is-app .story-tools:has(#guessTalker[hidden]) #shareCard, .is-app .result-actions .btn.primary, .is-app .actions .btn.primary, .is-app .pack--slide .pack-buy { --edge: #b08f00; background: var(--accent); color: var(--on-accent); }
+.is-app .buy-full { --edge: color-mix(in srgb, var(--accent) 45%, var(--ink)); border-color: var(--accent); }
+.is-app #shareCard::before, .is-app #openGallery::before, .is-app #guessTalker::before, .is-app #send::before { content: ""; flex: none; width: 19px; height: 19px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.is-app #shareCard, .is-app #send { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8'/%3E%3C/svg%3E"); }
+.is-app #openGallery { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'%3E%3Cpath d='M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z'/%3E%3C/svg%3E"); }
+.is-app #guessTalker { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8M12 17h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'/%3E%3C/svg%3E"); }
+.is-app .result-actions .btn { min-height: 54px; border-radius: 18px; background: var(--surface-raised); }
+.is-app .actions .btn.primary { border-radius: 22px; }
+/* Sample cards on the home screen: each one floats on its own beat, and the script brings one forward in turn. */
+.is-app .sample { animation: sample-float 5.2s ease-in-out infinite; }
+.is-app .sample:nth-child(2) { animation-duration: 4.4s; animation-delay: -1.3s; }
+.is-app .sample:nth-child(3) { animation-duration: 5.8s; animation-delay: -2.6s; }
+@keyframes sample-float { 50% { translate: 0 -9px; rotate: 1.4deg; } }
 .is-app .result-actions { flex-wrap: nowrap; margin-top: 6px; }
 .is-app .result-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }
 .is-app .result-actions .btn.primary { flex: 1.35 1 0; }
@@ -368,8 +394,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .pack--slide .pack-label { width: fit-content; padding: 5px 10px; border-radius: 999px; background: var(--accent); color: #17171c; }
 .is-app .pack--slide h3 { width: fit-content; color: #ffd92e; background: linear-gradient(90deg, #fff 10%, #ffd92e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
 .is-app .pack--slide .pack-details { color: #ececf1; font-size: .95rem; }
-.is-app .pack--slide .pack-buy { width: 100%; justify-content: center; min-height: 56px; margin-top: 4px; border: 0; border-radius: 999px; background: var(--accent); color: #17171c; font-size: 1.04rem; box-shadow: 0 6px 24px #ffd92e59; }
-.is-app .pack--slide .pack-buy:active { scale: .97; }
+.is-app .pack--slide .pack-buy { width: 100%; justify-content: center; min-height: 56px; margin-top: 4px; border: 0; border-radius: 20px; font-size: 1.04rem; box-shadow: 0 4px 0 #b08f00, 0 10px 26px #ffd92e4d; }
 .is-app .pack--slide .pack-note { color: #b6b8c4; }
 .is-app .pack--slide :focus-visible { outline-color: #ffd92e; }
 @media (prefers-reduced-motion: reduce) {
@@ -412,7 +437,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
           <p role="status" id="deliveryReturnText">Checking your Polar purchase…</p>
           <a id="deliveryDownload" hidden>Download your recap ZIP</a>
         </div>
-        <p class="app-only app-offer" id="appOffer">Your recap is free. The <strong>full recap</strong>, with a personal card for everyone, is <span class="offer-price">£2.99</span> once. No subscription.</p>
+        <button class="btn app-only buy-full" id="appBuy" type="button"><span>Get the full recap · <span class="offer-price">£2.99</span></span><small>A personal card for everyone. One-off, no subscription.</small></button>
         <p class="unlocked" id="unlocked" role="status" hidden>Full recap unlocked on this device. Go back to your recap, or upload a chat here.</p>
       </div>
       <div class="fan" id="fan" aria-label="Sample Yapstats cards"></div>
@@ -496,6 +521,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   </section>
   <section class="wrap result" id="result" hidden>
     <div class="result-head">
+      <button class="btn app-only back-home" id="backHome" type="button" aria-label="Back to home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
       <h2 id="groupTitle" tabindex="-1">Your group chat</h2>
       <div class="years" id="years" role="radiogroup" aria-label="Recap period" hidden></div>
       <details class="settings" id="settings">
@@ -582,7 +608,6 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 <footer class="wrap foot">
   <p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
   <p>Your browser reads your chat export on this device. Email delivery uploads only the finished cards.</p>
-  <p class="app-only">Your chat is read on this iPhone and is never uploaded.</p>
   <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
 </footer>
 <script>(() => {
@@ -1732,7 +1757,11 @@ function activate(index) {
     previous.inert = true;
   }
   state.index = index;
-  if (IN_APP && previous) toApp({ type: 'tick' });
+  if (IN_APP) {
+    const last = stripView.children.length - 1;
+    $('viewer').style.setProperty('--p', (index / Math.max(1, last)).toFixed(3)); // drives the glow behind the cards
+    if (previous) toApp({ type: index === last ? 'success' : 'tick' });
+  }
   const slide = stripView.children[index];
   slide.removeAttribute('aria-hidden');
   slide.inert = false;
@@ -1744,10 +1773,7 @@ function activate(index) {
   const card = currentCard();
   const numberedViews = state.cards.reduce((total, _, i) => total + Number(viewedCards.has(i)), 0);
   const allViewed = numberedViews === state.cards.length;
-  // In the app there are no arrow buttons, so the first card says how to move until the reader has moved once.
-  const swipeCue = IN_APP && index === 0 && viewedCards.size === 1;
-  $('storyCount').classList.toggle('swipe-cue', swipeCue);
-  $('storyCount').textContent = swipeCue ? '‹‹  Swipe' : isOffer ? 'Full recap' : isHighlights
+  $('storyCount').textContent = isOffer ? 'Full recap' : isHighlights
     ? 'Chat highlights'
     : `${index + 1} of ${state.cards.length} — ${card.title}`;
   $('prev').disabled = index === 0;
@@ -1819,11 +1845,16 @@ function nudge() {
   stripView.classList.add('settling');
   const started = performance.now();
   function step(now) {
-    const t = clamp((now - started) / 760, 0, 1);
-    stripView.scrollLeft = .17 * width * Math.sin(Math.PI * t) ** 2;
+    const t = clamp((now - started) / (IN_APP ? 900 : 760), 0, 1);
+    stripView.scrollLeft = (IN_APP ? .26 : .17) * width * Math.sin(Math.PI * t) ** 2;
     layoutDeck();
     if (t < 1) settle.frame = requestAnimationFrame(step);
-    else { cancelSettle(); continueNavigation(); }
+    else {
+      cancelSettle();
+      continueNavigation();
+      // App: there are no arrows, so the deck keeps showing the move (top card pulls aside, next card rises) until the first swipe or tap.
+      if (IN_APP && state.index === 0 && viewedCards.size === 1) nudgeTimer = setTimeout(nudge, 2300);
+    }
   }
   settle = { index: 0, nudge: true, frame: requestAnimationFrame(step) };
 }
@@ -2028,6 +2059,8 @@ function finishDrag(event) {
   }
 }
 stripView.addEventListener('dragstart', event => event.preventDefault());
+// Once a sideways drag is under way the touch is ours: stop iOS from turning the rest of it into a scroll.
+stripView.addEventListener('touchmove', event => { if (drag?.moved && event.cancelable) event.preventDefault(); }, { passive: false });
 window.addEventListener('pointerup', finishDrag);
 window.addEventListener('pointercancel', finishDrag);
 
@@ -2679,6 +2712,7 @@ function returnToUpload() {
 }
 $('again').addEventListener('click', returnToUpload);
 $('another').addEventListener('click', returnToUpload);
+$('backHome').addEventListener('click', returnToUpload);
 $('changeExport').addEventListener('click', returnToUpload);
 $('brand').addEventListener('click', event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -2709,6 +2743,8 @@ function showGuide(open) {
 if (IN_APP) {
   document.documentElement.classList.add('is-app'); // not 'in-app': that class styles the in-app-browser notice
   $('file').labels[0].lastChild.textContent = ' Choose a chat export ';
+  document.querySelector('.file-note').textContent = 'Read on this iPhone. Never uploaded.';
+  $('appBuy').addEventListener('click', () => toApp({ type: 'buy' }));
   for (const link of document.querySelectorAll('a[href="#export-guide"]')) {
     link.addEventListener('click', event => {
       event.preventDefault();
@@ -2949,6 +2985,12 @@ restoreEmailPurchase();
       if (!pressed) button.setAttribute('aria-pressed', 'true');
     });
     fan.append(button);
+  }
+  // App home: bring each sample forward in turn so the screen is never still. A touch on the cards hands control back.
+  if (IN_APP && !reducedMotion.matches) {
+    let turn = 1;
+    const timer = setInterval(() => { if (!$('landing').hidden) fan.children[turn++ % 3].click(); }, 2600);
+    fan.addEventListener('pointerdown', () => clearInterval(timer), { once: true });
   }
 })().catch(() => {});
 })();</script>
