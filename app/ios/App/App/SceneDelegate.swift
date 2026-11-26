@@ -32,16 +32,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     // MARK: - Startup animation every time the app is opened
 
-    /// Covers the app while it is in the background, so the app switcher never shows a chat and the return starts clean.
+    /// Blurs the app while it is in the background: the app switcher shows a teaser, never a readable chat, and the return starts clean.
     private var cover: UIView?
+    private var recapOpen = false
+
+    /// Fires as the swipe to the app switcher begins, while the page can still answer.
+    func sceneWillResignActive(_ scene: UIScene) {
+        let webView = (window?.rootViewController as? CAPBridgeViewController)?.webView
+        webView?.evaluateJavaScript("!document.getElementById('result').hidden") { [weak self] open, _ in
+            self?.recapOpen = open as? Bool ?? false // pages without a recap answer with an error
+        }
+    }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         guard cover == nil, let window else { return }
-        let view = UIView(frame: window.bounds)
-        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.backgroundColor = UIColor(named: "LaunchBackground") ?? .systemBackground
-        window.addSubview(view)
-        cover = view
+        let blur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+        blur.frame = window.bounds
+        blur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
+        let eye = UIImageView(image: UIImage(systemName: "eye.slash.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 34, weight: .semibold)))
+        eye.tintColor = .label
+        let title = UILabel()
+        title.text = "No peeking"
+        title.font = .systemFont(ofSize: 32, weight: .heavy)
+        let line = UILabel()
+        line.text = recapOpen ? "Your cards are waiting for you." : "Open Yapstats to make your recap."
+        line.font = .systemFont(ofSize: 16, weight: .medium)
+        line.textColor = .secondaryLabel
+        line.textAlignment = .center
+        line.numberOfLines = 0
+
+        let stack = UIStackView(arrangedSubviews: [eye, title, line])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.setCustomSpacing(14, after: eye)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        blur.contentView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.centerXAnchor.constraint(equalTo: blur.contentView.centerXAnchor),
+            stack.centerYAnchor.constraint(equalTo: blur.contentView.centerYAnchor),
+            stack.widthAnchor.constraint(lessThanOrEqualTo: blur.contentView.widthAnchor, constant: -64),
+        ])
+        window.addSubview(blur)
+        cover = blur
     }
 
     /// Coming back from the background: the page plays its startup animation and sound again, then the cover lifts.
