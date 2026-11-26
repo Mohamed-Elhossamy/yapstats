@@ -104,6 +104,25 @@ await page.click('#backHome'); await page.waitForTimeout(400);
 assert.deepEqual(await page.evaluate(() => [document.getElementById('appBuy').hidden, document.getElementById('unlocked').hidden]), [true, false]); ok('home shows the full recap as unlocked instead of the buy button');
 assert.equal(await page.isVisible('#landing'), true); assert.equal(await page.isVisible('#result'), false); ok('the back button returns to the home screen');
 
+// A second import: the loading bar must start empty and only ever grow (it used to start full and run backwards).
+await page.evaluate(() => {
+  window.fills = [];
+  const frame = () => {
+    if (!document.getElementById('loading').hidden) {
+      const hidden = getComputedStyle(document.getElementById('loadingFill'), '::before').clipPath.match(/inset\(0px ([\d.]+)(px|%)/);
+      const track = document.querySelector('.load-track').getBoundingClientRect().width;
+      window.fills.push(1 - (hidden[2] === '%' ? hidden[1] / 100 : hidden[1] / track));
+    }
+    requestAnimationFrame(frame);
+  };
+  frame();
+});
+await page.setInputFiles('#file', join(work, 'flat7-chat.txt'));
+await page.waitForSelector('#result:not([hidden])');
+const fills = await page.evaluate(() => window.fills);
+assert.ok(fills.length > 20 && fills[0] < .05 && fills.at(-1) > .95, `${fills.length} frames, ${fills[0]} to ${fills.at(-1)}`);
+assert.ok(fills.every((fill, i) => i === 0 || fill >= fills[i - 1] - .002)); ok('on a second import the loading bar starts empty and never runs backwards');
+
 assert.deepEqual(errors, []); ok('no page errors');
 console.log(`${passed} checks passed`);
 await browser.close(); server.close();

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-z/MJV6YB7HbMQ2wtNNboAzT0Iw9tAdQjHsoLQjsmcGM='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-llDXBQ1c6opkT+ek3FfJJNO7iWeHqC9HfUU9ILS9rKw='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -190,7 +190,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 39px; --y: 5px; --angle: 16deg; }
 .loading[data-phase="ready"] .loader-art span:last-child { transform: translateY(-12px) scale(1.1); }
 .load-track { width: 100%; height: 7px; overflow: hidden; border-radius: 99px; background: var(--line); margin-top: 6px; }
-.load-track span { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--action); transform: scaleX(0); transform-origin: left; transition: transform 380ms var(--ease); }
+.load-track .reset, .load-track .reset::before { transition: none !important; }
+.load-track span { display: block; width: 100%; height: 100%; border-radius: inherit; background: var(--action); transform: scaleX(var(--load, 0)); transform-origin: left; transition: transform 380ms var(--ease); }
 .loading[data-phase="ready"] .load-track span { transition-duration: 180ms; }
 .result { --story-chrome: 312px; padding-block: 13px 38px; }
 .result h2 { flex: 1; min-width: 0; font-size: clamp(1.45rem, 4vw, 2.65rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -514,8 +515,11 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .loading[data-phase="building"] .loader-art span:nth-child(2) { --x: 84px; --y: 16px; --angle: 19deg; }
 .is-app .loading[data-phase="ready"] .loader-art span:first-child { --x: -76px; --y: 8px; --angle: -14deg; }
 .is-app .loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 76px; --y: 8px; --angle: 14deg; }
-.is-app .load-track { height: 10px; box-shadow: 0 0 22px #ffd92e40; }
-.is-app .load-track span { background: linear-gradient(90deg, #ffd92e, #ff7eb6); }
+/* The bar uncovers one fixed yellow-to-pink strip, so the colours stay put and the tip stays round; the glow follows the filled part only. */
+.is-app .load-track { height: 10px; overflow: visible; }
+.is-app .load-track span { transform: none; background: none; filter: drop-shadow(0 0 7px #ffb84d99); }
+.is-app .loading[data-phase="ready"] .load-track span::before { transition-duration: 180ms; }
+.is-app .load-track span::before { content: ""; display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffd92e, #ff7eb6); clip-path: inset(0 calc((1 - var(--load, 0)) * 100%) 0 0 round 99px); transition: clip-path 380ms var(--ease); }
 @media (prefers-reduced-motion: reduce) {
   .is-app .intro { display: none; }
   .is-app .loading::before, .is-app .loader-art span, .is-app .loader-art span::before { animation: none !important; }
@@ -2418,11 +2422,18 @@ function disposeCards(cards) {
 
 function setLoadingProgress(progress) {
   $('loadingProgress').value = progress;
-  $('loadingFill').style.transform = `scaleX(${progress / 100})`;
+  $('loadingFill').style.setProperty('--load', progress / 100);
 }
 
 function loading(phase, message, progress) {
   const changed = $('loading').getAttribute('data-phase') !== phase;
+  if (phase === 'reading') { // a new import: empty the bar at once, so it never runs backwards from the last recap's 100%
+    const fill = $('loadingFill');
+    fill.classList.add('reset');
+    setLoadingProgress(0);
+    fill.offsetWidth;
+    fill.classList.remove('reset');
+  }
   $('loading').setAttribute('data-phase', phase);
   $('loadingStatus').textContent = message;
   setLoadingProgress(progress);
