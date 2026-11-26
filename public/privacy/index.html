@@ -18,6 +18,8 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ink); color: var(--text); font: 1.0625rem/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
 a { color: inherit; }
+.app-only { display: none; }
+.is-app .app-only { display: inline; }
 .is-app .web-only { display: none; } /* the iPhone app shows these pages too, without the parts that are only about the website */
 .wrap { width: min(100% - 40px, 720px); margin-inline: auto; }
 header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; border-bottom: 1px solid var(--line); }
@@ -85,7 +87,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <p>A chat export contains other people’s names and messages. The cards can show names, counts and aggregate results such as frequently used words. Share them where the people in them would expect, which is usually the group itself.</p>
 </main>
 <footer class="wrap">
-<p>Not affiliated with, endorsed by or connected to WhatsApp, Meta or TikTok.</p>
+<p>Not affiliated with, endorsed by or connected to WhatsApp<span class="web-only"> or Meta</span><span class="app-only">, Meta or TikTok</span>.</p>
 <nav aria-label="Site"><a class="web-only" href="/export-whatsapp-chat/">WhatsApp export guide</a><a class="web-only" href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
 </footer>
 </body>

@@ -15,6 +15,7 @@ node interact.mjs    # 22 checks: taps, drags, keyboard, year chips, gallery, re
 node wheel2.mjs      # 8 checks: trackpad swipes
 node checks2.mjs     # 12 checks: offer cue, phone layout, error state, end actions, unlocked state
 node mktiktok.mjs && node tiktok.mjs   # 3 checks: the website refuses TikTok files (the import is app-only, checked in app/test)
+node polish.mjs      # 6 checks: sample chat, loading cards, unlock lands on the first new card, no TikTok wording on the website
 ```
 
 `*.txt` files and the TikTok test files here are generated and ignored by git.

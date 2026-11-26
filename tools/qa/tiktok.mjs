@@ -11,11 +11,11 @@ const page = await ctx.newPage(); page.on('pageerror', e => errors.push(String(e
 await page.goto('http://127.0.0.1:8788/'); await page.waitForTimeout(600);
 for (const file of ['tiktok-data.json', 'tiktok-direct-messages.txt']) {
   await page.setInputFiles('#file', file); await page.waitForSelector('#error:not([hidden])');
-  assert.match(await page.textContent('#error'), /TikTok chats are read in the Yapstats iPhone app/);
+  assert.match(await page.textContent('#error'), /TikTok chats are not read on the website/);
   assert.equal(await page.isVisible('#hero'), true);
   await page.reload(); await page.waitForTimeout(400);
 }
-ok('the website refuses a TikTok file (JSON or TXT) and says the app reads it');
+ok('the website refuses a TikTok file (JSON or TXT) and says so');
 assert.equal(await page.isVisible('.tiktok-guide'), false);
 assert.doesNotMatch(await page.textContent('.file-note'), /TikTok/); ok('the website does not offer TikTok steps');
 assert.deepEqual(errors, []); ok('no page errors');

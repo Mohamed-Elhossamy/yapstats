@@ -4,7 +4,7 @@ Added 26 Nov 2026. Reads the JSON data file from TikTok's "Download your data" a
 
 ## App only
 
-Mohamed's decision on 26 Nov 2026: TikTok import is an app feature, as a reason to get the app. The website recognises a TikTok file and replies "TikTok chats are read in the Yapstats iPhone app, not on the website." The gate is `tiktokIfApp` in the page.
+Mohamed's decision on 26 Nov 2026: TikTok import is an app feature, as a reason to get the app. The website recognises a TikTok file and replies "TikTok chats are not read on the website. The Yapstats iPhone app, coming soon, will read them." (change "coming soon" to a link to the App Store page once the app is live). No other page of the website names TikTok; inside the app the not-affiliated line adds it. The gate is `tiktokIfApp` in the page.
 
 ## Status
 

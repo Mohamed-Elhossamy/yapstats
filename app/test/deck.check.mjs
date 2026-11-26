@@ -200,9 +200,24 @@ for (const [name, width, height] of [['SE', 375, 647], ['mini', 375, 728], ['16'
   await phone.setInputFiles('#file', join(work, 'flat7-chat.txt')); await phone.waitForSelector('#result:not([hidden])'); await phone.waitForTimeout(900);
   assert.equal(await fits(), true, `${name} card`);
   assert.deepEqual(await phone.evaluate(() => [...document.querySelectorAll('#storyTools .btn')].filter(b => b.offsetParent).map(b => b.scrollWidth <= b.clientWidth + 1)), [true, true, true], `${name} buttons`);
+  // Paid: the last card has a line of text under it (or, once every card is seen, a second row of buttons) and still must not scroll.
+  await phone.evaluate(() => yapstatsPurchase({ owned: true }));
+  await phone.waitForFunction(() => /^12 of 2\d/.test(document.getElementById('storyCount').textContent)); await phone.waitForTimeout(700); // the redraw lands on the first new card
+  await phone.focus('#cards'); await phone.keyboard.press('End'); await phone.waitForTimeout(1300);
+  assert.deepEqual(await phone.evaluate(() => [document.getElementById('storyCount').textContent, document.getElementById('storyHint').hidden]), ['Chat highlights', false], `${name} last card`);
+  assert.equal(await fits(), true, `${name} last card with its hint`);
+  if (name === '16') {
+    await phone.keyboard.press('Home'); await phone.waitForTimeout(700);
+    for (let i = 0; i < 30 && await phone.textContent('#storyCount') !== 'Chat highlights'; i++) { await phone.keyboard.press('ArrowRight'); await phone.waitForTimeout(420); }
+    await phone.waitForTimeout(900);
+    assert.equal(await phone.isVisible('#bulkActions'), true, 'end actions show once every card is seen');
+    assert.equal(await fits(), true, `${name} last card with its end actions`);
+    await phone.keyboard.press('ArrowLeft'); await phone.waitForTimeout(900);
+    assert.equal(await phone.evaluate(() => document.getElementById('result').style.getPropertyValue('--story-extra')), '', 'cards get their full height back on other cards');
+  }
   await small.close();
 }
-ok('home and cards fit, with whole button labels, on SE, mini, 16 and 16 Pro Max screens');
+ok('home and cards fit, with whole button labels, on SE, mini, 16 and 16 Pro Max screens; the paid last card fits with its extra row');
 
 assert.deepEqual(errors, []); ok('no page errors');
 console.log(`${passed} checks passed`);
