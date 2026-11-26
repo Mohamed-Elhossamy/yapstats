@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xuNa0BSbJzlH2C5irQhxn7HqswdDpY3jgYiaQ6JkaJw='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UH5z1iy8t8zzOYRA+TH/dD/hodkXmTpJX5lxZfobmDM='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -84,7 +84,10 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .btn:disabled { opacity: .42; cursor: default; transform: none; }
 .actions .btn { min-height: 55px; padding-inline: 20px; border-radius: 999px; }
 .vh:focus-visible + .btn { outline: 2px solid var(--text); outline-offset: 5px; }
-.file-note { color: var(--muted); font-size: .84rem; }
+.file-note { flex-basis: 100%; color: var(--muted); font-size: .84rem; }
+.file-note a { display: inline-block; padding-block: 6px; color: var(--text); font-weight: 700; text-underline-offset: .22em; }
+.in-app { max-width: 48ch; padding: 10px 14px; border-left: 4px solid var(--accent); border-radius: 4px 12px 12px 4px; background: var(--surface); font-size: .9rem; }
+.in-app a { font-weight: 740; }
 .error { color: var(--danger); font-weight: 650; max-width: 48ch; }
 .hero.is-drop .actions .btn { outline: 3px solid var(--accent); outline-offset: 6px; }
 .fan { position: relative; isolation: isolate; aspect-ratio: 1.1; margin-inline: 4%; min-width: 0; }
@@ -161,7 +164,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .pack-cue { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 39px; margin: 6px auto 0; padding: 3px 8px; border: 0; background: transparent; color: var(--text); font-size: .78rem; font-weight: 740; cursor: pointer; }
 .pack-cue span:first-child { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; background: var(--accent); color: var(--on-accent); animation: offer-nudge 1100ms var(--ease) 3; }
 .pack-cue:hover #packCueText { text-decoration: underline; text-underline-offset: .22em; }
-@keyframes offer-nudge { 0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 #ffd92e65; } 45% { transform: translateY(3px); box-shadow: 0 0 0 5px #ffd92e00; } }
+@keyframes offer-nudge { 0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 #ffd92e65; } 45% { transform: translateX(3px); box-shadow: 0 0 0 5px #ffd92e00; } }
 .unlocked { padding: 10px 14px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-weight: 650; max-width: 48ch; }
 .foot-links { display: flex; flex-wrap: wrap; gap: 0 18px; }
 .foot-links a { padding-block: 8px; }
@@ -263,7 +266,10 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   .gallery-open:active img { transform: scale(.98); }
 }
 @media (max-width: 760px) {
-  .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .hero-copy { display: contents; } /* lets the sample cards sit between the upload button and the paid offer */
+  .fan { order: 1; margin-block: 10px; }
+  .hero-offer { order: 2; }
   .hero h1 { font-size: clamp(2.4rem, 10vw, 5.25rem); }
   .fan { width: min(90%, 490px); margin-inline: auto; }
 
@@ -311,9 +317,10 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg>
             Upload chat export
           </label>
-          <span class="file-note">WhatsApp or Instagram</span>
+          <p class="file-note">WhatsApp or Instagram. No export yet? <a href="#export-guide">See how to get one</a>.</p>
         </div>
         <p class="error" id="error" role="alert" hidden></p>
+        <p class="in-app" id="inApp" hidden></p>
         <div class="hero-offer" id="heroOffer" hidden>
           <div class="mini-deck" aria-hidden="true"><i></i><i></i><i></i></div>
           <div><strong>Full recap <span class="offer-price">£2.99</span></strong><p>Personal cards and extra rankings for your chat.</p></div>
@@ -434,11 +441,12 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
         <button class="btn" id="openGallery" type="button">View all cards</button>
       </div>
       <button class="pack-cue" id="packCue" type="button" hidden>
-        <span aria-hidden="true">↓</span> <span id="packCueText"></span>
+        <span aria-hidden="true">→</span> <span id="packCueText"></span>
       </button>
       <div class="result-actions" id="bulkActions" hidden>
         <button class="btn primary" id="send" type="button" disabled>Share recap</button>
         <button class="btn ghost" id="save" type="button" disabled>Save all images</button>
+        <button class="btn ghost" id="another" type="button">Recap another chat</button>
       </div>
     </div>
     <aside class="pack" id="pack" aria-label="Full recap preview" hidden></aside>
@@ -460,14 +468,14 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
       </div>
     </dialog>
     <dialog class="prediction" id="emailRecap" aria-labelledby="emailRecapTitle">
-      <h3 id="emailRecapTitle">Get your recap by email</h3>
-      <p>Yapstats will upload the finished cards for this chat. We’ll send a private ZIP download link to the email you use at Polar checkout. The link lasts seven days.</p>
-      <p class="note">Your chat export stays on this device. Only share cards containing names or stats you’re comfortable emailing.</p>
+      <h3 id="emailRecapTitle">Unlock the full recap · <span class="offer-price">£2.99</span></h3>
+      <p>Want the cards emailed to you as well? Yapstats uploads the finished cards for this chat and sends a private ZIP download link to the email you use at checkout. The link lasts seven days.</p>
+      <p class="note">Your chat export stays on this device. Only share cards containing names or stats you’re comfortable emailing. Checkout is run by Polar, so Yapstats never sees your card details.</p>
       <p class="note" id="emailRecapStatus" role="status" hidden></p>
       <div class="actions">
-        <button class="btn primary" type="button" id="prepareEmailRecap">Prepare cards for checkout</button>
-        <a class="btn primary" id="emailCheckout" target="_blank" rel="noopener noreferrer" hidden>Continue to Polar ↗</a>
-        <a class="btn ghost" id="skipEmailRecap" target="_blank" rel="noopener noreferrer">Buy without email delivery ↗</a>
+        <button class="btn primary" type="button" id="prepareEmailRecap">Yes, email my cards</button>
+        <a class="btn primary" id="emailCheckout" target="_blank" rel="noopener noreferrer" hidden>Continue to checkout ↗</a>
+        <a class="btn ghost" id="skipEmailRecap" target="_blank" rel="noopener noreferrer">No thanks, just unlock ↗</a>
         <button class="btn ghost" type="button" id="closeEmailRecap">Back to recap</button>
       </div>
     </dialog>
@@ -482,7 +490,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
         <h3 tabindex="-1"></h3>
         <ul class="pack-details"></ul>
         <a class="pack-buy" target="_blank" rel="noopener noreferrer"></a>
-        <p class="pack-note">One payment for every recap in this browser. Your chat export stays here.</p>
+        <p class="pack-note">One payment unlocks every recap in this browser. Checkout is run by Polar, so Yapstats never sees your card details. Your chat stays on this device.</p>
       </div>
     </template>
   </section>
@@ -1660,7 +1668,7 @@ function activate(index) {
     hint.textContent = `${numberedViews} of ${state.cards.length} cards viewed. Open the rest to save the full set.`;
   }
   $('bulkActions').hidden = !allViewed || index !== lastSlide();
-  $('packCue').hidden = index !== 0 || $('pack').hidden;
+  $('packCue').hidden = index !== state.cards.length - 1 || $('pack').hidden; // the last free card is one person's sample of the paid set
   $('storyTools').hidden = isOffer;
   $('openGallery').hidden = index === 0;
   $('guessTalker').hidden = index !== 0 || !state.prediction || typeof $('prediction').showModal !== 'function';
@@ -2313,7 +2321,8 @@ function showPack(recap) {
     return;
   }
   fillPackOffer(pack, recap);
-  $('packCueText').textContent = `See ${count(recap.locked, 'bonus card')} · ${PACK_PRICE}`;
+  const others = recap.people.length - 1;
+  $('packCueText').textContent = `${others > 0 ? `Get this card for ${count(others, 'other')} too` : `See ${count(recap.locked, 'bonus card')}`} · ${PACK_PRICE}`;
 }
 
 function syncLandingOffer() {
@@ -2558,9 +2567,8 @@ $('guessReveal').addEventListener('click', () => {
 });
 $('openGallery').addEventListener('click', showGallery);
 $('packCue').addEventListener('click', () => {
-  const heading = $('pack').querySelector('h3');
-  heading?.focus({ preventScroll: true });
-  $('pack').scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'start' });
+  stripView.focus({ preventScroll: true });
+  go(lastSlide()); // the offer is the last slide
 });
 $('backToStory').addEventListener('click', backToRecap);
 function returnToUpload() {
@@ -2568,6 +2576,7 @@ function returnToUpload() {
   $('file').focus({ preventScroll: true });
 }
 $('again').addEventListener('click', returnToUpload);
+$('another').addEventListener('click', returnToUpload);
 $('changeExport').addEventListener('click', returnToUpload);
 $('brand').addEventListener('click', event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -2615,6 +2624,17 @@ if (CHECKOUT_URL) {
 }
 
 syncLandingOffer();
+
+// Links opened from TikTok, Instagram and similar apps load in a cut-down browser where saving images can fail without
+// any message. Say so before someone uploads a chat, and on Android offer the link that reopens the page in the real browser.
+if (/BytedanceWebview|musical_ly|Instagram|FBAN|FBAV|FB_IAB|Snapchat/.test(navigator.userAgent)) {
+  const note = $('inApp');
+  note.textContent = 'Saving cards can fail inside this app’s browser. For the full recap, open yapstats.tech in Safari or Chrome: tap the menu (⋯ or the share icon), then “Open in browser”.';
+  if (/Android/.test(navigator.userAgent)) {
+    note.append(' ', Object.assign(document.createElement('a'), { href: 'intent://yapstats.tech/#Intent;scheme=https;end', textContent: 'Open in my browser' }));
+  }
+  note.hidden = false;
+}
 
 const emailApi = '/recap-email/';
 const emailZipLimit = 16 * 1024 * 1024;
