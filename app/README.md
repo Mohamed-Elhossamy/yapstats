@@ -43,7 +43,7 @@ Tested on an iPhone 16 Pro (iOS 27.2.1, Xcode 27.2, free Personal Team signing),
 - **Taps** move one card at a time through all 12 cards, the highlights and the unlock slide.
 - **Share this card works** (system share sheet with the PNG, including Save Image).
 
-Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (14) from `app/`.
+
 
 Mohamed confirmed on 26 Nov that finger swipes work on the fixed build.
 
@@ -55,7 +55,15 @@ Tested on the iPhone with Xcode's test store (26 Nov 2026): cancel, buy from the
 
 Third trap: on launch WebKit can leave the page resting under the status bar (scroll offset 0 where the top limit is -62) when the page's height changes while it loads. It showed up once the unlock was owned at startup. `YapstatsViewController` watches the scroll view and puts a resting position back inside its limits. Do not remove that guard without retesting a launch with the purchase owned.
 
-Known gaps: the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
+Added on 26 Nov 2026: Save to Photos (`save` message, add-only access), the startup chime (`intro` message, `startup.m4a`, made by `tools/make-chime.py`), the icon (`tools/make-icon.mjs`), "Try a sample chat", app-only TikTok import, and layout that uses the real page height (`--app-h`, set from `innerHeight`) with `short` and `tiny` tiers for iPhone mini and SE. A native user script adds the `is-app` class to every page at document start, so About, Privacy and Terms can hide their website-only parts (`.web-only`).
+
+`npm run sync` copies `../public` and then removes the website-only files (export guides, email page, og.png, sitemap, robots, _headers) from the bundle.
+
+Store paperwork: `docs/APP_STORE_LISTING.md`, `docs/APP_STORE_AUDIT.md`, `docs/store-screenshots/` (made by `tools/make-screenshots.mjs`).
+
+Checks from `app/`: `node test/handoff.check.mjs` (5), `node test/deck.check.mjs` (25), `node test/tiktok.check.mjs` (6).
+
+Not yet confirmed on a device: the Photos prompt and a saved card, the chime, the sample chat, the sub-pages in the app.
 
 - The working Xcode project is at `~/Downloads/Yapstats-iOS` on his Mac (connected folder). Its `project.pbxproj` also holds his signing team; this repo's copy does not. After writing a file there, compare checksums: a staged file can lag by a few seconds.
 - Changes go on the `ios-app` branch. A push to `main` deploys the website.

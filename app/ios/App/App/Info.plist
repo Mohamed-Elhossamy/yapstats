@@ -42,7 +42,7 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Yapstats saves your recap cards to your photo library when you choose Save Image.</string>
+	<string>Yapstats adds the recap cards you choose to save to your photo library. It only adds pictures and never reads your library.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
@@ -70,7 +70,7 @@
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

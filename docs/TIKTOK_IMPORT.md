@@ -2,6 +2,10 @@
 
 Added 26 Nov 2026. Reads the JSON data file from TikTok's "Download your data" and lists its group chats and one-to-one chats to pick from. The file is read on the device like every other export.
 
+## App only
+
+Mohamed's decision on 26 Nov 2026: TikTok import is an app feature, as a reason to get the app. The website recognises a TikTok file and replies "TikTok chats are read in the Yapstats iPhone app, not on the website." The gate is `tiktokIfApp` in the page.
+
 ## Status
 
 **Not yet checked against a real TikTok export.** Mohamed tests real exports himself; the checks here use a synthetic file (`tools/qa/mktiktok.mjs`). The layout below comes from TikTok's own documentation and from three open-source readers, read on 26 Nov 2026. None of their code was copied.
