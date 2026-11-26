@@ -311,7 +311,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .lede:not(.app-only), .is-app .foot p:nth-child(2) { display: none; }
 .is-app .hero { gap: 11px; padding-block: 20px 4px; }
 .is-app .hero h1 { font-size: clamp(2.3rem, 11.5vw, 3.5rem); }
-.is-app .fan { order: 1; width: min(84%, 372px, 41svh); margin-block: 20px 6px; } /* room above: the sample in front grows and floats */
+.is-app .fan { order: 1; width: min(84%, 372px, 41svh); margin-block: 20px 12px; } /* room above and below: the samples grow and float, and must not sit on the title or the button */
 .is-app .actions, .is-app .error { order: 2; }
 .is-app .actions { justify-content: center; text-align: center; gap: 8px; }
 .is-app .actions .btn { width: 100%; min-height: 60px; font-size: 1.08rem; }
@@ -399,17 +399,17 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .actions .btn.primary { border-radius: 22px; }
 /* Sample cards on the home screen: each one floats on its own beat, and the script brings one forward in turn. */
 .is-app .sample { animation: sample-float 5.2s ease-in-out infinite; }
-.is-app .sample:nth-child(1) { --x: -64%; --y: 7%; --r: -17deg; --lit: #ffd92e; }
+.is-app .sample:nth-child(1) { --x: -64%; --y: 1%; --r: -17deg; --lit: #ffd92e; }
 .is-app .sample:nth-child(2) { --x: 0%; --y: -5%; --r: -3deg; --lit: #ff7eb6; animation-duration: 4.4s; animation-delay: -1.3s; }
-.is-app .sample:nth-child(3) { --x: 64%; --y: 8%; --r: 16deg; --lit: #74c5ff; animation-duration: 5.8s; animation-delay: -2.6s; }
-@keyframes sample-float { 50% { translate: 0 -10px; rotate: 1.6deg; } }
+.is-app .sample:nth-child(3) { --x: 64%; --y: 2%; --r: 16deg; --lit: #74c5ff; animation-duration: 5.8s; animation-delay: -2.6s; }
+@keyframes sample-float { 50% { translate: 0 -7px; rotate: 1.6deg; } }
 /* Each sample is a sticker with a hard shadow and its own colour of light; the one in front lifts, glows and catches a sweep of light. */
 .is-app .sample img { box-shadow: 5px 7px 0 #000b, 0 0 26px color-mix(in srgb, var(--lit) 30%, transparent); transition: transform 520ms cubic-bezier(.34,1.56,.64,1), box-shadow 400ms var(--ease); }
-.is-app .sample[aria-pressed=true] img { transform: translateY(-5%) rotate(calc(var(--r) * -.7)) scale(1.15); box-shadow: 7px 10px 0 #000c, 0 0 0 2px var(--lit), 0 0 44px color-mix(in srgb, var(--lit) 75%, transparent); }
+.is-app .sample[aria-pressed=true] img { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); box-shadow: 7px 10px 0 #000c, 0 0 0 2px var(--lit), 0 0 44px color-mix(in srgb, var(--lit) 75%, transparent); }
 .is-app .sample:nth-child(2) img, .is-app .sample:nth-child(2)::after { transform-origin: 50% 0; } /* the middle card sits highest: it grows downwards so it never covers the title */
-.is-app .sample:nth-child(2)[aria-pressed=true] img, .is-app .sample:nth-child(2)[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.12); }
+.is-app .sample:nth-child(2)[aria-pressed=true] img, .is-app .sample:nth-child(2)[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); }
 .is-app .sample::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background: linear-gradient(110deg, transparent 35%, #ffffff66 50%, transparent 65%) 200% 0 / 250% 100% no-repeat; }
-.is-app .sample[aria-pressed=true]::after { transform: translateY(-5%) rotate(calc(var(--r) * -.7)) scale(1.15); animation: sample-sheen 900ms 180ms var(--ease); }
+.is-app .sample[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); animation: sample-sheen 900ms 180ms var(--ease); }
 @keyframes sample-sheen { 0% { opacity: 1; background-position: 200% 0; } 100% { opacity: 1; background-position: -100% 0; } }
 .is-app .result-actions { flex-wrap: nowrap; margin-top: 6px; }
 .is-app .result-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }

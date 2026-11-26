@@ -36,6 +36,19 @@ let passed = 0; const ok = name => { passed++; console.log('ok', name); };
 await page.waitForTimeout(2300); // the startup animation takes about 1.3s
 assert.deepEqual(await page.evaluate(() => [!document.getElementById('intro'), document.documentElement.scrollWidth <= innerWidth, document.documentElement.scrollHeight <= innerHeight]), [true, true, true]);
 ok('the startup animation ends and the home screen fits with no scrolling either way');
+let gap = { title: Infinity, button: Infinity };
+for (let i = 0; i < 3; i++) {
+  await page.evaluate(i => document.getElementById('fan').children[i].click(), i); // bring each sample to the front
+  for (let frame = 0; frame < 10; frame++) {
+    await page.waitForTimeout(120);
+    const now = await page.evaluate(i => {
+      const card = document.getElementById('fan').children[i].querySelector('img').getBoundingClientRect();
+      return { title: card.top - document.querySelector('#landing h1').getBoundingClientRect().bottom, button: document.querySelector('#landing .actions .btn.primary').getBoundingClientRect().top - card.bottom };
+    }, i);
+    gap = { title: Math.min(gap.title, now.title), button: Math.min(gap.button, now.button) };
+  }
+}
+assert.ok(gap.title >= 6 && gap.button >= 8, JSON.stringify(gap)); ok(`a sample in front stays clear of the title (${Math.round(gap.title)}px) and of the main button (${Math.round(gap.button)}px)`);
 await page.setInputFiles('#file', join(work, 'flat7-chat.txt'));
 await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
 assert.match(await page.getAttribute('.loader-art span:last-child', 'data-count'), /^[1-9][\d,]*$/); ok('the loading screen counted the messages on its front card');
