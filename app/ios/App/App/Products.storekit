@@ -1,0 +1,30 @@
+{
+  "identifier": "7A51C2E0",
+  "nonRenewingSubscriptions": [],
+  "products": [
+    {
+      "displayPrice": "2.99",
+      "familyShareable": false,
+      "internalID": "6F3A2B10",
+      "localizations": [
+        {
+          "description": "A personal card for everyone in the chat, plus bonus rankings.",
+          "displayName": "Full recap",
+          "locale": "en_GB"
+        }
+      ],
+      "productID": "tech.yapstats.app.fullrecap",
+      "referenceName": "Full recap",
+      "type": "NonConsumable"
+    }
+  ],
+  "settings": {
+    "_locale": "en_GB",
+    "_storefront": "GBR"
+  },
+  "subscriptionGroups": [],
+  "version": {
+    "major": 3,
+    "minor": 0
+  }
+}

@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import StoreKit
 import Capacitor
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -75,6 +76,79 @@ final class YapstatsViewController: CAPBridgeViewController {
         webView?.scrollView.backgroundColor = background
         // The page reaches native features with window.webkit.messageHandlers.yapstats.postMessage({ type }).
         webView?.configuration.userContentController.add(self, name: "yapstats")
+        // Purchases that finish outside a buy tap (Ask to Buy approvals, refunds, another device) arrive here.
+        purchaseUpdates = Task { [weak self] in
+            for await update in Transaction.updates {
+                if case .verified(let transaction) = update { await transaction.finish() }
+                await self?.reportPurchase()
+            }
+        }
+    }
+
+    private var purchaseUpdates: Task<Void, Never>?
+
+    /// Tells the page whether the full recap is owned and what it costs in the buyer's currency, plus a message if something went wrong.
+    private func reportPurchase(message: String? = nil) async {
+        let owned = await FullRecap.isOwned()
+        let price = await FullRecap.product()?.displayPrice
+        var state: [String: Any] = ["owned": owned]
+        if let price { state["price"] = price }
+        if let message { state["error"] = message }
+        _ = try? await webView?.callAsyncJavaScript("window.yapstatsPurchase?.(state); return true;", arguments: ["state": state], in: nil, contentWorld: .page)
+    }
+
+    private func buy() async {
+        guard let product = await FullRecap.product() else {
+            await reportPurchase(message: "The full recap isn’t available right now. Try again later.")
+            return
+        }
+        do {
+            switch try await product.purchase() {
+            case .success(.verified(let transaction)):
+                await transaction.finish()
+                UINotificationFeedbackGenerator().notificationOccurred(.success)
+                await reportPurchase()
+            case .success(.unverified):
+                await reportPurchase(message: "Apple couldn’t verify that purchase. You haven’t been charged.")
+            case .pending:
+                await reportPurchase(message: "Waiting for approval. The full recap unlocks as soon as it’s approved.")
+            case .userCancelled:
+                await reportPurchase()
+            @unknown default:
+                await reportPurchase()
+            }
+        } catch {
+            await reportPurchase(message: "The purchase didn’t go through. You haven’t been charged.")
+        }
+    }
+
+    private func restore() async {
+        do {
+            try await AppStore.sync()
+        } catch {
+            await reportPurchase(message: "Couldn’t check with the App Store. Try again.")
+            return
+        }
+        let owned = await FullRecap.isOwned()
+        await reportPurchase(message: owned ? nil : "No full recap purchase found for this Apple Account.")
+    }
+}
+
+/// The one thing for sale: the full recap, bought once. StoreKit checks the signed transaction on the device.
+private enum FullRecap {
+    static let productID = "tech.yapstats.app.fullrecap"
+
+    static func product() async -> Product? {
+        try? await Product.products(for: [productID]).first
+    }
+
+    static func isOwned() async -> Bool {
+        for await entitlement in Transaction.currentEntitlements {
+            if case .verified(let transaction) = entitlement, transaction.productID == productID, transaction.revocationDate == nil {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -86,7 +160,10 @@ extension YapstatsViewController: WKScriptMessageHandler {
         switch type {
         case "tick": UIImpactFeedbackGenerator(style: .light).impactOccurred()
         case "success": UINotificationFeedbackGenerator().notificationOccurred(.success)
-        default: break // "buy" arrives with the in-app purchase step
+        case "buy": Task { await buy() }
+        case "restore": Task { await restore() }
+        case "purchase": Task { await reportPurchase() }
+        default: break
         }
     }
 }

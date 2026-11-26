@@ -70,7 +70,7 @@ Written 26 Nov 2026. Scope is iOS only. Status of the code is in `app/README.md`
 | Save a card | Website falls back to a download link, which a web view ignores | Needs the share sheet's Save Image, or a native save |
 | Privacy, Terms, About and the two export guides | Capacitor served the home page for all five | Fixed (`FolderRouter`) |
 | Content clear of the status bar and home indicator | Page has no safe-area padding | Fixed (`contentInset: always`), check on phone |
-| Full recap unlock (Polar link, unlock code) | Not allowed in the app | To build: StoreKit purchase and restore |
+| Full recap unlock (Polar link, unlock code) | Not allowed in the app | Built: StoreKit purchase and restore (device test pending) |
 | Email delivery of the cards | Left out; the request fails quietly and the offer stays hidden | By design |
 | Ko-fi tip link | Remove in the app | To build |
 | Export guides text ("save to Files, then upload") | Wrong for the app, where you pick Yapstats in the share sheet | To write |

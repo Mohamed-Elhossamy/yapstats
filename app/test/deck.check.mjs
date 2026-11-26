@@ -73,7 +73,18 @@ state = await deck();
 assert.deepEqual([state.index, state.aligned], [3, true]); ok('a tap on the right moves forward one card');
 assert.ok(opacities.length > 30 && Math.min(...opacities) === 1, `lowest opacity ${Math.min(...opacities)}`); ok('the card on top is never see-through while it arrives');
 
+// The native side reports purchases through window.yapstatsPurchase. Stand in for it here.
+const slidesBefore = await page.evaluate(() => document.getElementById('cards').children.length);
+await page.evaluate(() => window.yapstatsPurchase({ owned: false, price: '£2.99', error: 'The purchase didn’t go through. You haven’t been charged.' }));
+assert.equal(await page.evaluate(() => document.getElementById('cards').children.length), slidesBefore);
+assert.match(await page.textContent('#buyStatus'), /haven’t been charged/); ok('a failed purchase changes nothing and says so');
+await page.evaluate(() => window.yapstatsPurchase({ owned: true, price: '£2.99' })); await page.waitForTimeout(1500);
+const slidesAfter = await page.evaluate(() => document.getElementById('cards').children.length);
+assert.ok(slidesAfter > slidesBefore, `${slidesBefore} -> ${slidesAfter}`);
+assert.equal(await page.evaluate(() => Boolean(document.querySelector('.pack--slide'))), false); ok(`buying unlocks the paid cards (${slidesBefore} slides become ${slidesAfter}) and removes the offer`);
+
 await page.click('#backHome'); await page.waitForTimeout(400);
+assert.deepEqual(await page.evaluate(() => [document.getElementById('appBuy').hidden, document.getElementById('unlocked').hidden]), [true, false]); ok('home shows the full recap as unlocked instead of the buy button');
 assert.equal(await page.isVisible('#landing'), true); assert.equal(await page.isVisible('#result'), false); ok('the back button returns to the home screen');
 
 assert.deepEqual(errors, []); ok('no page errors');

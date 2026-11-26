@@ -6,7 +6,7 @@ A Capacitor shell around the website. `../public` is bundled unchanged, so the p
 
 - **Share-sheet import (prototype).** `Info.plist` registers the app for `.zip`, `.txt` and `.json`. When a chat export is opened in Yapstats, `SceneDelegate.swift` moves it to a private temporary folder, puts it into the page's own file input, then deletes it. The chat never leaves the device.
 
-Still to build: in-app purchase for the unlock, Save to Photos, hiding the web checkout and tip links. Email delivery is not part of the app.
+Still to build: Save to Photos. Email delivery is not part of the app.
 
 ## Work on it
 
@@ -43,13 +43,17 @@ Tested on an iPhone 16 Pro (iOS 27.2.1, Xcode 27.2, free Personal Team signing),
 - **Taps** move one card at a time through all 12 cards, the highlights and the unlock slide.
 - **Share this card works** (system share sheet with the PNG, including Save Image).
 
-Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (10) from `app/`.
+Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (13) from `app/`.
 
 Mohamed confirmed on 26 Nov that finger swipes work on the fixed build.
 
 Not tested yet: the haptics, WhatsApp's own "Export chat" sheet, Save Image and the Photos prompt, the sub-pages, the Instagram picker, the guess game, the gallery, light mode on the device, a cold start from the share sheet, VoiceOver, smaller iPhones.
 
-Known gaps: the unlock buttons do nothing until the StoreKit step; the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
+Purchase: one non-consumable, `tech.yapstats.app.fullrecap`. The page sends `buy`, `restore` or `purchase` (ask what is owned); `SceneDelegate.swift` calls StoreKit 2 and answers through `window.yapstatsPurchase({ owned, price, error })`. Ownership lives only in StoreKit: nothing is saved in the page. `App/Products.storekit` is a local test product and the shared `App` scheme points at it, so a build from Xcode buys with test data: no App Store Connect, no real money. An archive for the App Store ignores it and needs the same product id created in App Store Connect.
+
+Not yet tested on a device: the purchase sheet, restore, and the price coming back from StoreKit. Tested so far: it compiles and runs on the iPhone, and the page side passes the browser checks with a stand-in for the native answer.
+
+Known gaps: the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
 
 - The working Xcode project is at `~/Downloads/Yapstats-iOS` on his Mac (connected folder). Its `project.pbxproj` also holds his signing team; this repo's copy does not. After writing a file there, compare checksums: a staged file can lag by a few seconds.
 - Changes go on the `ios-app` branch. A push to `main` deploys the website.
