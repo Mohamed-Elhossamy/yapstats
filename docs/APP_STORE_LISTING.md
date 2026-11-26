@@ -15,6 +15,7 @@ Submitted for review on 26 Nov 2026 at 15:03: iOS version 1.0 (build 1) and the 
 - In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, GBP 2.99 (base United Kingdom), display name, description, review note and review screenshot. Submitted together with version 1.0.
 - Business: Paid Apps Agreement, bank account, both US tax forms, Digital Services Act trader status and MRDP are all Active.
 - TestFlight: build 1.0 (1) uploaded; internal group "Me" with Mohamed as tester. The sandbox purchase sheet shows the real price.
+- TestFlight public testing: test information saved; external group "Friends" holds build 1.0 (1), sent to beta review on 26 Nov 2026 ("Waiting for Review"). Public link, open to anyone: https://testflight.apple.com/join/XPMn1mXe. It accepts testers only after the build is approved. Purchases are free for testers.
 
 Still open:
 - Wait for Apple's review email (up to 48 hours). If approved, Mohamed presses Release. If rejected, read the cited guideline and fix before resubmitting.
