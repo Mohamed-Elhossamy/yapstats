@@ -236,7 +236,9 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .cards.dragging .card { cursor: grabbing; transition: none; }
 .story-hint { text-align: center; margin: 7px auto 0; }
 .prediction { width: min(440px, calc(100% - 32px)); max-height: calc(100% - 32px); border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); background: var(--surface); padding: clamp(20px, 6vw, 32px); box-shadow: 0 12px 34px var(--shadow); }
-.prediction[open] { display: grid; gap: 16px; }
+.prediction[open] { display: grid; gap: 12px; }
+.prediction .actions { gap: 8px; }
+.prediction .actions .btn { min-height: 48px; padding-inline: 16px; }
 .prediction::backdrop { background: #17171c85; }
 .prediction h3 { font-size: clamp(1.5rem, 6vw, 2.15rem); line-height: 1.08; }
 .guess-choices { display: grid; gap: 8px; }
@@ -469,14 +471,14 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     </dialog>
     <dialog class="prediction" id="emailRecap" aria-labelledby="emailRecapTitle">
       <h3 id="emailRecapTitle">Unlock the full recap · <span class="offer-price">£2.99</span></h3>
-      <p>Want the cards emailed to you as well? Yapstats uploads the finished cards for this chat and sends a private ZIP download link to the email you use at checkout. The link lasts seven days.</p>
-      <p class="note">Your chat export stays on this device. Only share cards containing names or stats you’re comfortable emailing. Checkout is run by Polar, so Yapstats never sees your card details.</p>
+      <p>Want your cards emailed too?</p>
+      <p class="note">We upload the finished cards, not your chat. The download link lasts 7 days.</p>
       <p class="note" id="emailRecapStatus" role="status" hidden></p>
       <div class="actions">
-        <button class="btn primary" type="button" id="prepareEmailRecap">Yes, email my cards</button>
+        <button class="btn primary" type="button" id="prepareEmailRecap">Email my cards</button>
         <a class="btn primary" id="emailCheckout" target="_blank" rel="noopener noreferrer" hidden>Continue to checkout ↗</a>
-        <a class="btn ghost" id="skipEmailRecap" target="_blank" rel="noopener noreferrer">No thanks, just unlock ↗</a>
-        <button class="btn ghost" type="button" id="closeEmailRecap">Back to recap</button>
+        <a class="btn ghost" id="skipEmailRecap" target="_blank" rel="noopener noreferrer">Just unlock ↗</a>
+        <button class="btn ghost" type="button" id="closeEmailRecap">Back</button>
       </div>
     </dialog>
     <template id="packTemplate">
