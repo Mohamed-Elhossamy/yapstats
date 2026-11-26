@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KjJUVYi9m9JyGgESUyG4SF4p7F1mYkzqb/v23s1bs8w='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-We4x4p4Ctapl2sqHIiptn4ykrA83XdMKkv+cXg2d2ak='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -225,6 +225,10 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .viewer[data-offer] .slide--offer { contain: none; }
 .slide .card, .gallery-item .card { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; background: var(--surface); }
 .slide .card { width: min(100%, 395px, max(118px, calc((100svh - var(--story-chrome)) * .5625))); border-radius: clamp(12px, 3vw, 24px); cursor: grab; transition: translate 310ms var(--ease); }
+/* A thin lit edge in the loading bar's yellow and pink. It turns slowly on the card in hand and rests on the others. */
+.slide .card { border: 2px solid transparent; object-fit: cover; box-shadow: 0 0 14px #ffab6052;
+  background: linear-gradient(var(--surface), var(--surface)) padding-box, conic-gradient(from var(--spin), #ffd92e, #ff7eb6, #ffd92e, #ff7eb6, #ffd92e) border-box; }
+.slide:not([aria-hidden]) .card { animation: app-card 420ms var(--ease), pack-spin 6s linear infinite; }
 .cards.dragging .card { cursor: grabbing; transition: none; }
 .story-hint { text-align: center; margin: 7px auto 0; }
 .prediction { width: min(440px, calc(100% - 32px)); max-height: calc(100% - 32px); border: 1px solid var(--line); border-radius: var(--radius); color: var(--text); background: var(--surface); padding: clamp(20px, 6vw, 32px); box-shadow: 0 12px 34px var(--shadow); }
@@ -384,8 +388,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .story-nav { display: block; position: relative; }
 .is-app .story-nav .arrow { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
 .is-app .cards { touch-action: none; }
-.is-app .slide .card { box-shadow: 0 14px 38px var(--shadow); }
-.slide:not([aria-hidden]) .card { animation: app-card 420ms var(--ease); }
+.is-app .slide .card { box-shadow: 0 0 16px #ffab6066, 0 14px 38px var(--shadow); }
 @keyframes app-card { 45% { scale: 1.03; } } /* each new card swells and settles; it never shrinks or fades, so the card under it stays hidden */
 .is-app .story-tools { gap: 10px; padding: 0 0 5px; border: 0; background: transparent; }
 /* Buttons you want to press: a solid edge underneath that the button sinks into, and an icon that says what it does. */
@@ -537,7 +540,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .load-track span::before { content: ""; display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffd92e, #ff7eb6); clip-path: inset(0 calc((1 - var(--load, 0)) * 100%) 0 0 round 99px); transition: clip-path 380ms var(--ease); }
 @media (prefers-reduced-motion: reduce) {
   .is-app .intro { display: none; }
-  .loading::before, .loader-art span, .loader-art span::before, .sample { animation: none !important; }
+  .loading::before, .loader-art span, .loader-art span::before, .sample, .slide .card, .pack--slide { animation: none !important; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .loading[data-phase="building"] .loader-art span:last-child { animation: none; }
   .sample:focus-visible img, .sample:hover img, .sample[aria-pressed=true] img, .gallery-open:hover img { transform: none; }
@@ -2127,7 +2130,7 @@ function settleTo(index, smooth = true, velocity = 0) {
   stripView.classList.add('settling');
   const started = performance.now();
   const following = requestedIndex !== null && requestedIndex !== index;
-  const duration = following ? 135 : clamp(250 + 110 * Math.abs(distance) / width, 260, 450);
+  const duration = following ? 125 : clamp(222 + 98 * Math.abs(distance) / width, 232, 400);
   const slope = clamp(velocity * duration / distance, 0, 2.65);
   function step(now) {
     const t = clamp((now - started) / duration, 0, 1);
@@ -2152,26 +2155,42 @@ stripView.addEventListener('scroll', () => {
   const index = Math.round(position);
   if (Math.abs(position - index) < .16) activate(index);
 }, { passive: true });
-// A sideways trackpad swipe turns one card. The browser's own sideways scrolling is switched off here because its
-// snapping pulls against the deck. A swipe keeps sending fading "momentum" events after the fingers lift, so the
-// handler waits for a pause, or for the movement to pick up again after fading, before it counts a new swipe.
-const wheelSwipe = { sum: 0, at: 0, last: 0, peak: 0, turned: false };
+// A sideways trackpad swipe turns one card, however hard it is. The browser's own sideways scrolling is switched off
+// here because its snapping pulls against the deck. A swipe keeps sending fading "momentum" events after the fingers
+// lift, and a hard swipe sends big ones for a second or more. After a turn the rest of that swipe is ignored: the next
+// swipe starts after a pause, a change of direction, or a clear new push.
+const wheelSwipe = { sum: 0, at: 0, last: 0, level: 0, peak: 0, low: 0, fell: false, turned: 0 };
 stripView.addEventListener('wheel', event => {
   if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return; // up and down still scrolls the page
   event.preventDefault();
-  const now = performance.now();
+  const swipe = wheelSwipe;
+  const now = event.timeStamp; // when the fingers moved: a busy page handles events late, and that must not read as a pause
   const size = Math.abs(event.deltaX) * (event.deltaMode === 1 ? 16 : 1);
-  const faded = wheelSwipe.last < wheelSwipe.peak * .5;
-  if (now - wheelSwipe.at > 140 || (wheelSwipe.turned && faded && size > wheelSwipe.last + 5 && size > 10)) {
-    Object.assign(wheelSwipe, { sum: 0, peak: 0, turned: false });
+  const direction = Math.sign(event.deltaX);
+  const gap = now - swipe.at;
+  if (gap > 140) {
+    // A short gap inside a tail that was still strong and falling is the same swipe carrying on, not a new one.
+    // (Wheel notches repeat one size and never fall, so each notch after a gap still counts.)
+    if (swipe.turned && swipe.fell && swipe.level > 12 && gap < 400) Object.assign(swipe, { level: 0, low: size });
+    else Object.assign(swipe, { sum: 0, level: 0, peak: 0, low: 0, fell: false, turned: 0 });
   }
-  Object.assign(wheelSwipe, { at: now, last: size, peak: Math.max(wheelSwipe.peak, size) });
-  if (wheelSwipe.turned) return;
-  wheelSwipe.sum += Math.sign(event.deltaX) * size;
-  if (Math.abs(wheelSwipe.sum) < 28) return;
-  wheelSwipe.turned = true;
+  if (swipe.turned && size < swipe.last) swipe.fell = true;
+  swipe.last = size;
+  swipe.at = now;
+  swipe.level = swipe.level ? swipe.level * .7 + size * .3 : size; // smoothed, because single events arrive uneven
+  swipe.peak = Math.max(swipe.peak, swipe.level);
+  if (swipe.turned) {
+    if (swipe.level < swipe.peak * .6) swipe.low = Math.min(swipe.low || Infinity, swipe.level); // the tail is fading
+    const pushed = swipe.low && swipe.level > swipe.low * 1.8 + 6; // well above the quietest the tail has been
+    const reversed = direction !== swipe.turned && size > 4; // momentum never changes direction
+    if (!pushed && !reversed) return;
+    Object.assign(swipe, { sum: 0, level: size, peak: size, low: 0, fell: false, turned: 0 });
+  }
+  swipe.sum += direction * size;
+  if (Math.abs(swipe.sum) < 28) return;
+  swipe.turned = Math.sign(swipe.sum);
   clearTimeout(nudgeTimer);
-  moveBy(Math.sign(wheelSwipe.sum));
+  moveBy(swipe.turned);
 }, { passive: false });
 
 function continueNavigation() {
@@ -2247,7 +2266,9 @@ stripView.addEventListener('pointermove', event => {
     drag.lastX = event.clientX;
   }
   const position = drag.scroll - clamp(delta, -width, width); // the card stays under the finger
-  const bounded = clamp(position, 0, lastSlide() * width);
+  // One card at a time: the strip never leaves the neighbours of the card in hand, even when a second swipe
+  // starts while the last turn is still finishing.
+  const bounded = clamp(position, Math.max(0, state.index - 1) * width, Math.min(lastSlide(), state.index + 1) * width);
   stripView.scrollLeft = bounded;
   layoutDeck();
   const overshoot = bounded - position;
@@ -2268,7 +2289,7 @@ function finishDrag(event) {
   const velocity = performance.now() - drag.lastAt < 95 ? drag.velocity : 0;
   const flick = Math.abs(delta) >= 19 && Math.sign(velocity) === Math.sign(delta) && Math.abs(velocity) >= .4;
   const advance = event.type === 'pointerup' && (Math.abs(delta) >= threshold || flick);
-  const index = drag.index + (advance ? -Math.sign(delta) : 0);
+  const index = clamp(drag.index + (advance ? -Math.sign(delta) : 0), state.index - 1, state.index + 1); // never past the next card, however hard or often the swipe
   const { moved, target, startY, startedAt } = drag;
   drag = null;
   if (moved) {

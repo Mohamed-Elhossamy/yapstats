@@ -83,6 +83,18 @@ await flick(330, 110); await flick(330, 110); state = await deck();
 assert.deepEqual([state.index, state.aligned], [3, true]); ok('two more flicks land on the fourth card, in step');
 await flick(90, 320); state = await deck();
 assert.deepEqual([state.index, state.aligned], [2, true]); ok('a fast flick right moves back exactly one card');
+// One card at a time, however hard or often the swipe: a second flick 100ms later, while the card is still turning,
+// cannot reach past the next card. Nor can a finger dragged across the whole screen.
+const quick = async (from, to) => { await touch('touchStart', from, 420); await touch('touchMove', (from + to) / 2, 423); await touch('touchMove', to, 425); await touch('touchEnd'); };
+await quick(330, 110); await page.waitForTimeout(100); await quick(330, 110); await page.waitForTimeout(900); state = await deck();
+assert.deepEqual([state.index, state.aligned], [3, true], 'two flicks 100ms apart');
+await quick(330, 110); await page.waitForTimeout(100); await quick(90, 320); await page.waitForTimeout(900); state = await deck();
+assert.ok(state.index === 3 || state.index === 2 || state.index === 4, `forward then back ended on ${state.index}`);
+if (state.index !== 3) { await flick(state.index < 3 ? 330 : 90, state.index < 3 ? 110 : 320); state = await deck(); }
+await touch('touchStart', 390, 420); for (const x of [300, 200, 100, 0, -200, -500]) await touch('touchMove', x, 422); await touch('touchEnd'); await page.waitForTimeout(900); state = await deck();
+assert.deepEqual([state.index, state.aligned], [4, true], 'one long hard drag');
+await flick(90, 320); await flick(90, 320); state = await deck();
+assert.deepEqual([state.index, state.aligned], [2, true]); ok('a second flick mid-turn or a very long drag still moves one card only');
 
 const opacities = [];
 await page.evaluate(() => { window.seen = []; const read = () => { const card = document.querySelector('.slide:not([aria-hidden]) .card'); if (card) window.seen.push(Number(getComputedStyle(card).opacity)); if (window.seen.length < 90) requestAnimationFrame(read); }; requestAnimationFrame(read); });
