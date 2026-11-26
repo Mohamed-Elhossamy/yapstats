@@ -30,6 +30,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         SceneDelegateProxy.shared.scene(scene, continue: userActivity)
     }
 
+    // MARK: - Startup animation every time the app is opened
+
+    /// Covers the app while it is in the background, so the app switcher never shows a chat and the return starts clean.
+    private var cover: UIView?
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        guard cover == nil, let window else { return }
+        let view = UIView(frame: window.bounds)
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.backgroundColor = UIColor(named: "LaunchBackground") ?? .systemBackground
+        window.addSubview(view)
+        cover = view
+    }
+
+    /// Coming back from the background: the page plays its startup animation and sound again, then the cover lifts.
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        guard let cover else { return } // the first launch plays its own
+        self.cover = nil
+        let lift = { UIView.animate(withDuration: 0.12, animations: { cover.alpha = 0 }, completion: { _ in cover.removeFromSuperview() }) }
+        guard let webView = (window?.rootViewController as? CAPBridgeViewController)?.webView else { lift(); return }
+        var lifted = false
+        let liftOnce = { if !lifted { lifted = true; lift() } }
+        webView.callAsyncJavaScript("window.yapstatsIntro?.(); return true;", arguments: [:], in: nil, in: .page) { _ in liftOnce() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: liftOnce) // never leave the cover up if the page does not answer
+    }
+
     // MARK: - Chat export opened from another app's share sheet
 
     /// Takes the first chat export in `contexts` and hands it to the page. Returns true if one was found.
@@ -101,22 +127,24 @@ final class YapstatsViewController: CAPBridgeViewController {
 
     private var purchaseUpdates: Task<Void, Never>?
     private var scrollWatch: [NSKeyValueObservation] = []
-    private var startupSound: AVAudioPlayer?
-    private var startupSoundAsked = false
+    private var startupSound: AVAudioPlayer? // used on audioQueue only
+    private let audioQueue = DispatchQueue(label: "tech.yapstats.app.audio", qos: .userInitiated)
 
-    /// One quiet chime with the startup animation. It follows the silent switch, never interrupts or talks over other
-    /// audio, and plays once per launch. The audio session is set up off the main thread: those calls can stall the UI.
+    /// One quiet chime with the startup animation, each time the animation plays. It follows the silent switch and
+    /// never interrupts or talks over other audio. Audio work stays off the main thread: those calls can stall the UI.
     private func playStartupSound() {
-        guard !startupSoundAsked, let url = Bundle.main.url(forResource: "startup", withExtension: "m4a") else { return }
-        startupSoundAsked = true
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        guard let url = Bundle.main.url(forResource: "startup", withExtension: "m4a") else { return }
+        audioQueue.async { [weak self] in
+            guard let self else { return }
             let session = AVAudioSession.sharedInstance()
             guard !session.isOtherAudioPlaying else { return }
-            try? session.setCategory(.ambient)
-            guard let player = try? AVAudioPlayer(contentsOf: url) else { return }
-            player.volume = 0.7
-            player.play()
-            DispatchQueue.main.async { self?.startupSound = player } // keep it alive while it plays
+            if self.startupSound == nil {
+                try? session.setCategory(.ambient)
+                self.startupSound = try? AVAudioPlayer(contentsOf: url)
+                self.startupSound?.volume = 0.7
+            }
+            self.startupSound?.currentTime = 0 // from the top if the last one is still ringing
+            self.startupSound?.play()
         }
     }
 

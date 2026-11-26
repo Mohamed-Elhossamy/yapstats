@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fypBHvFx1Ib+ImzyEmVuom49SCAkH08oAFfwmA4rrx0='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-OMqOe0QNCPL3rMBX7KDTEoP5JKWOtArOhIPU7qPjBUc='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -3082,23 +3082,38 @@ globalThis.yapstatsPurchase = ({ owned, price, error }) => {
   buyStatus(error || '');
 };
 
-// App startup animation: lasts about 1.3s, then hands over to the home screen. Leaving home (a shared chat arriving) ends it early.
+// App startup animation: lasts about 1.3s, then hands over to the screen behind it. Leaving home (a shared chat arriving) ends it early.
+// It plays with its sound on launch and again every time the app comes back to the front (the native side calls yapstatsIntro).
+let introTemplate = null, introTimers = [];
 function endIntro() {
+  introTimers.forEach(clearTimeout);
   $('intro')?.remove();
   document.documentElement.style.removeProperty('--intro');
 }
+function playIntro(again = false) {
+  if (again) {
+    if (reducedMotion.matches || !introTemplate || !$('loading').hidden || document.querySelector('dialog[open]')) return; // nothing to cover: a recap is being made, or a question is open
+    endIntro();
+    document.body.prepend(introTemplate.cloneNode(true)); // a fresh copy, so its animations start from the beginning
+  }
+  document.documentElement.style.setProperty('--intro', '1250ms'); // the home screen's own entrance waits for the intro
+  if (again && !$('landing').hidden) { // run the home screen's entrance again behind the animation
+    $('landing').hidden = true;
+    $('landing').offsetWidth;
+    $('landing').hidden = false;
+  }
+  toApp({ type: 'intro' }); // the native side plays the startup sound
+  introTimers = [setTimeout(() => toApp({ type: 'tick' }), 500), setTimeout(endIntro, 1750)]; // the tick is felt as the cards deal out
+}
+globalThis.yapstatsIntro = () => playIntro(true);
 if (IN_APP) {
   document.documentElement.classList.add('is-app');
-  // The startup animation and its sound play once per launch, not again when coming back from Privacy or Terms.
+  // On a page load the animation plays once per launch: not again when coming back from Privacy or Terms.
+  introTemplate = $('intro').cloneNode(true);
   let seenIntro = false;
   try { seenIntro = sessionStorage.getItem('yapstatsIntro') === '1'; sessionStorage.setItem('yapstatsIntro', '1'); } catch { /* storage blocked: the intro plays each time */ }
   if (reducedMotion.matches || seenIntro) endIntro();
-  else {
-    document.documentElement.style.setProperty('--intro', '1250ms'); // the home screen's own entrance waits for the intro
-    toApp({ type: 'intro' }); // the native side plays the startup sound
-    setTimeout(() => toApp({ type: 'tick' }), 500); // felt as the cards deal out
-    setTimeout(endIntro, 1750);
-  } // not 'in-app': that class styles the in-app-browser notice
+  else playIntro(); // not 'in-app': that class styles the in-app-browser notice
   // The height the page really has, without the status bar and home indicator. Layout that must fit one screen uses it.
   const fitScreen = () => {
     if (/^(?:INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return; // the keyboard is up: keep the layout still

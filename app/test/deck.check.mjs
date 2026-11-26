@@ -148,9 +148,26 @@ await page.evaluate(() => window.yapstatsSaved({ ok: true }));
 assert.equal(await page.textContent('.gallery-item:nth-child(3) figcaption a'), 'Saved'); ok('the save links under All cards save to Photos too');
 await page.click('#backHome'); await page.waitForTimeout(400);
 
+// Coming back to the front (the native side calls yapstatsIntro): the animation and its sound play again, over whatever
+// screen is showing, and leave it as it was.
+await page.setInputFiles('#file', join(work, 'flat7-chat.txt')); await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
+await page.touchscreen.tap(330, 400); await page.waitForTimeout(700);
+const before = await page.textContent('#storyCount');
+await page.evaluate(() => { window.sent.length = 0; window.yapstatsIntro(); });
+assert.deepEqual(await page.evaluate(() => [Boolean(document.getElementById('intro')), window.sent.filter(message => message.type === 'intro').length]), [true, 1]);
+await page.waitForTimeout(2000);
+assert.deepEqual(await page.evaluate(() => [Boolean(document.getElementById('intro')), document.getElementById('result').hidden]), [false, false]);
+assert.equal(await page.textContent('#storyCount'), before);
+await page.click('#backHome'); await page.waitForTimeout(400);
+await page.evaluate(() => { window.sent.length = 0; window.yapstatsIntro(); }); await page.waitForTimeout(300);
+assert.equal(await page.evaluate(() => Boolean(document.getElementById('intro')) && !document.getElementById('landing').hidden), true);
+await page.waitForTimeout(1800);
+assert.equal(await page.evaluate(() => Boolean(document.getElementById('intro'))), false);
+ok('every return to the app replays the startup animation and sound, and leaves the screen as it was');
+
 // Coming back to the home screen later in the same launch (from Privacy or Terms) must not replay the intro or its sound.
 await page.reload(); await page.waitForTimeout(400);
-assert.deepEqual(await page.evaluate(() => [Boolean(document.getElementById('intro')), window.sent.some(message => message.type === 'intro')]), [false, false]); ok('the intro and its sound play once per launch');
+assert.deepEqual(await page.evaluate(() => [Boolean(document.getElementById('intro')), window.sent.some(message => message.type === 'intro')]), [false, false]); ok('a page reload inside the app does not replay the intro');
 
 // A second import: the loading bar must start empty and only ever grow (it used to start full and run backwards).
 await page.evaluate(() => {
