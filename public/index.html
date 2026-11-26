@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-t+db75hWyjRuIEJjxvJ7ZRsmaRQe0ggJpRLoxgryBFI='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-xuNa0BSbJzlH2C5irQhxn7HqswdDpY3jgYiaQ6JkaJw='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -1792,11 +1792,27 @@ stripView.addEventListener('scroll', () => {
   const index = Math.round(position);
   if (Math.abs(position - index) < .16) activate(index);
 }, { passive: true });
+// A sideways trackpad swipe turns one card. The browser's own sideways scrolling is switched off here because its
+// snapping pulls against the deck. A swipe keeps sending fading "momentum" events after the fingers lift, so the
+// handler waits for a pause, or for the movement to pick up again after fading, before it counts a new swipe.
+const wheelSwipe = { sum: 0, at: 0, last: 0, peak: 0, turned: false };
 stripView.addEventListener('wheel', event => {
-  if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
-  requestedIndex = null;
-  cancelSettle();
-}, { passive: true });
+  if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return; // up and down still scrolls the page
+  event.preventDefault();
+  const now = performance.now();
+  const size = Math.abs(event.deltaX) * (event.deltaMode === 1 ? 16 : 1);
+  const faded = wheelSwipe.last < wheelSwipe.peak * .5;
+  if (now - wheelSwipe.at > 140 || (wheelSwipe.turned && faded && size > wheelSwipe.last + 5 && size > 10)) {
+    Object.assign(wheelSwipe, { sum: 0, peak: 0, turned: false });
+  }
+  Object.assign(wheelSwipe, { at: now, last: size, peak: Math.max(wheelSwipe.peak, size) });
+  if (wheelSwipe.turned) return;
+  wheelSwipe.sum += Math.sign(event.deltaX) * size;
+  if (Math.abs(wheelSwipe.sum) < 28) return;
+  wheelSwipe.turned = true;
+  clearTimeout(nudgeTimer);
+  moveBy(Math.sign(wheelSwipe.sum));
+}, { passive: false });
 
 function continueNavigation() {
   if (settle || requestedIndex === null) return;
