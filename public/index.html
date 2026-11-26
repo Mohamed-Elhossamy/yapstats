@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HwQ9ZTyKVPGnOy0ecVrhfFnsVcmB6bp8VDgylwk15iU='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-t+db75hWyjRuIEJjxvJ7ZRsmaRQe0ggJpRLoxgryBFI='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -57,8 +57,10 @@ h1, h2, h3 { line-height: 1.02; letter-spacing: -.045em; text-wrap: balance; }
 a { color: inherit; }
 button, input, select { font: inherit; }
 button { color: inherit; }
+a, button, label, summary { touch-action: manipulation; }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid var(--text); outline-offset: 5px; }
+[tabindex="-1"]:focus { outline: none; }
 mark { display: inline-block; padding: .02em .22em; border-radius: 8px; background: var(--accent); color: var(--on-accent); transform: rotate(-1.2deg); }
 .wrap { width: min(100% - 2 * clamp(20px, 4.5vw, 56px), 1160px); margin-inline: auto; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -66,7 +68,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .top { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-size: 1.23rem; font-weight: 850; letter-spacing: -.055em; text-decoration: none; }
 .brand-icon { display: grid; place-items: center; width: 30px; aspect-ratio: 1; border-radius: 8px; background: var(--accent); color: var(--on-accent); }
-.top-link { font-size: .88rem; font-weight: 700; text-underline-offset: .22em; color: var(--muted); }
+.top-link { padding-block: 11px; font-size: .88rem; font-weight: 700; text-underline-offset: .22em; color: var(--muted); }
 .top-link:hover { color: var(--text); }
 .hero { display: grid; grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr); align-items: center; gap: clamp(24px, 4vw, 64px); padding-block: clamp(42px, 6vw, 90px) clamp(48px, 7vw, 104px); }
 .hero-copy { display: grid; gap: 18px; min-width: 0; }
@@ -100,16 +102,16 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .band { padding-block: clamp(38px, 5vw, 66px); border-top: 1px solid var(--line); }
 .band h2 { font-size: clamp(1.9rem, 3.5vw, 3.15rem); }
 .note { color: var(--muted); font-size: .9rem; }
-.hero-offer { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 14px 0; border-block: 1px solid var(--line); max-width: 540px; }
+.hero-offer { display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-block: 1px solid var(--line); max-width: 540px; }
 .hero-offer strong { display: block; line-height: 1.3; }
 .hero-offer p { color: var(--muted); font-size: .84rem; line-height: 1.35; margin-top: 3px; }
 .hero-offer .offer-price { color: var(--muted); font-size: .85em; margin-left: .25em; }
-.mini-deck { position: relative; height: 38px; }
-.mini-deck i { position: absolute; left: 10px; top: 4px; width: 22px; height: 30px; border: 1px solid #17171c; border-radius: 4px; background: #ff8fbd; transform: translateX(-8px) rotate(-16deg); }
+.mini-deck { position: relative; width: 46px; height: 40px; }
+.mini-deck i { position: absolute; left: 12px; top: 5px; width: 22px; height: 30px; border: 1px solid #17171c; border-radius: 4px; background: #ff8fbd; transform: translateX(-8px) rotate(-16deg); }
 .mini-deck i:nth-child(2) { background: #74c5ff; transform: translateX(8px) rotate(16deg); }
 .mini-deck i:last-child { background: var(--accent); transform: translateY(-2px); }
 .mini-deck i:last-child::after { content: ""; position: absolute; inset: 6px 5px; border-block: 1px solid #17171c; }
-.checkout-link { width: fit-content; font-size: .84rem; font-weight: 780; text-underline-offset: .25em; }
+.checkout-link { width: fit-content; padding-block: 10px; font-size: .84rem; font-weight: 780; text-underline-offset: .25em; }
 .checkout-link:hover { text-decoration-thickness: 2px; }
 .recap-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px clamp(24px, 5vw, 64px); margin-top: 28px; }
 .recap-option { display: grid; align-content: start; gap: 10px; padding-top: 16px; border-top: 2px solid var(--line); }
@@ -161,7 +163,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .pack-cue:hover #packCueText { text-decoration: underline; text-underline-offset: .22em; }
 @keyframes offer-nudge { 0%, 100% { transform: translateY(0); box-shadow: 0 0 0 0 #ffd92e65; } 45% { transform: translateY(3px); box-shadow: 0 0 0 5px #ffd92e00; } }
 .unlocked { padding: 10px 14px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-weight: 650; max-width: 48ch; }
-.foot-links { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 0 18px; }
+.foot-links a { padding-block: 8px; }
 .guide-links { margin-top: 18px; }
 .foot { display: grid; gap: 6px; padding-block: 20px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
 .loading { min-height: min(650px, 76svh); display: grid; place-items: center; padding-block: 45px; }
@@ -189,6 +192,15 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .result { --story-chrome: 312px; padding-block: 13px 38px; }
 .result h2 { flex: 1; min-width: 0; font-size: clamp(1.45rem, 4vw, 2.65rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .result-head { width: min(100%, 530px); margin-inline: auto; display: flex; align-items: center; gap: 10px; padding-bottom: 10px; }
+.years { flex: 1; min-width: 0; display: flex; gap: 6px; padding: 0 18px 0 2px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 20px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 20px), transparent); }
+.years::-webkit-scrollbar { display: none; }
+.year { position: relative; flex: none; display: grid; align-items: center; min-height: 44px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.year span { display: grid; place-items: center; min-width: 52px; height: 36px; padding-inline: 13px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .84rem; font-weight: 740; font-variant-numeric: tabular-nums; white-space: nowrap; transition: transform 220ms var(--ease), background-color 220ms var(--ease), color 220ms var(--ease), border-color 220ms var(--ease); }
+.year:hover span { border-color: var(--muted); }
+.year:active span { transform: scale(.94); transition-duration: 90ms; }
+.year input:checked + span { background: var(--action); color: var(--on-action); border-color: transparent; }
+.year input:focus-visible + span { outline: 2px solid var(--text); outline-offset: 2px; }
+.viewer.updating .cards { opacity: .45; }
 .settings { position: relative; margin-inline-start: auto; }
 .settings > summary { list-style: none; min-height: 42px; padding: 5px 10px; font-size: .76rem; white-space: nowrap; }
 .settings > summary::-webkit-details-marker { display: none; }
@@ -209,11 +221,11 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .progress span.seen { background: #d9a500; }
 .progress span.current { background: var(--action); }
 @media (prefers-color-scheme: dark) { .progress span.seen { background: var(--accent); } .progress span.current { background: var(--text); } }
-.cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
+.cards { display: flex; isolation: isolate; transition: opacity 180ms var(--ease); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
 .cards::-webkit-scrollbar { display: none; }
 .cards.dragging, .cards.settling { scroll-snap-type: none; }
 .cards.dragging { cursor: grabbing; user-select: none; }
-.slide { flex: 0 0 100%; min-width: 0; display: grid; place-items: center; padding-inline: 2px; scroll-snap-align: center; scroll-snap-stop: always; }
+.slide { position: relative; flex: 0 0 100%; min-width: 0; display: grid; place-items: center; padding-inline: 2px; scroll-snap-align: center; scroll-snap-stop: always; }
 .slide--offer { contain: size; overflow: hidden; }
 .viewer[data-offer] .slide--offer { contain: none; }
 .slide .card, .gallery-item .card { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; background: var(--surface); }
@@ -233,13 +245,15 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .story-tools .btn:hover { background: var(--surface-raised); }
 .story-tools .story-guess { background: var(--accent); color: var(--on-accent); }
 .story-tools .story-guess:hover { background: #f4c926; }
+.story-tools:has(#guessTalker[hidden]) #shareCard { background: var(--action); color: var(--on-action); }
 .result-actions { flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .result-actions .btn { font-size: .84rem; }
 #sendNote { margin-top: 9px; text-align: center; }
 .gallery-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
 .gallery-top h3 { font-size: 1.6rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr)); gap: 12px; }
-.gallery-item { display: grid; gap: 6px; color: var(--muted); font-size: .85rem; }
+.gallery-item { display: grid; gap: 0; color: var(--muted); font-size: .85rem; }
+.gallery-item figcaption a { display: block; padding-block: 10px; }
 .gallery-open { display: block; border: 0; padding: 0; border-radius: 16px; background: transparent; cursor: zoom-in; }
 .gallery-item img { border-radius: 16px; transition: transform 260ms var(--ease); }
 .gallery-open:active img { transform: scale(.98); transition-duration: 90ms; }
@@ -259,7 +273,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   .wrap { width: calc(100% - 32px); }
   .hero { padding-top: 34px; }
   .hero-copy { gap: 15px; }
-  .hero-offer { grid-template-columns: 35px minmax(0, 1fr) auto; gap: 7px; }
+  .hero-offer { gap: 12px; }
   .hero-offer .checkout-link { max-width: 9ch; line-height: 1.25; }
   .recap-options { grid-template-columns: 1fr; }
   .result { --story-chrome: 300px; }
@@ -392,13 +406,10 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   <section class="wrap result" id="result" hidden>
     <div class="result-head">
       <h2 id="groupTitle" tabindex="-1">Your group chat</h2>
+      <div class="years" id="years" role="radiogroup" aria-label="Recap period" hidden></div>
       <details class="settings" id="settings">
-        <summary class="btn ghost">Recap settings</summary>
+        <summary class="btn ghost">Settings</summary>
         <div class="settings-panel">
-          <div class="field">
-            <label for="year">Date range</label>
-            <select id="year"></select>
-          </div>
           <details class="names">
             <summary>Edit names</summary>
             <div class="name-list" id="nameList"></div>
@@ -503,19 +514,44 @@ const EMOJI = /[\u{1F1E6}-\u{1F1FF}]{2}|\p{Extended_Pictographic}(?:️|[\u{1F3F
 const SKIN = /[\u{1F3FB}-\u{1F3FF}]/gu;
 const WORD = /\p{L}+(?:['’]\p{L}+)*/gu;
 const LAUGH = /\b(?:a?(?:ha){2,}h?|lo+l|lmf?a+o+)\b|[😂🤣]/iu;
-// shortcut: English stop words only, add other languages if non-UK chats matter
-const STOP = new Set(('the and you that was for are with his they this have from not but had what all were when your can said there ' +
-  'use each which she how their will other about out many then them these some her would make like him into time has look two more ' +
-  'see way could people than first been who its now find long down day did get come made may part yeah yes just got one too also ' +
-  'gonna wanna still back want need good well much very here why where does off over only even ever any because being our she\'s ' +
-  'he\'s they\'re we\'re there\'s what\'s let\'s i\'ll you\'ll won\'t isn\'t aren\'t wasn\'t doesn\'t don\'t dont i\'m it\'s that\'s ' +
-  'i\'ve ive you\'re youre can\'t cant didn\'t didnt going really think know thats its im should were going been those though ' +
-  'them then than doing done has had having his hers ours yours mine him her did does say says thing things actually literally ' +
-  'again after before while until since between through without anyone someone everyone anybody somebody everybody nobody anything ' +
-  'something everything nothing never always maybe might must shall let lets put take took give gave went came tell told knew saw ' +
-  'seen myself yourself themselves theirs whose whom such same both few own okay yep nah nope sure right quite i\'d we\'ll we\'ve ' +
-  'we\'d you\'ve you\'d they\'ve they\'ll they\'d he\'ll she\'ll it\'ll that\'ll who\'s how\'s where\'s couldn\'t wouldn\'t ' +
-  'shouldn\'t haven\'t hasn\'t hadn\'t weren\'t ain\'t').split(' '));
+// Grammar and filler words left out of "Most-used words". English only: add other languages if non-UK chats matter.
+const STOP = new Set((
+  // articles, determiners and quantifiers
+  'the this that these those some any each every either neither both all such another other others much many more most few fewer less least ' +
+  'several enough own same one ones two first ' +
+  // pronouns
+  'you your yours yourself yourselves him his himself she her hers herself its itself they them their theirs themselves our ours ourselves ' +
+  'mine myself who whom whose whoever what whatever which whichever anyone anybody anything someone somebody something everyone everybody ' +
+  'everything nobody nothing none y\'all yall ' +
+  // prepositions
+  'for with from into onto upon about above across after against along among around before behind below beneath beside besides between ' +
+  'beyond down during except inside near off out outside over past per since through throughout till until toward towards under underneath ' +
+  'unlike via within without than like ' +
+  // conjunctions and question words
+  'and but nor yet because cos cuz coz bcos although though tho unless whereas whether while whilst however therefore thus hence otherwise ' +
+  'instead also then else once when whenever where wherever why how ' +
+  // auxiliaries and the most generic verbs
+  'are was were been being has have had having does did doing done can cannot could will would shall should may might must ought ' +
+  'get gets getting got gotten going goes gone went come comes coming came make makes making made take takes taking took taken give gives ' +
+  'giving gave given say says saying said tell tells telling told know knows knew think thinking thought want wants wanted need needs ' +
+  'needed see sees seeing saw seen look looks looking looked use uses used using put puts let find ' +
+  'gonna wanna gotta kinda sorta dunno lemme gimme tryna imma coulda woulda shoulda ' +
+  // contractions; the Set also gets each one without its apostrophe ("dont", "im", "thats")
+  'i\'m i\'ve i\'ll i\'d you\'re you\'ve you\'ll you\'d he\'s he\'ll he\'d she\'s she\'ll she\'d it\'s it\'ll it\'d we\'re we\'ve we\'ll we\'d ' +
+  'they\'re they\'ve they\'ll they\'d that\'s that\'ll that\'d there\'s there\'ll there\'d here\'s what\'s what\'ll what\'d who\'s who\'ll ' +
+  'who\'d where\'s when\'s why\'s how\'s how\'d let\'s isn\'t aren\'t wasn\'t weren\'t hasn\'t haven\'t hadn\'t doesn\'t don\'t didn\'t ' +
+  'won\'t wouldn\'t can\'t couldn\'t shan\'t shouldn\'t mustn\'t mightn\'t needn\'t ain\'t could\'ve would\'ve should\'ve might\'ve must\'ve ' +
+  // adverbs and fillers
+  'not just very really too still even ever never always again already almost only quite rather now here there well back maybe actually ' +
+  'literally yes yeah yea yep yup nope nah okay alright sure right good long new time day way part people thing things ' +
+  // leftovers from links typed without http
+  'www com http https').split(' '));
+// Typed without the apostrophe these are still grammar words. Skipped where that spells a real word: hell, shell, shed, wed.
+for (const word of [...STOP]) if (word.includes('\'') && !/^(?:he'll|she'll|she'd|we'd)$/.test(word)) STOP.add(word.replace('\'', ''));
+// One key per word: phones type ’ where exports from a keyboard have ', and "mum’s" counts with "mum".
+const wordKey = word => word.replace(/’/g, '\'').replace(/'s$/, '');
+// Instagram writes reactions and attachments as message text. They still count as messages, but not as words.
+const NOTICE = /^(?:reacted .{1,16} to your message|liked a message|.{0,80} sent an attachment\.?)\s*$/i;
 
 class ChatError extends Error {}
 
@@ -866,7 +902,10 @@ function computeStats(all, year, localTime = false) {
     }
     const tokens = plain.toLowerCase().match(WORD) || [];
     p.words += tokens.length;
-    for (const w of tokens) if (w.length > 2 && w.length < 31 && !STOP.has(w)) bump(words, w);
+    if (!NOTICE.test(plain)) for (const token of tokens) {
+      const w = wordKey(token);
+      if (w.length > 2 && w.length < 31 && !STOP.has(w)) bump(words, w);
+    }
     if (plain.includes('?')) p.q++;
     const letters = plain.replace(/[^\p{L}]/gu, '');
     if (letters.length > 3 && letters === letters.toUpperCase() && letters !== letters.toLowerCase()) p.caps++;
@@ -1532,13 +1571,14 @@ const $ = id => document.getElementById(id);
 const canvas = Object.assign(document.createElement('canvas'), { width: W, height: H });
 const stripView = $('cards');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const state = { chat: null, names: new Map(), group: '', cards: [], highlights: null, prediction: null, job: 0, sent: 0, index: -1 };
+const state = { chat: null, names: new Map(), group: '', year: 0, cards: [], highlights: null, prediction: null, job: 0, sent: 0, index: -1 };
 const viewedCards = new Set();
 let nameTimer;
 let drag = null;
 let settle = null;
 let requestedIndex = null;
 let edgeCard = null;
+let nudgeTimer;
 let galleryFlight = null;
 let galleryExit = [];
 const warmedImages = new WeakSet();
@@ -1640,6 +1680,53 @@ function activate(index) {
   for (const i of [index - 1, index, index + 1]) warmCard(i);
 }
 
+// The strip scrolls sideways. Each card is placed by its distance from the centre, so the one leaving tips away
+// like a dealt card and the next one waits underneath with its edge showing.
+function layoutDeck(left = stripView.scrollLeft) {
+  const width = stripView.clientWidth;
+  if (!width) return;
+  const position = left / width;
+  const cardWidth = stripView.firstElementChild?.firstElementChild.offsetWidth || width;
+  const travel = Math.max(0, width - 16 - .03 * cardWidth);
+  const count = stripView.children.length;
+  Array.from(stripView.children).forEach((slide, i) => {
+    const item = slide.firstElementChild;
+    const d = clamp(i - position, -1, 2);
+    let transform = '', opacity = '', origin = '';
+    if (d && !reducedMotion.matches && !slide.classList.contains('slide--offer')) {
+      if (d < 0) {
+        transform = `rotate(${(5 * d).toFixed(2)}deg)`;
+        origin = '50% 100%';
+      } else {
+        const near = Math.min(d, 1);
+        transform = `translateX(${(-near * travel).toFixed(1)}px) scale(${(1 - .06 * near).toFixed(4)})`;
+        opacity = (d > 1 ? .7 * (2 - d) : 1 - .3 * d).toFixed(3);
+      }
+    }
+    const key = transform + opacity + width;
+    if (item.deckKey === key) return;
+    item.deckKey = key;
+    slide.style.zIndex = d > 0 ? count - i : count + 1; // the card in hand on top, the rest stacked in order beneath
+    Object.assign(item.style, { transform, opacity, transformOrigin: origin });
+  });
+}
+
+// One small pull on the first card shows that the deck moves. Any touch or key cancels it.
+function nudge() {
+  const width = stripView.clientWidth;
+  if (reducedMotion.matches || state.index !== 0 || drag || settle || lastSlide() < 1 || !width || $('viewer').hidden || $('prediction').open) return;
+  stripView.classList.add('settling');
+  const started = performance.now();
+  function step(now) {
+    const t = clamp((now - started) / 760, 0, 1);
+    stripView.scrollLeft = .17 * width * Math.sin(Math.PI * t) ** 2;
+    layoutDeck();
+    if (t < 1) settle.frame = requestAnimationFrame(step);
+    else { cancelSettle(); continueNavigation(); }
+  }
+  settle = { index: 0, nudge: true, frame: requestAnimationFrame(step) };
+}
+
 function cancelSettle() {
   if (!settle) return;
   cancelAnimationFrame(settle.frame);
@@ -1672,6 +1759,7 @@ function settleTo(index, smooth = true, velocity = 0) {
   if (!smooth || reducedMotion.matches || Math.abs(distance) < 1) {
     cancelSettle();
     stripView.scrollTo({ left: target, behavior: 'instant' });
+    layoutDeck();
     activate(index);
     return;
   }
@@ -1685,6 +1773,7 @@ function settleTo(index, smooth = true, velocity = 0) {
     const t = clamp((now - started) / duration, 0, 1);
     const eased = t * t * (3 - 2 * t) + slope * t * (1 - t) ** 2;
     stripView.scrollLeft = start + distance * eased;
+    layoutDeck();
     if (t < 1) {
       settle.frame = requestAnimationFrame(step);
     } else {
@@ -1697,6 +1786,7 @@ function settleTo(index, smooth = true, velocity = 0) {
 }
 
 stripView.addEventListener('scroll', () => {
+  layoutDeck();
   if (!stripView.clientWidth || drag || settle) return;
   const position = stripView.scrollLeft / stripView.clientWidth;
   const index = Math.round(position);
@@ -1720,6 +1810,7 @@ function continueNavigation() {
 
 function moveBy(delta) {
   if (state.index < 0) return;
+  if (settle?.nudge) cancelSettle();
   requestedIndex = clamp((requestedIndex ?? settle?.index ?? state.index) + delta, 0, lastSlide());
   continueNavigation();
 }
@@ -1728,6 +1819,7 @@ $('prev').addEventListener('click', () => moveBy(-1));
 $('next').addEventListener('click', () => moveBy(1));
 $('viewer').addEventListener('keydown', event => {
   if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  clearTimeout(nudgeTimer);
   event.preventDefault();
   if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') moveBy(event.key === 'ArrowLeft' ? -1 : 1);
   else go(event.key === 'Home' ? 0 : lastSlide());
@@ -1745,6 +1837,8 @@ new ResizeObserver(() => {
 // Horizontal drags follow the pointer. Vertical touch gestures still scroll the page.
 stripView.addEventListener('pointerdown', event => {
   if (drag || event.isPrimary === false || event.button !== 0 || event.target.closest('button, a')) return;
+  clearTimeout(nudgeTimer);
+  if (settle?.nudge) cancelSettle();
   endGalleryFlight();
   const now = performance.now();
   drag = { id: event.pointerId, start: event.clientX, startY: event.clientY, startedAt: now,
@@ -1776,9 +1870,10 @@ stripView.addEventListener('pointermove', event => {
     drag.lastAt = now;
     drag.lastX = event.clientX;
   }
-  const position = drag.scroll - clamp(delta * .88, -width, width);
+  const position = drag.scroll - clamp(delta, -width, width); // the card stays under the finger
   const bounded = clamp(position, 0, lastSlide() * width);
   stripView.scrollLeft = bounded;
+  layoutDeck();
   const overshoot = bounded - position;
   if (overshoot && !reducedMotion.matches) {
     const image = stripView.children[Math.round(bounded / width)]?.querySelector('img');
@@ -1801,12 +1896,13 @@ function finishDrag(event) {
   const { moved, target, startY, startedAt } = drag;
   drag = null;
   if (moved) {
-    go(index, true, event.type === 'pointerup' ? -.88 * velocity : 0);
+    go(index, true, event.type === 'pointerup' ? -velocity : 0);
   } else if (!settle && event.type === 'pointerup' && event.target === target &&
-    target === stripView.children[state.index]?.firstElementChild &&
+    (target === stripView.children[state.index] || target === stripView.children[state.index]?.firstElementChild) &&
     Math.hypot(delta, event.clientY - startY) < 8 && performance.now() - startedAt < 450) {
-    const rect = target.getBoundingClientRect();
-    moveBy(event.clientX < rect.left + rect.width / 2 ? -1 : 1);
+    // Story layout: the left third goes back, the rest goes on, because forward is the tap people make most.
+    const rect = stripView.getBoundingClientRect();
+    moveBy(event.clientX < rect.left + rect.width / 3 ? -1 : 1);
   }
   stripView.classList.remove('dragging');
   if (edgeCard) {
@@ -2011,6 +2107,7 @@ function openPrediction() {
 }
 
 function mountStory(cards, highlights, recap) {
+  clearTimeout(nudgeTimer);
   requestedIndex = null;
   cancelSettle();
   endGalleryFlight();
@@ -2039,6 +2136,7 @@ function mountStory(cards, highlights, recap) {
   stripView.replaceChildren(...slides);
   $('progress').replaceChildren(...slides.map(() => document.createElement('span')));
   go(0, false);
+  layoutDeck();
 }
 
 function disposeCards(cards) {
@@ -2076,6 +2174,7 @@ async function render(uploadStartedAt = null) {
   const cards = [];
   $('send').disabled = $('save').disabled = true;
   $('sendNote').textContent = fromUpload ? '' : 'Updating your cards…';
+  $('viewer').classList.toggle('updating', !fromUpload);
   try {
     if (fromUpload) {
       loading('counting', 'Counting messages and finding the highlights…', 28);
@@ -2083,7 +2182,7 @@ async function render(uploadStartedAt = null) {
     }
     if (job !== state.job) return;
     const group = state.group;
-    const year = +$('year').value;
+    const year = state.year;
     const names = new Map(state.names);
     const recap = recapFor(state.chat, year, group, name => names.get(name) || name);
     const draft = [...recap.cards, recap.highlights];
@@ -2137,13 +2236,15 @@ async function render(uploadStartedAt = null) {
           { duration: 430, easing: storyEase }
         );
       }
+      nudgeTimer = setTimeout(nudge, 1500);
     }
   } catch (error) {
     if (job !== state.job) return;
     if (fromUpload) throw error;
-    $('sendNote').textContent = 'Couldn’t update the cards. Try changing the date range or names again.';
+    $('sendNote').textContent = 'Couldn’t update the cards. Try another year or change the names again.';
     $('send').disabled = $('save').disabled = !state.cards.length;
   } finally {
+    if (job === state.job) $('viewer').classList.remove('updating');
     if (state.cards !== cards) disposeCards(cards);
   }
 }
@@ -2221,8 +2322,17 @@ function setupChat(chat, group) {
   Object.assign(state, { chat, group, names: new Map() });
   const years = [...new Set(chat.messages.map(message => messageYear(message, chat.localTime)))].sort((a, b) => b - a);
   const now = new Date().getFullYear();
-  $('year').replaceChildren(...years.map(year => new Option(year, year)), new Option('All time', 0));
-  $('year').value = years.includes(now) ? now : years[0];
+  state.year = years.includes(now) ? now : years[0];
+  // One visible chip per year. A chat inside a single year has nothing to choose, so it keeps its title instead.
+  $('years').replaceChildren(...[0, ...years].map(year => {
+    const chip = document.createElement('label');
+    const input = Object.assign(document.createElement('input'), { type: 'radio', name: 'year', value: year, className: 'vh', checked: year === state.year });
+    chip.className = 'year';
+    chip.append(input, Object.assign(document.createElement('span'), { textContent: year || 'All time' }));
+    return chip;
+  }));
+  $('years').hidden = years.length < 2;
+  $('groupTitle').classList.toggle('vh', years.length > 1);
   $('nameList').replaceChildren(
     nameField('name-group', 'Chat name', group, value => { state.group = value; }),
     ...[...new Set(chat.messages.map(message => message.a))].sort((a, b) => a.localeCompare(b)).map((name, i) =>
@@ -2236,6 +2346,7 @@ function setupChat(chat, group) {
 function goHome() {
   state.job++;
   clearTimeout(nameTimer);
+  clearTimeout(nudgeTimer);
   galleryTrigger = null;
   requestedIndex = null;
   instagramArchive = null;
@@ -2413,7 +2524,9 @@ $('threadSelect').addEventListener('change', () => {
   $('threadError').hidden = true;
 });
 $('openThread').addEventListener('click', chooseInstagramThread);
-$('year').addEventListener('change', () => {
+$('years').addEventListener('change', event => {
+  state.year = +event.target.value;
+  event.target.parentElement.scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth', block: 'nearest', inline: 'center' });
   clearTimeout(nameTimer);
   render();
 });
@@ -2561,7 +2674,7 @@ async function prepareEmailRecap() {
   $('prepareEmailRecap').disabled = true;
   $('skipEmailRecap').hidden = true;
   const { chat, group, names } = state;
-  const recap = recapFor(chat, +$('year').value, group, name => names.get(name) || name, 'full');
+  const recap = recapFor(chat, state.year, group, name => names.get(name) || name, 'full');
   const cards = [...recap.cards, recap.highlights];
   try {
     deliveryNote('Preparing your recap images…');
