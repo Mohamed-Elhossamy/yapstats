@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-llDXBQ1c6opkT+ek3FfJJNO7iWeHqC9HfUU9ILS9rKw='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UhB7M3nh/Mr3DB4NdU0mqc1vb+KhB7OQarZbEY5HcA8='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
+<meta name="description" content="Turn your WhatsApp chats, Instagram DMs and TikTok group chats into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
 <meta property="og:title" content="Yapstats: who really runs the group chat?">
-<meta property="og:description" content="Turn a WhatsApp or Instagram chat export into recap cards for your group. Start free. Your chat stays on your device.">
+<meta property="og:description" content="Turn a WhatsApp, Instagram or TikTok chat export into recap cards for your group. Start free. Your chat stays on your device.">
 <meta property="og:image" content="https://yapstats.tech/og.png">
 <meta property="og:url" content="https://yapstats.tech/">
 <meta property="og:type" content="website">
@@ -126,7 +126,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .howto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
 .panel { border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(17px, 3vw, 30px); }
 .panel h3 { font-size: 1.35rem; margin-bottom: 14px; }
-.instagram-guide { grid-column: 1 / -1; }
+.instagram-guide, .tiktok-guide { grid-column: 1 / -1; }
 .thread-picker { max-width: 610px; padding-block: 48px; }
 .thread-picker .panel { background: var(--surface); display: grid; gap: 16px; }
 .thread-picker h2 { font-size: clamp(1.7rem, 5vw, 2.5rem); text-wrap: pretty; }
@@ -550,7 +550,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg>
             Upload chat export
           </label>
-          <p class="file-note">WhatsApp or Instagram. No export yet? <a href="#export-guide">See how to get one</a>.</p>
+          <p class="file-note">WhatsApp, Instagram or TikTok. No export yet? <a href="#export-guide">See how to get one</a>.</p>
         </div>
         <p class="error" id="error" role="alert" hidden></p>
         <p class="in-app" id="inApp" hidden></p>
@@ -614,6 +614,16 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <li>When it’s ready, download the ZIP and open it here. To recap just one file, open its <b>message_1.json</b> instead.</li>
           </ol>
         </div>
+        <div class="panel tiktok-guide">
+          <h3>TikTok group chats and DMs</h3>
+          <ol>
+            <li>In TikTok, tap <b>Profile</b>, then the <b>Menu</b> button, then <b>Settings and privacy</b>.</li>
+            <li>Tap <b>Account</b>, then <b>Download your data</b>.</li>
+            <li>Choose what to include (make sure messages are included), set the file format to <b>JSON</b> and tap <b>Request data</b>.</li>
+            <li>TikTok says the file can take a few days. When it’s ready, open <b>Download your data</b> again, tap <b>Download data</b>, then <b>Download</b>. You have 4 days to get it.</li>
+            <li>Open the downloaded file here and pick the chat you want.</li>
+          </ol>
+        </div>
       </div>
       <p class="note guide-links">Stuck? Read the full guide for <a href="/export-whatsapp-chat/">WhatsApp</a> or <a href="/export-instagram-messages/">Instagram</a>.</p>
     </section>
@@ -629,7 +639,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   </section>
   <section class="wrap thread-picker" id="threads" hidden>
     <div class="panel">
-      <h2 id="threadTitle" tabindex="-1">Choose an Instagram chat</h2>
+      <h2 id="threadTitle" tabindex="-1">Choose a chat</h2>
       <p class="note">Your export contains multiple conversations. Pick the one you want to recap.</p>
       <div class="field">
         <label for="threadFilter">Find a conversation</label>
@@ -733,7 +743,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   </section>
 </main>
 <footer class="wrap foot">
-  <p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
+  <p>Not affiliated with, endorsed by or connected to WhatsApp, Meta or TikTok.</p>
   <p>Your browser reads your chat export on this device. Email delivery uploads only the finished cards.</p>
   <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><button class="app-only restore" id="appRestore" type="button">Restore purchase</button><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
 </footer>
@@ -972,7 +982,7 @@ function instagramPart(raw, messages) {
   let data;
   try { data = JSON.parse(raw); } catch { /* report a friendly error below */ }
   if (!Array.isArray(data?.messages)) {
-    throw new ChatError('This is not an Instagram messages JSON. Export Messages in JSON format or choose a message_1.json from the chat folder.');
+    throw new ChatError('This JSON is not a chat export. For Instagram, choose a message_1.json from the chat folder. For TikTok, choose the data file you downloaded.');
   }
   for (const item of data.messages) {
     const t = item?.timestamp_ms;
@@ -1020,6 +1030,60 @@ function instagramThreads(entries) {
   return result;
 }
 
+// TikTok's data download is one JSON file. Each chat is a list of { Date, From, Content } under a key such as
+// "Chat History with name:" (one person) or "Group Chat with name:" (a group). The sections around those keys have
+// been renamed between exports, so the chats are found by key wherever they sit. Dates are UTC.
+// Source: open-source readers of real exports (see docs/TIKTOK_IMPORT.md). Not yet checked against a real export here.
+const TT_CHAT = /^(chat history|group chat) with (.*?):?\s*$/i;
+const TT_SECTION = /^(?:direct messages?|profile|(?:your )?activity|app settings|ads and data|comments?|video|tiktok (?:live|shopping))$/i;
+
+function tiktokThreads(data) {
+  const threads = [];
+  (function walk(node, depth, grouped) {
+    if (!node || typeof node !== 'object' || Array.isArray(node) || depth > 6) return;
+    for (const [key, value] of Object.entries(node)) {
+      const match = TT_CHAT.exec(key);
+      if (!match || !Array.isArray(value)) walk(value, depth + 1, grouped || /group ?chat/i.test(key));
+      else if (value.length) threads.push({ name: match[2].replace(MARKS, '').trim() || 'TikTok chat', group: grouped || /group/i.test(match[1]), rows: value });
+    }
+  })(data, 0, false);
+  // Group chats first, then the busiest chats: this is where people look for theirs.
+  threads.sort((a, b) => b.group - a.group || b.rows.length - a.rows.length);
+  for (const thread of threads) thread.label = `${thread.name} (${thread.group ? 'group, ' : ''}${count(thread.rows.length, 'message')})`;
+  return threads;
+}
+
+function finishTiktok(thread) {
+  const messages = [];
+  for (const row of thread.rows) {
+    const date = /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)/.exec(row?.Date ?? row?.date ?? '');
+    const a = String(row?.From ?? row?.from ?? '').replace(MARKS, '').trim();
+    if (!date || !a) continue;
+    const t = Date.UTC(+date[1], date[2] - 1, +date[3], +date[4], +date[5], +date[6]);
+    const text = String(row.Content ?? row.content ?? '').replace(MARKS, '').trim();
+    // A message that is only a link is a shared video: it counts as a message, not as words.
+    messages.push(!text || /^https?:\/\/\S+$/i.test(text) ? { t, a, type: 'media', text: '' } : { t, a, type: 'text', text });
+  }
+  if (!messages.length) throw new ChatError('No messages found in this TikTok chat. Pick another chat or request the data again.');
+  messages.sort((a, b) => a.t - b.t);
+  return { chat: { messages, localTime: true }, group: thread.name };
+}
+
+// Returns the chat (or the list of chats to pick from) if this JSON is a TikTok data file, otherwise null.
+function tiktokExport(raw) {
+  let data;
+  try { data = JSON.parse(raw); } catch { return null; }
+  if (!data || typeof data !== 'object' || Array.isArray(data.messages)) return null;
+  const threads = tiktokThreads(data);
+  if (threads.length) return threads.length === 1 ? finishTiktok(threads[0]) : { threads, openThread: finishTiktok, source: 'TikTok' };
+  if (Object.keys(data).some(key => TT_SECTION.test(key))) {
+    throw new ChatError('This TikTok data file has no chats in it. Request your data again and make sure messages are included.');
+  }
+  return null;
+}
+
+const TIKTOK_TXT = 'This TikTok export is in TXT format. Request your data again and choose JSON as the file format.';
+
 async function readChatExport(file) {
   const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
   const zip = head[0] === 0x50 && head[1] === 0x4b;
@@ -1027,8 +1091,11 @@ async function readChatExport(file) {
     throw new ChatError('This chat is too large. Export a shorter date range and try again.');
   }
   if (!zip && /\.json$/i.test(file.name)) {
+    const text = await file.text();
+    const tiktok = tiktokExport(text);
+    if (tiktok) return tiktok;
     const messages = [];
-    const title = instagramPart(await file.text(), messages);
+    const title = instagramPart(text, messages);
     return finishInstagram(messages.reverse(), title);
   }
   let raw;
@@ -1057,19 +1124,29 @@ async function readChatExport(file) {
       }
       return threads.length === 1 ? openThread(threads[0]) : { threads, openThread };
     }
+    const json = entries.filter(entry => /\.json$/i.test(entry.name) && !/(?:^|\/)(?:__MACOSX\/|\._)/.test(entry.name));
+    const dataFile = json.find(entry => /(?:^|\/)user_data[^/]*\.json$/i.test(entry.name)) || (json.length === 1 ? json[0] : null);
+    if (dataFile) {
+      const tiktok = tiktokExport(await readZipText(file, dataFile, dirAt));
+      if (tiktok) return tiktok;
+    }
+    if (entries.some(entry => /(?:^|\/)(?:direct messages?|chat history|group chats?)\.txt$/i.test(entry.name))) throw new ChatError(TIKTOK_TXT);
     if (entries.some(entry => /(?:^|\/)message(?:_\d+)?\.html$/i.test(entry.name))) {
       throw new ChatError('This Instagram export is HTML. Request another export with Messages and JSON selected.');
     }
     const txt = entries.find(entry => /(?:^|\/)_chat\.txt$/i.test(entry.name)) ||
       entries.find(entry => /\.txt$/i.test(entry.name));
-    if (!txt) throw new ChatError('No chat files found. Export a WhatsApp chat without media, or select Messages and JSON for Instagram.');
+    if (!txt) throw new ChatError('No chat files found. Export a WhatsApp chat without media, select Messages and JSON for Instagram, or choose JSON for TikTok.');
     raw = await readZipText(file, txt, dirAt);
   } else {
-    if (/\.html?$/i.test(file.name)) throw new ChatError('Choose an Instagram JSON export or a WhatsApp TXT or ZIP file.');
+    if (/\.html?$/i.test(file.name)) throw new ChatError('Choose a WhatsApp TXT or ZIP file, or an Instagram or TikTok JSON export.');
     raw = await file.text();
   }
   const chat = parseChat(raw);
-  if (!chat.messages.length) throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram JSON or ZIP export.');
+  if (!chat.messages.length) {
+    if (/^(?:>>> ?)?(?:chat history|group chat) with .+:\s*$/im.test(raw.slice(0, 50_000))) throw new ChatError(TIKTOK_TXT);
+    throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram or TikTok JSON or ZIP export.');
+  }
   return { chat, group: groupFromFile(file.name) };
 }
 
@@ -2734,7 +2811,7 @@ async function importChat(read, recover) {
   screen('loading');
   scrollTo(0, 0);
   $('loadingTitle').focus({ preventScroll: true });
-  loading('reading', recover ? 'Reading your Instagram chat…' : 'Reading your export…', 10);
+  loading('reading', recover ? 'Reading your chat…' : 'Reading your export…', 10);
   try {
     await afterPaint();
     if (job !== state.job) return;
@@ -2743,6 +2820,7 @@ async function importChat(read, recover) {
     $('file').value = '';
     if (result.threads) {
       instagramArchive = result;
+      $('threadTitle').textContent = `Choose ${result.source === 'TikTok' ? 'a TikTok' : 'an Instagram'} chat`;
       $('threadFilter').value = '';
       $('threadSelect').value = '';
       $('threadError').hidden = true;

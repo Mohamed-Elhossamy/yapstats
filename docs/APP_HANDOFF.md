@@ -4,7 +4,7 @@ Written 26 Nov 2026 at the end of the web polish session. Read this first, then 
 
 ## Goal
 
-Ship Yapstats as a real app on the App Store and Google Play, at the same quality bar as the site. TikTok chat import comes after the app. Snapchat import is rejected (its export only holds saved messages, so recaps would be near-empty).
+Ship Yapstats as a real app on the App Store and Google Play, at the same quality bar as the site. TikTok chat import was added on 26 Nov 2026 (see docs/TIKTOK_IMPORT.md; not yet checked against a real export). Snapchat import is rejected (its export only holds saved messages, so recaps would be near-empty).
 
 ## What exists today
 

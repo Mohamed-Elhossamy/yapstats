@@ -18,7 +18,7 @@ Written 26 Nov 2026. Scope is iOS only. Status of the code is in `app/README.md`
 - Works offline. iPhone only, portrait, iOS 16.4 or later.
 - No "WhatsApp", "Wrapped" or other brand in the name, icon, subtitle or keywords.
 
-**Left out of v1:** email delivery (Save to Photos replaces it), Android, TikTok import, iPad-specific layout.
+**Left out of v1:** email delivery (Save to Photos replaces it), Android, iPad-specific layout. (TikTok import was added later: docs/TIKTOK_IMPORT.md.)
 
 ## Components
 
