@@ -38,6 +38,7 @@ assert.deepEqual(await page.evaluate(() => [!document.getElementById('intro'), d
 ok('the startup animation ends and the home screen fits with no scrolling either way');
 await page.setInputFiles('#file', join(work, 'flat7-chat.txt'));
 await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
+assert.match(await page.getAttribute('.loader-art span:last-child', 'data-count'), /^[1-9][\d,]*$/); ok('the loading screen counted the messages on its front card');
 
 const cdp = await context.newCDPSession(page);
 const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });

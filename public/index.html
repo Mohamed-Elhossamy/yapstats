@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-nE3eSvhwZr3modRBqpcS3eHPUjcNHD0bQ+xWXxKMZ2Y='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-z/MJV6YB7HbMQ2wtNNboAzT0Iw9tAdQjHsoLQjsmcGM='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -436,8 +436,89 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .pack--slide .pack-buy { width: 100%; justify-content: center; min-height: 56px; margin-top: 4px; border: 0; border-radius: 20px; font-size: 1.04rem; box-shadow: 0 4px 0 #b08f00, 0 10px 26px #ffd92e4d; }
 .is-app .pack--slide .pack-note { color: #b6b8c4; }
 .is-app .pack--slide :focus-visible { outline-color: #ffd92e; }
+/* App loading screen and startup cards: three small versions of the real cards instead of blank tiles. While a chat loads,
+   the front card counts the messages read, the list card writes its rows and the chart card's bars move. */
+.is-app .loading { position: relative; min-height: calc(100svh - 150px); }
+.is-app .loading::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(72% 42% at 50% 36%, color-mix(in srgb, #ffd92e 22%, transparent), transparent 72%); animation: load-glow 1500ms ease-in-out infinite alternate; }
+@keyframes load-glow { from { opacity: .4; } to { opacity: 1; } }
+.is-app .loading-inner { position: relative; gap: 12px; }
+.is-app .loader-art { width: 270px; height: 236px; margin-bottom: 14px; }
+.is-app .loader-art span, .is-app .intro i {
+  --paper: #fffbf1; --tone: #ffd92e; --soft: #fff0a9; --mark: #17171c; --faint: #17171c59;
+  width: 96px; height: 171px; border: 0; border-radius: 15px; background-color: var(--paper); background-repeat: no-repeat;
+  box-shadow: 5px 6px 0 #000a, 0 0 28px color-mix(in srgb, var(--tone) 50%, transparent);
+}
+.is-app .intro i { position: relative; aspect-ratio: auto; }
+.is-app .loader-art span { animation: sample-float 3.6s ease-in-out infinite; }
+.is-app .loader-art span:nth-child(2) { animation-duration: 4.3s; animation-delay: -1.4s; }
+.is-app .loader-art span:last-child { animation-duration: 3.1s; animation-delay: -.7s; }
+.is-app .loader-art span::before, .is-app .loader-art span::after, .is-app .intro i::before, .is-app .intro i::after { content: none; }
+/* Messages sent: yellow block with the count. */
+.is-app .loader-art span:last-child, .is-app .intro i:nth-of-type(1) {
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--soft) 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--faint) 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 9px 42px, 11px 44px, 9px 104px, 50px 104px, 9px 138px, 9px 151px, 9px 158px;
+  background-size: 9px 9px, 28px 3px, 54px 7px, 78px 52px, 78px 52px, 37px 24px, 37px 24px, 62px 5px, 78px 1px, 34px 3px;
+}
+.is-app .loader-art span:last-child::before, .is-app .intro i:nth-of-type(1)::before { content: attr(data-count); position: absolute; left: 16px; top: 51px; color: #17171c; font-size: 21px; font-weight: 850; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.is-app .loader-art span:last-child[data-count]::after, .is-app .intro i:nth-of-type(1)::after { content: "messages read"; position: absolute; left: 16px; top: 76px; width: auto; height: auto; margin: 0; background: none; color: #17171c; font-size: 8px; font-weight: 750; line-height: 1; }
+.is-app .intro i:nth-of-type(1)::after { content: "messages"; }
+/* Top talkers: pink block, then the ranking written row by row. */
+.is-app .loader-art span:first-child, .is-app .intro i:nth-of-type(2) {
+  --tone: #ff8fbd; --soft: #ffd6e6;
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--tone) 0 0), linear-gradient(var(--mark) 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 16px 50px, 16px 62px, 9px 42px, 11px 44px;
+  background-size: 9px 9px, 28px 3px, 48px 7px, 30px 5px, 46px 11px, 78px 38px, 78px 38px;
+}
+.is-app .loader-art span:first-child::before, .is-app .intro i:nth-of-type(2)::before {
+  content: ""; position: absolute; left: 9px; top: 92px; width: 78px; height: 62px; background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0);
+  background-position: 0 0, 14px 2px, 60px 2px, 0 16px, 14px 18px, 62px 18px, 0 32px, 14px 34px, 64px 34px, 0 48px, 14px 50px, 66px 50px;
+  background-size: 9px 9px, 34px 5px, 18px 5px, 9px 9px, 26px 5px, 16px 5px, 9px 9px, 38px 5px, 14px 5px, 9px 9px, 22px 5px, 12px 5px;
+}
+.is-app .loader-art span:first-child::before { animation: load-rows 2400ms steps(4, end) infinite; }
+@keyframes load-rows { 0% { clip-path: inset(0 0 100% 0); } 55%, 100% { clip-path: inset(0 0 0 0); } }
+/* Busiest hour: the dark card, blue block and a bar chart. */
+.is-app .loader-art span:nth-child(2), .is-app .intro i:nth-of-type(3) {
+  --paper: #1d1d27; --tone: #74c5ff; --soft: #d8edff; --faint: #ffffff66;
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(#f4f4f6 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--tone) 0 0), linear-gradient(#000 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(#ffffff24 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 16px 50px, 16px 65px, 9px 42px, 11px 44px, 9px 90px, 9px 146px;
+  background-size: 9px 9px, 28px 3px, 56px 7px, 46px 10px, 30px 4px, 78px 38px, 78px 38px, 78px 50px, 78px 16px;
+}
+.is-app .loader-art span:nth-child(2)::before, .is-app .intro i:nth-of-type(3)::before {
+  content: ""; position: absolute; left: 16px; top: 96px; width: 64px; height: 38px; background-repeat: no-repeat;
+  background-image: linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0);
+  background-position: 0 100%, 11px 100%, 22px 100%, 33px 100%, 44px 100%, 55px 100%;
+  background-size: 7px 9px, 7px 16px, 7px 12px, 7px 24px, 7px 36px, 7px 19px;
+}
+.is-app .loader-art span:nth-child(2)::before { animation: load-bars 900ms ease-in-out infinite alternate; }
+@keyframes load-bars { to { background-size: 7px 22px, 7px 8px, 7px 30px, 7px 13px, 7px 20px, 7px 34px; } }
+.is-app .loader-art span:first-child { --x: -14px; --angle: -7deg; }
+.is-app .loader-art span:nth-child(2) { --x: 14px; --angle: 7deg; }
+.is-app .loader-art span:last-child { --y: -6px; }
+.is-app .loading[data-phase="counting"] .loader-art span:first-child { --x: -46px; --y: 8px; --angle: -13deg; }
+.is-app .loading[data-phase="counting"] .loader-art span:nth-child(2) { --x: 46px; --y: 8px; --angle: 13deg; }
+.is-app .loading[data-phase="building"] .loader-art span:first-child { --x: -84px; --y: 16px; --angle: -19deg; }
+.is-app .loading[data-phase="building"] .loader-art span:nth-child(2) { --x: 84px; --y: 16px; --angle: 19deg; }
+.is-app .loading[data-phase="ready"] .loader-art span:first-child { --x: -76px; --y: 8px; --angle: -14deg; }
+.is-app .loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 76px; --y: 8px; --angle: 14deg; }
+.is-app .load-track { height: 10px; box-shadow: 0 0 22px #ffd92e40; }
+.is-app .load-track span { background: linear-gradient(90deg, #ffd92e, #ff7eb6); }
 @media (prefers-reduced-motion: reduce) {
   .is-app .intro { display: none; }
+  .is-app .loading::before, .is-app .loader-art span, .is-app .loader-art span::before { animation: none !important; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .loading[data-phase="building"] .loader-art span:last-child { animation: none; }
   .sample:focus-visible img, .sample:hover img, .sample[aria-pressed=true] img, .gallery-open:hover img { transform: none; }
@@ -445,7 +526,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 </style>
 </head>
 <body>
-<div class="app-only intro" id="intro" aria-hidden="true"><span class="intro-logo"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4zM8 10v2m4-3v4m4-3v2"/></svg></span><i></i><i></i><i></i><b>Yapstats</b></div>
+<div class="app-only intro" id="intro" aria-hidden="true"><span class="intro-logo"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4zM8 10v2m4-3v4m4-3v2"/></svg></span><i data-count="4,179"></i><i></i><i></i><b>Yapstats</b></div>
 <header class="wrap top" id="top">
   <a class="top-link" id="exportLink" href="#export-guide">How to export</a>
   <a class="brand" id="brand" href="./" aria-label="Yapstats home">
@@ -2341,9 +2422,27 @@ function setLoadingProgress(progress) {
 }
 
 function loading(phase, message, progress) {
+  const changed = $('loading').getAttribute('data-phase') !== phase;
   $('loading').setAttribute('data-phase', phase);
   $('loadingStatus').textContent = message;
   setLoadingProgress(progress);
+  if (IN_APP && changed) loadingBeat(phase);
+}
+
+// App loading screen: a tap for each phase, and the front card counts up to the number of messages read.
+function loadingBeat(phase) {
+  toApp({ type: phase === 'ready' ? 'success' : 'tick' });
+  const card = document.querySelector('.loader-art span:last-child');
+  if (phase === 'reading') card.removeAttribute('data-count');
+  if (phase !== 'counting' || !state.chat) return;
+  const total = state.chat.messages.length;
+  const started = performance.now();
+  const step = now => {
+    const t = reducedMotion.matches ? 1 : Math.min(1, (now - started) / 1000);
+    card.dataset.count = Math.round(total * (1 - (1 - t) ** 3)).toLocaleString('en-GB');
+    if (t < 1 && !$('loading').hidden) requestAnimationFrame(step);
+  };
+  step(started);
 }
 
 function screen(id) {
