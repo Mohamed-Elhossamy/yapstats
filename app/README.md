@@ -18,17 +18,30 @@ node test/handoff.check.mjs   # 5 browser checks of the import hand-off (needs P
 
 Then open `ios/App/App.xcodeproj` in Xcode, choose your iPhone and press Run. Xcode downloads the Capacitor package the first time.
 
+## App mode
+
+`public/index.html` adds the class `is-app` to `<html>` when it runs inside the shell (`IN_APP`). That one flag gives the app its own layout on the same cards and colours:
+
+- **Home:** one screen. Short pitch, sample cards, one large button low on the screen, the price in one line. The export guide opens as its own screen.
+- **Story:** no header and no arrow buttons (they stay for VoiceOver). Progress bar, a "Swipe" cue on the first card, tap zones, a haptic tick per card.
+- **Unlock slide:** the last slide, card-sized, dark with a lit border. Its button sends `{ type: 'buy' }` to the native side, which does nothing yet.
+- **Off in the app:** web checkout, unlock link, tip link, email delivery, Save buttons (the share sheet has Save Image), Android steps.
+
+Do not name the flag class `in-app`: that class already styles the in-app-browser notice and shrinks the whole page.
+
 ## Status, 26 Nov 2026
 
 Tested on an iPhone 16 Pro (iOS 27.2.1, Xcode 27.2, free Personal Team signing), driven through iPhone Mirroring with a synthetic export:
 
-- The Swift code compiles and the app launches. The landing page renders in dark mode, clear of the status bar.
-- **Share-sheet import works.** Files > long-press a `.zip` > Share > Yapstats opens a 12-card recap with year chips.
+- Builds and launches. Home fills the screen in dark mode without scrolling.
+- **Share-sheet import works.** Files > long-press a `.zip` > Share > Yapstats opens a 12-card recap.
+- **The file picker works** ("Choose a chat export").
+- **Story:** taps move one card at a time through all 12 cards, the highlights and the unlock slide.
 - **Share this card works.** `navigator.share` opens the system share sheet with the PNG, including Save Image.
 
-Not tested yet: WhatsApp's own "Export chat" sheet (Mohamed tests real chats himself), Save Image and the Photos prompt, "Save this card", the sub-pages, the Instagram picker, the guess game, the gallery, light mode, a cold start from the share sheet, VoiceOver.
+Not tested yet: a real finger swipe and the haptics (mirroring cannot show them), WhatsApp's own "Export chat" sheet, Save Image and the Photos prompt, the sub-pages, the Instagram picker, the guess game, the gallery, light mode on the device, a cold start from the share sheet, VoiceOver, smaller iPhones.
 
-Known gaps: the status-bar strip is black while the page is dark grey; the app icon and launch screen are Capacitor defaults; the web checkout, unlock code and tip link are still present.
+Known gaps: the unlock button does nothing until the StoreKit step; the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
 
-- The working Xcode project is at `~/Downloads/Yapstats-iOS` on his Mac (connected folder). Its `project.pbxproj` also holds his signing team; this repo's copy does not.
+- The working Xcode project is at `~/Downloads/Yapstats-iOS` on his Mac (connected folder). Its `project.pbxproj` also holds his signing team; this repo's copy does not. After writing a file there, compare checksums: a staged file can lag by a few seconds.
 - Changes go on the `ios-app` branch. A push to `main` deploys the website.

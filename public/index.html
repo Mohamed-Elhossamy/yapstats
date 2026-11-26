@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UH5z1iy8t8zzOYRA+TH/dD/hodkXmTpJX5lxZfobmDM='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-lfSTaLf21czXYvu4jdbcCsvy/zTd9V1t78/Ji9Px/FI='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -293,6 +293,85 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   .howto { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* iPhone app (html.is-app, set by the script when the page runs inside the app shell).
+   Same cards and colours as the website; the layout becomes a one-screen home and a full-height story,
+   and browser habits (text selection, link arrows, the long scrolling page) are switched off. */
+.app-only { display: none; }
+.is-app .app-only { display: block; }
+.is-app { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+.is-app body { overscroll-behavior: none; }
+.is-app input { -webkit-user-select: text; user-select: text; }
+.is-app .btn { transition: scale 130ms var(--ease), background-color 160ms var(--ease); }
+.is-app .btn:active { scale: .965; }
+.is-app .top { border-bottom: 0; }
+.is-app #landing > .band, .is-app .hero-offer, .is-app .checkout-link, .is-app #tipLink, .is-app #saveCard, .is-app #save,
+.is-app .lede:not(.app-only), .is-app .foot p:nth-child(2) { display: none; }
+.is-app .hero { gap: 12px; padding-block: 4px 10px; }
+.is-app .hero h1 { font-size: clamp(2.3rem, 11.5vw, 3.5rem); }
+.is-app .fan { order: 1; width: min(80%, 350px, 41svh); margin-block: 4px 0; }
+.is-app .actions, .is-app .error { order: 2; }
+.is-app .actions { justify-content: center; text-align: center; gap: 8px; }
+.is-app .actions .btn { width: 100%; min-height: 60px; font-size: 1.08rem; }
+.is-app .app-offer, .is-app .unlocked { order: 3; }
+.is-app .app-offer { text-align: center; color: var(--muted); font-size: .86rem; text-wrap: balance; }
+.is-app .app-offer strong, .is-app .app-offer .offer-price { color: var(--text); font-weight: 750; }
+.is-app .foot { border-top: 0; justify-items: center; gap: 2px; text-align: center; font-size: .72rem; line-height: 1.35; padding-block: 2px 8px; }
+.is-app .foot-links a[href*="export"] { display: none; } /* the guide opens from How to export */
+.is-app .foot-links a { padding-block: 4px; }
+.is-app .foot-links { justify-content: center; }
+.is-app.guide-open .hero, .is-app.guide-open .foot { display: none; }
+.is-app .howto .panel:nth-child(2), .is-app:has(#landing[hidden]) .foot { display: none; } /* no Android steps on an iPhone; the footer belongs to the home screen */
+.is-app.guide-open #export-guide { display: block; border-top: 0; padding-top: 6px; }
+.is-app #landing:not([hidden]) .hero > *, .is-app #landing:not([hidden]) .hero-copy > * { animation: app-rise 560ms var(--ease) both; }
+.is-app #landing .hero-copy > .lede { animation-delay: 70ms; }
+.is-app #landing .hero > .fan { animation-delay: 150ms; }
+.is-app #landing .hero-copy > .actions { animation-delay: 240ms; }
+.is-app #landing .hero-copy > .app-offer { animation-delay: 320ms; }
+.is-app #landing .actions .btn.primary { animation: cta-glow 1500ms 1100ms ease-out 2; }
+.is-app .brand-icon { animation: app-pop 640ms cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes app-rise { from { opacity: 0; translate: 0 16px; scale: .985; } }
+@keyframes app-pop { from { opacity: 0; scale: .4; rotate: -14deg; } }
+@keyframes cta-glow { from { box-shadow: 0 0 0 0 #ffd92e99; } to { box-shadow: 0 0 0 18px #ffd92e00; } }
+/* Story: no arrow buttons to look at. They stay in the page for VoiceOver; taps and swipes do the moving. */
+.is-app:has(#landing[hidden]) .top { display: none; } /* in the story the cards carry the name; the screen is theirs */
+.is-app .result { --story-chrome: 262px; padding-block: 8px 10px; }
+.is-app .result > .pack, .is-app .pack-cue { display: none; } /* the offer is the last slide of the story */
+.is-app .progress { width: 100%; gap: 4px; margin-bottom: 10px; }
+.is-app .progress span { height: 3px; }
+.is-app .story-nav { display: block; position: relative; }
+.is-app .story-nav .arrow { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
+.is-app .slide .card { box-shadow: 0 14px 38px var(--shadow); }
+.is-app .slide:not([aria-hidden]) .card { animation: app-card 380ms var(--ease) both; }
+@keyframes app-card { from { opacity: .55; scale: .962; } }
+.is-app .story-count.swipe-cue { color: var(--text); font-size: .98rem; font-weight: 800; letter-spacing: .01em; animation: swipe-cue 1150ms var(--ease) infinite; }
+@keyframes swipe-cue { 50% { translate: -12px 0; } }
+.is-app .story-tools { gap: 8px; padding: 0; border: 0; background: transparent; }
+.is-app .story-tools .btn { min-height: 52px; border-radius: 999px; font-size: .9rem; }
+.is-app .story-tools .btn:not(.story-guess) { background: var(--surface); }
+.is-app .result-actions .btn { min-height: 52px; border-radius: 999px; }
+.is-app .result-actions { flex-wrap: nowrap; margin-top: 6px; }
+.is-app .result-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }
+.is-app .result-actions .btn.primary { flex: 1.35 1 0; }
+/* The paid slide: dark, lit from the corners, with one slow sweep of light. Loud enough to notice, shown once. */
+/* Same size and place as a card, so the story does not jump when it arrives. */
+.is-app .pack--slide { display: flex; flex-direction: column; gap: 10px; width: min(100% - 10px, 395px, max(118px, calc((100svh - var(--story-chrome)) * .5625))); aspect-ratio: 9 / 16; min-height: 0; margin: 0 auto; padding: 20px 20px 18px; }
+.is-app .pack--slide .pack-art { flex: 1 1 0; width: min(100%, 250px); min-height: 0; margin: 0 auto; }
+.is-app .pack--slide .pack-ticket { width: 50%; max-width: 132px; color: #17171c; }
+.is-app .pack--slide .pack-copy { flex: 0 0 auto; }
+.is-app .pack--slide { border: 0; border-radius: 26px; color: #fff; overflow: hidden;
+  background: radial-gradient(120% 80% at 88% 0%, #ffd92e3d, transparent 60%), radial-gradient(95% 70% at 0% 100%, #74c5ff30, transparent 62%), #17171c;
+  box-shadow: 0 0 0 1.5px #ffd92e, 0 0 38px #ffd92e42, 0 18px 44px #000a; }
+.is-app .pack--slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; translate: -125% 0; background: linear-gradient(105deg, transparent 38%, #ffffff2b 50%, transparent 62%); }
+.is-app .slide:not([aria-hidden]) .pack--slide::after { animation: pack-shine 2400ms 450ms var(--ease) 2; }
+@keyframes pack-shine { to { translate: 125% 0; } }
+.is-app .pack--slide .pack-label { width: fit-content; padding: 5px 10px; border-radius: 999px; background: var(--accent); color: #17171c; }
+.is-app .pack--slide h3 { width: fit-content; color: #ffd92e; background: linear-gradient(90deg, #fff 10%, #ffd92e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.is-app .pack--slide .pack-details { color: #ececf1; font-size: .95rem; }
+.is-app .pack--slide .pack-buy { width: 100%; justify-content: center; min-height: 56px; margin-top: 4px; border: 0; border-radius: 999px; background: var(--accent); color: #17171c; font-size: 1.04rem; box-shadow: 0 6px 24px #ffd92e59; }
+.is-app .pack--slide .pack-buy:active { scale: .97; }
+.is-app .pack--slide .pack-note { color: #b6b8c4; }
+.is-app .pack--slide :focus-visible { outline-color: #ffd92e; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .loading[data-phase="building"] .loader-art span:last-child { animation: none; }
@@ -312,6 +391,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     <section class="wrap hero" id="hero">
       <div class="hero-copy">
         <h1>Who really runs the <mark>group chat?</mark></h1>
+        <p class="lede app-only">Drop in a chat export. Get cards about your group that you can share.</p>
         <p class="lede">Find the biggest yapper, the midnight regular and the emoji your group has worn out. Turn the results into cards and drop the receipts back in the chat.</p>
         <div class="actions">
           <input class="vh" type="file" id="file" accept=".zip,.txt,.json">
@@ -332,6 +412,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
           <p role="status" id="deliveryReturnText">Checking your Polar purchase…</p>
           <a id="deliveryDownload" hidden>Download your recap ZIP</a>
         </div>
+        <p class="app-only app-offer" id="appOffer">Your recap is free. The <strong>full recap</strong>, with a personal card for everyone, is <span class="offer-price">£2.99</span> once. No subscription.</p>
         <p class="unlocked" id="unlocked" role="status" hidden>Full recap unlocked on this device. Go back to your recap, or upload a chat here.</p>
       </div>
       <div class="fan" id="fan" aria-label="Sample Yapstats cards"></div>
@@ -353,6 +434,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     </section>
     <section class="wrap band" id="export-guide">
       <h2>How to get your chat export</h2>
+      <p class="lede app-only">Quickest way: in WhatsApp, open the chat, tap its name, then Export chat, then Without media, and pick Yapstats.</p>
       <div class="howto">
         <div class="panel">
           <h3>WhatsApp on iPhone</h3>
@@ -500,6 +582,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 <footer class="wrap foot">
   <p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
   <p>Your browser reads your chat export on this device. Email delivery uploads only the finished cards.</p>
+  <p class="app-only">Your chat is read on this iPhone and is never uploaded.</p>
   <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
 </footer>
 <script>(() => {
@@ -1072,8 +1155,12 @@ const PACK_PEOPLE = 40; // personal cards are drawn for the 40 biggest talkers, 
 
 // shortcut: the unlock is a code in the link the payment page sends buyers back to, remembered in this browser.
 // Anyone who reads this file can find it. Move to a checked licence key if shared links ever cost real money.
+// Inside the iPhone app the page runs in the app's web view. Apple sells the unlock there, so the web
+// checkout, the unlock link and the tip link are off; the app's native side is reached through toApp().
+const IN_APP = Boolean(globalThis.Capacitor?.isNativePlatform?.());
+const toApp = message => globalThis.webkit?.messageHandlers?.yapstats?.postMessage(message);
 let packOwned = false;
-try { packOwned = localStorage.getItem(PACK_KEY) === UNLOCK_CODE; } catch { /* storage blocked: the unlock lasts for this visit */ }
+if (!IN_APP) try { packOwned = localStorage.getItem(PACK_KEY) === UNLOCK_CODE; } catch { /* storage blocked: the unlock lasts for this visit */ }
 // 'none': nothing is for sale. 'sample': the top talker's personal card is shown free. 'full': everything.
 const packMode = () => !CHECKOUT_URL ? 'none' : packOwned ? 'full' : 'sample';
 
@@ -1645,6 +1732,7 @@ function activate(index) {
     previous.inert = true;
   }
   state.index = index;
+  if (IN_APP && previous) toApp({ type: 'tick' });
   const slide = stripView.children[index];
   slide.removeAttribute('aria-hidden');
   slide.inert = false;
@@ -1656,7 +1744,10 @@ function activate(index) {
   const card = currentCard();
   const numberedViews = state.cards.reduce((total, _, i) => total + Number(viewedCards.has(i)), 0);
   const allViewed = numberedViews === state.cards.length;
-  $('storyCount').textContent = isOffer ? 'Full recap' : isHighlights
+  // In the app there are no arrow buttons, so the first card says how to move until the reader has moved once.
+  const swipeCue = IN_APP && index === 0 && viewedCards.size === 1;
+  $('storyCount').classList.toggle('swipe-cue', swipeCue);
+  $('storyCount').textContent = swipeCue ? '‹‹  Swipe' : isOffer ? 'Full recap' : isHighlights
     ? 'Chat highlights'
     : `${index + 1} of ${state.cards.length} — ${card.title}`;
   $('prev').disabled = index === 0;
@@ -2182,6 +2273,7 @@ function loading(phase, message, progress) {
 
 function screen(id) {
   for (const view of ['landing', 'loading', 'threads', 'result']) $(view).hidden = view !== id;
+  if (IN_APP && id !== 'landing') showGuide(false);
   $('exportLink').style.visibility = id === 'landing' ? '' : 'hidden';
 }
 
@@ -2302,6 +2394,14 @@ function fillPackOffer(container, { locked, people, rankings }) {
   }
   tickets[2].textContent = personal.length ? 'Your own card' : 'Group chat awards';
   const buy = container.querySelector('.pack-buy');
+  if (IN_APP) {
+    buy.setAttribute('role', 'button');
+    buy.tabIndex = 0;
+    buy.addEventListener('click', () => toApp({ type: 'buy' }));
+    buy.append(`Unlock full recap · ${PACK_PRICE}`);
+    container.querySelector('.pack-note').textContent = 'One-off purchase through Apple. No subscription. Your chat stays on this iPhone.';
+    return;
+  }
   buy.href = CHECKOUT_URL;
   buy.addEventListener('click', event => {
     if (!emailDeliveryEnabled || !state.chat || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -2601,7 +2701,24 @@ window.addEventListener('drop', event => {
   take(event.dataTransfer.files[0]);
 });
 
-if (TIP_URL) {
+// App only: the export guide opens as its own screen instead of a section further down the page.
+function showGuide(open) {
+  document.documentElement.classList.toggle('guide-open', open);
+  $('exportLink').textContent = open ? 'Back' : 'How to export';
+}
+if (IN_APP) {
+  document.documentElement.classList.add('is-app'); // not 'in-app': that class styles the in-app-browser notice
+  $('file').labels[0].lastChild.textContent = ' Choose a chat export ';
+  for (const link of document.querySelectorAll('a[href="#export-guide"]')) {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      showGuide(!document.documentElement.classList.contains('guide-open'));
+      scrollTo(0, 0);
+    });
+  }
+}
+
+if (TIP_URL && !IN_APP) {
   $('tipLink').href = TIP_URL;
   $('tipLink').hidden = false;
 }
@@ -2609,14 +2726,14 @@ if (CHECKOUT_URL) {
   for (const link of document.querySelectorAll('.checkout-link')) link.href = CHECKOUT_URL;
   for (const price of document.querySelectorAll('.offer-price')) price.textContent = PACK_PRICE;
   // The payment page sends buyers back with the code after ? or #. Either works, whatever else it adds to the link.
-  if (location.hash === `#unlock=${UNLOCK_CODE}` || new URLSearchParams(location.search).get('unlock') === UNLOCK_CODE) {
+  if (!IN_APP && (location.hash === `#unlock=${UNLOCK_CODE}` || new URLSearchParams(location.search).get('unlock') === UNLOCK_CODE)) {
     packOwned = true;
     try { localStorage.setItem(PACK_KEY, UNLOCK_CODE); } catch { /* storage blocked: the unlock lasts for this visit */ }
     history.replaceState(null, '', location.pathname);
     $('unlocked').hidden = false;
   }
   // The payment page opens in a new tab. When it comes back unlocked, redraw the recap that is still open here.
-  window.addEventListener('storage', event => {
+  if (!IN_APP) window.addEventListener('storage', event => {
     if (event.key !== PACK_KEY || event.newValue !== UNLOCK_CODE || packOwned) return;
     packOwned = true;
     syncLandingOffer();
@@ -2764,7 +2881,7 @@ for (const link of document.querySelectorAll('.checkout-link')) {
   });
 }
 
-if (location.protocol !== 'file:') {
+if (location.protocol !== 'file:' && !IN_APP) {
   fetch(emailApi + 'available').then(response => response.ok ? response.json() : {}).then(({ enabled }) => {
     emailDeliveryEnabled = enabled === true && typeof $('emailRecap').showModal === 'function';
     if (emailDeliveryEnabled) {

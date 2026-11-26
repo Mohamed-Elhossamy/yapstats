@@ -65,6 +65,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 /// The app's web view. Same as Capacitor's, except that sub-pages get their own files.
 final class YapstatsViewController: CAPBridgeViewController {
     override func router() -> Router { FolderRouter() }
+
+    override func capacitorDidLoad() {
+        // Same colour as the launch screen and the page, so launch, status bar and overscroll never flash.
+        let background = UIColor(named: "LaunchBackground") ?? .systemBackground
+        view.backgroundColor = background
+        webView?.isOpaque = false
+        webView?.backgroundColor = background
+        webView?.scrollView.backgroundColor = background
+        // The page reaches native features with window.webkit.messageHandlers.yapstats.postMessage({ type }).
+        webView?.configuration.userContentController.add(self, name: "yapstats")
+    }
+}
+
+extension YapstatsViewController: WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.frameInfo.isMainFrame,
+              let body = message.body as? [String: Any],
+              let type = body["type"] as? String else { return }
+        switch type {
+        case "tick": UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        case "success": UINotificationFeedbackGenerator().notificationOccurred(.success)
+        default: break // "buy" arrives with the in-app purchase step
+        }
+    }
 }
 
 /// Capacitor treats every path without a file extension as a single-page-app route and serves the
