@@ -11,7 +11,7 @@
   },
   "vars": {
     "SITE_ORIGIN": "https://yapstats.tech",
-    "RECAP_EMAIL_ENABLED": "false",
+    "RECAP_EMAIL_ENABLED": "true",
     "EMAIL_FROM": "Yapstats <recaps@send.yapstats.tech>",
     "POLAR_PRODUCT_ID": "841fbefd-ac86-43e7-b15d-353606206595"
   },

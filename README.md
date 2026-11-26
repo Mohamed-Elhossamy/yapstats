@@ -25,6 +25,6 @@ npx wrangler dev           # serves public/ and the worker
 node --test test/          # run the tests
 ```
 
-Secrets (`POLAR_ACCESS_TOKEN`, `RESEND_API_KEY`) are set as Cloudflare Worker secrets and are never stored in this repo. Email delivery is off by default (`RECAP_EMAIL_ENABLED = "false"`). See [docs/EMAIL_DELIVERY.md](docs/EMAIL_DELIVERY.md) for setup.
+Secrets (`POLAR_ACCESS_TOKEN`, `RESEND_API_KEY`) are set as Cloudflare Worker secrets and are never stored in this repo. Email delivery is switched by `RECAP_EMAIL_ENABLED` in `wrangler.jsonc` (`"true"` in production; set it to `"false"` to turn delivery off). See [docs/EMAIL_DELIVERY.md](docs/EMAIL_DELIVERY.md) for setup.
 
 Not affiliated with, endorsed by or connected to WhatsApp, Instagram or Meta.
