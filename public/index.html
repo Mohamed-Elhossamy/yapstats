@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-8PJ7pwFYiwmvONn6nz5FKFNCHlijt597XpvE+C0SDuU='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-KjJUVYi9m9JyGgESUyG4SF4p7F1mYkzqb/v23s1bs8w='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -126,7 +126,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .howto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 26px; }
 .panel { border: 1px solid var(--line); border-radius: var(--radius); padding: clamp(17px, 3vw, 30px); }
 .panel h3 { font-size: 1.35rem; margin-bottom: 14px; }
-.instagram-guide { grid-column: 1 / -1; }
+.instagram-guide, .tiktok-guide { grid-column: 1 / -1; }
 .thread-picker { max-width: 610px; padding-block: 48px; }
 .thread-picker .panel { background: var(--surface); display: grid; gap: 16px; }
 .thread-picker h2 { font-size: clamp(1.7rem, 5vw, 2.5rem); text-wrap: pretty; }
@@ -176,18 +176,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .loader-art { position: relative; display: grid; place-items: center; width: 172px; height: 126px; margin-bottom: 8px; animation: loader-appear 420ms var(--ease) both; }
 @keyframes loader-appear { from { opacity: 0; scale: .94; } to { opacity: 1; scale: 1; } }
 .loader-art span { position: absolute; width: 54px; height: 88px; border: 1px solid #17171c35; border-radius: 11px; background: var(--card-color, var(--accent)); box-shadow: 0 6px 14px var(--shadow); transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--angle, 0deg)); transition: transform 630ms var(--ease); }
-.loader-art span::after { content: ""; display: block; width: 46%; height: 4px; margin: 13px 9px; border-radius: 3px; background: #17171c55; }
-.loader-art span:first-child { --card-color: #ff8fbd; --x: -8px; --angle: -8deg; }
-.loader-art span:nth-child(2) { --card-color: #74c5ff; --x: 8px; --angle: 8deg; }
-.loader-art span:last-child { --y: -5px; }
-.loading[data-phase="counting"] .loader-art span:first-child { --x: -23px; --y: 4px; --angle: -17deg; }
-.loading[data-phase="counting"] .loader-art span:nth-child(2) { --x: 23px; --y: 4px; --angle: 17deg; }
-.loading[data-phase="building"] .loader-art span:first-child { --x: -44px; --y: 12px; --angle: -24deg; }
-.loading[data-phase="building"] .loader-art span:nth-child(2) { --x: 44px; --y: 12px; --angle: 24deg; }
 .loading[data-phase="building"] .loader-art span:last-child { animation: loader-pulse 840ms ease-in-out infinite alternate; }
 @keyframes loader-pulse { from { transform: translateY(-8px) scale(1.02); } to { transform: translateY(-15px) scale(1.08); } }
-.loading[data-phase="ready"] .loader-art span:first-child { --x: -39px; --y: 5px; --angle: -16deg; }
-.loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 39px; --y: 5px; --angle: 16deg; }
 .loading[data-phase="ready"] .loader-art span:last-child { transform: translateY(-12px) scale(1.1); }
 .load-track { width: 100%; height: 7px; overflow: hidden; border-radius: 99px; background: var(--line); margin-top: 6px; }
 .load-track .reset, .load-track .reset::before { transition: none !important; }
@@ -225,7 +215,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .progress span.seen { background: #d9a500; }
 .progress span.current { background: var(--action); }
 @media (prefers-color-scheme: dark) { .progress span.seen { background: var(--accent); } .progress span.current { background: var(--text); } }
-.cards { display: flex; isolation: isolate; transition: opacity 180ms var(--ease); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
+/* overflow-x is hidden, not auto: the script moves the strip. A scrollable strip lets iOS start its own pan on a fast flick, which cancels the pointer and leaves the deck out of step with the cards. */
+.cards { display: flex; isolation: isolate; transition: opacity 180ms var(--ease); overflow-x: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; touch-action: pan-y pinch-zoom; border-radius: 18px; }
 .cards::-webkit-scrollbar { display: none; }
 .cards.dragging, .cards.settling { scroll-snap-type: none; }
 .cards.dragging { cursor: grabbing; user-select: none; }
@@ -255,6 +246,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .result-actions { flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .result-actions .btn { font-size: .84rem; }
 #sendNote { margin-top: 9px; text-align: center; }
+.is-app #sendNote:empty { display: none; }
 .gallery-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
 .gallery-top h3 { font-size: 1.6rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr)); gap: 12px; }
@@ -294,7 +286,258 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   .howto { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* iPhone app (html.is-app, set by the script when the page runs inside the app shell).
+   Same cards and colours as the website; the layout becomes a one-screen home and a full-height story,
+   and browser habits (text selection, link arrows, the long scrolling page) are switched off. */
+.app-only { display: none; }
+.is-app .app-only { display: block; }
+.is-app { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+.is-app body { overscroll-behavior: none; }
+#landing { overflow-x: clip; } /* tilted, floating sample cards may reach past the screen edge; they must not make the page wider */
+.is-app input { -webkit-user-select: text; user-select: text; }
+.is-app .btn { transition: scale 130ms var(--ease), background-color 160ms var(--ease); }
+.is-app .btn:active { scale: .965; }
+.is-app .top { border-bottom: 0; }
+.is-app #landing > .band, .is-app .hero-offer, .is-app .checkout-link, .is-app #tipLink, .is-app #saveCard, .is-app #save,
+.is-app .lede:not(.app-only), .is-app .foot p:nth-child(2) { display: none; }
+.is-app .hero { gap: 11px; padding-block: 20px 4px; }
+.is-app .hero h1 { font-size: clamp(2.3rem, 11.5vw, 3.5rem); }
+/* The samples take whatever height is left once everything else on the home screen has its room (--home-rest), so the
+   screen never scrolls. Shorter iPhones drop the description line, then tighten the spacing. */
+.is-app { --home-rest: 494px; }
+.is-app.short { --home-rest: 496px; }
+.is-app.tiny { --home-rest: 420px; }
+.is-app.tiny .buy-full small { font-size: .68rem; }
+.is-app.short .lede-text { display: none; }
+.sample-link { display: inline; cursor: pointer; padding: 4px 0; border: 0; background: none; color: var(--text); font: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: .22em; }
+.is-app.tiny .top { min-height: 42px; }
+.is-app.tiny .hero { gap: 8px; padding-block: 8px 2px; }
+.is-app.tiny .hero h1 { font-size: 2.2rem; }
+.is-app.tiny .fan { margin-block: 12px 8px; }
+.is-app .fan { order: 1; width: min(84%, 372px, calc((var(--app-h, 100svh) - var(--home-rest)) * 1.1)); margin-block: 20px 12px; } /* room above and below: the samples grow and float, and must not sit on the title or the button */
+.is-app .actions, .is-app .error { order: 2; }
+.is-app .actions { justify-content: center; text-align: center; gap: 8px; }
+.is-app .actions .btn { width: 100%; min-height: 60px; font-size: 1.08rem; }
+.is-app .buy-full, .is-app .unlocked { order: 3; }
+.is-app .lede.app-only { order: 4; max-width: none; margin-top: 2px; text-align: center; font-size: .78rem; color: var(--muted); }
+.is-app .buy-full { display: grid; gap: 1px; width: 100%; min-height: 54px; padding: 8px 16px; border: 1.5px solid var(--accent); border-radius: 18px; background: color-mix(in srgb, var(--accent) 9%, transparent); font-size: .98rem; }
+.is-app .buy-full small { color: var(--muted); font-size: .74rem; font-weight: 560; }
+.is-app .buy-full[hidden], .is-app .buy-status[hidden] { display: none; }
+.is-app .buy-status { order: 3; text-align: center; font-size: .82rem; font-weight: 650; }
+.is-app .unlocked { max-width: none; padding: 9px 14px; border: 1.5px solid var(--accent); background: none; color: inherit; text-align: center; font-size: .9rem; } /* a quiet confirmation: the yellow stays with the one main button */
+.is-app .unlocked::before { content: '✓ '; color: var(--accent); font-weight: 800; }
+.is-app .restore { display: inline; padding: 5px 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: .22em; }
+.is-app .pack--slide .restore { align-self: center; margin-top: 2px; color: #b6b8c4; font-size: .74rem; }
+.is-app [aria-busy=true] { opacity: .6; pointer-events: none; }
+.is-app .foot { border-top: 0; justify-items: center; gap: 0; text-align: center; font-size: .62rem; line-height: 1.3; padding-block: 0 4px; opacity: .78; }
+.is-app .foot-links a[href*="export"] { display: none; } /* the guide opens from How to export */
+.is-app .foot-links { gap: 0 14px; } .is-app .foot-links a { padding-block: 5px; }
+.is-app .foot-links { justify-content: center; }
+.is-app.guide-open .hero, .is-app.guide-open .foot { display: none; }
+.is-app .howto .panel:nth-child(2), .is-app:has(#landing[hidden]) .foot { display: none; } /* no Android steps on an iPhone; the footer belongs to the home screen */
+.is-app.guide-open #export-guide { display: block; border-top: 0; padding-top: 6px; }
+#landing:not([hidden]) .hero > *, #landing:not([hidden]) .hero-copy > * { animation: app-rise 560ms var(--intro, 0ms) var(--ease) both; }
+#landing .hero > .fan { animation-delay: calc(var(--intro, 0ms) + 90ms); }
+#landing .hero-copy > .actions { animation-delay: calc(var(--intro, 0ms) + 200ms); }
+.is-app #landing .hero-copy > .buy-full { animation-delay: calc(var(--intro, 0ms) + 290ms); }
+.is-app #landing .hero-copy > .lede { animation-delay: calc(var(--intro, 0ms) + 360ms); }
+.is-app #landing .actions .btn.primary { animation: cta-glow 1900ms 900ms ease-out infinite; }
+.brand-icon { animation: app-pop 640ms cubic-bezier(.34,1.56,.64,1) both; }
+@keyframes app-rise { from { opacity: 0; translate: 0 16px; scale: .985; } }
+@keyframes app-pop { from { opacity: 0; scale: .4; rotate: -14deg; } }
+@keyframes cta-glow { 0% { box-shadow: 0 4px 0 var(--edge), 0 0 0 0 #ffd92e99, 0 0 22px #ffd92e55; } 70%, 100% { box-shadow: 0 4px 0 var(--edge), 0 0 0 16px #ffd92e00, 0 0 22px #ffd92e55; } }
+/* Startup: the logo lands, its three bars become the three cards, and the cards are where the home screen's samples wait. About 1.3s, once per launch. */
+.is-app .intro { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: var(--ink); pointer-events: none; animation: intro-out 360ms 1300ms var(--ease) forwards; }
+.intro > * { grid-area: 1 / 1; }
+.intro-logo { z-index: 2; display: grid; place-items: center; width: 104px; aspect-ratio: 1; border-radius: 28px; background: var(--accent); color: var(--on-accent); animation: intro-logo 1300ms var(--ease) both; }
+.intro-logo .icon { width: 62px; height: 62px; stroke-width: 2.1; }
+.intro i { width: 96px; aspect-ratio: 9 / 16; border-radius: 15px; box-shadow: 5px 6px 0 #000a; animation: intro-card 820ms 470ms cubic-bezier(.34,1.4,.64,1) both; }
+.intro i:nth-of-type(1) { --x: -84px; --r: -16deg; background: #ffd92e; }
+.intro i:nth-of-type(2) { --x: 0px; --r: -3deg; z-index: 1; background: #ff9ec7; animation-delay: 530ms; }
+.intro i:nth-of-type(3) { --x: 84px; --r: 15deg; background: #74c5ff; animation-delay: 590ms; }
+.intro b { align-self: end; margin-bottom: 20svh; font-size: 1.6rem; font-weight: 850; letter-spacing: -.055em; animation: app-rise 480ms 260ms var(--ease) both; }
+@keyframes intro-logo { 0% { opacity: 0; scale: .2; rotate: -24deg; } 24% { opacity: 1; scale: 1.1; rotate: 4deg; } 36%, 46% { opacity: 1; scale: 1; rotate: 0deg; translate: 0 0; } 74%, 100% { opacity: 0; scale: .5; translate: 0 -34px; } }
+@keyframes intro-card { 0% { opacity: 0; scale: .25; } 100% { opacity: 1; scale: 1; translate: var(--x) 6px; rotate: var(--r); } }
+@keyframes intro-out { to { opacity: 0; visibility: hidden; } }
+/* Story: no arrow buttons to look at. They stay in the page for VoiceOver; taps and swipes do the moving. */
+.is-app:has(#landing[hidden]) .top { display: none; } /* in the story the cards carry the name; the screen is theirs */
+.is-app .result { --story-chrome: calc(100svh - var(--app-h, 100svh) + 166px + var(--story-extra, 0px)); padding-block: 8px 10px; } /* cards get the real screen height minus the top bar, bars and buttons */
+.is-app .back-home { display: inline-flex; flex: none; width: 44px; min-height: 44px; padding: 0; border-radius: 50%; background: var(--surface-raised); border-color: transparent; }
+.is-app .result > .pack, .is-app .pack-cue { display: none; } /* the offer is the last slide of the story */
+.is-app { --action: var(--accent); --on-action: var(--on-accent); }
+/* Progress you can feel: the bar is thicker and lit, each new segment pops, and a glow behind the cards warms from yellow to pink as --p (0 to 1, set by the script) rises. */
+.is-app .progress { width: 100%; gap: 4px; margin-bottom: 11px; }
+.is-app .progress span { height: 5px; border-radius: 6px; }
+.is-app .progress span.seen { background: var(--accent); box-shadow: 0 0 9px color-mix(in srgb, var(--accent) 55%, transparent); }
+.is-app .progress span.current { background: var(--text); box-shadow: 0 0 12px color-mix(in srgb, var(--text) 60%, transparent); }
+.progress span.current { animation: seg-pop 520ms var(--ease) both; transform-origin: left center; }
+@keyframes seg-pop { 0% { scale: .2 1; } 55% { scale: 1 2.1; } 100% { scale: 1 1; } }
+.is-app .result { --glow: color-mix(in oklab, #ffd92e, #ff7eb6 calc(var(--p, 0) * 100%)); }
+.is-app .result::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: calc(.1 + var(--p, 0) * .5); transition: opacity 500ms var(--ease);
+  background: radial-gradient(95% 50% at 50% 0%, var(--glow), transparent 72%), radial-gradient(95% 46% at 50% 100%, var(--glow), transparent 72%);
+  box-shadow: inset 0 0 calc(26px + var(--p, 0) * 120px) var(--glow); }
+.viewer { position: relative; isolation: isolate; }
+.viewer::before { content: ""; position: absolute; z-index: -1; inset: 6% -6% 16%; border-radius: 50%; pointer-events: none; filter: blur(34px);
+  background: color-mix(in oklab, #ffd92e, #ff7eb6 calc(var(--p, 0) * 100%)); opacity: calc(.1 + var(--p, 0) * .34); transition: opacity 500ms var(--ease), background-color 500ms var(--ease); }
+.is-app .story-count { transition: color 200ms var(--ease); }
+.is-app .story-nav { display: block; position: relative; }
+.is-app .story-nav .arrow { position: absolute; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); }
+.is-app .cards { touch-action: none; }
+.is-app .slide .card { box-shadow: 0 14px 38px var(--shadow); }
+.slide:not([aria-hidden]) .card { animation: app-card 420ms var(--ease); }
+@keyframes app-card { 45% { scale: 1.03; } } /* each new card swells and settles; it never shrinks or fades, so the card under it stays hidden */
+.is-app .story-tools { gap: 10px; padding: 0 0 5px; border: 0; background: transparent; }
+/* Buttons you want to press: a solid edge underneath that the button sinks into, and an icon that says what it does. */
+.is-app .story-tools .btn, .is-app .result-actions .btn, .is-app .actions .btn.primary, .is-app .buy-full, .is-app .pack--slide .pack-buy {
+  --edge: color-mix(in srgb, var(--text) 22%, var(--ink)); border-color: transparent; font-weight: 820; box-shadow: 0 4px 0 var(--edge); transition: translate 90ms var(--ease), box-shadow 90ms var(--ease); }
+.is-app .story-tools .btn:active, .is-app .result-actions .btn:active, .is-app .actions .btn.primary:active, .is-app .buy-full:active, .is-app .pack--slide .pack-buy:active { scale: 1; transform: none; translate: 0 3px; box-shadow: 0 1px 0 var(--edge); }
+.is-app .story-tools .btn { min-height: 54px; padding-inline: 8px; border-radius: 18px; font-size: clamp(.8rem, 3.6vw, .92rem); gap: 7px; }
+.is-app #savePhoto { display: inline-flex; flex: 0 0 auto; padding-inline: 13px; }
+.is-app #shareCard { flex: 0 1 auto; padding-inline: 13px; }
+.is-app #savePhoto.done { --edge: #1f7a3d; background: #2fa957; color: #fff; }
+.is-app .gallery-item a.done { color: #2fa957; font-weight: 750; text-decoration: none; }
+.is-app .toast { position: fixed; z-index: 70; left: 18px; right: 18px; bottom: 84px; width: fit-content; max-width: calc(100vw - 36px); margin: 0 auto; padding: 11px 16px; border-radius: 14px; background: var(--text); color: var(--ink); font-size: .9rem; font-weight: 700; text-align: center; box-shadow: 0 8px 26px #0006; animation: app-rise 260ms var(--ease) both; }
+.is-app .toast[hidden] { display: none; }
+.is-app .story-tools .btn:not(.story-guess) { background: var(--surface-raised); }
+.is-app .story-tools .story-guess, .is-app .story-tools:has(#guessTalker[hidden]) #shareCard, .is-app .result-actions .btn.primary, .is-app .actions .btn.primary, .is-app .pack--slide .pack-buy { --edge: #b08f00; background: var(--accent); color: var(--on-accent); }
+.is-app .buy-full { --edge: color-mix(in srgb, var(--accent) 45%, var(--ink)); border-color: var(--accent); }
+.is-app #savePhoto { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11m-4-4 4 4 4-4M5 19h14'/%3E%3C/svg%3E"); }
+.is-app #savePhoto.done { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E"); }
+.is-app #savePhoto::before, .is-app #shareCard::before, .is-app #openGallery::before, .is-app #guessTalker::before, .is-app #send::before { content: ""; flex: none; width: 19px; height: 19px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.is-app #shareCard, .is-app #send { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8'/%3E%3C/svg%3E"); }
+.is-app #openGallery { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'%3E%3Cpath d='M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z'/%3E%3C/svg%3E"); }
+.is-app #guessTalker { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8M12 17h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'/%3E%3C/svg%3E"); }
+.is-app .result-actions .btn { min-height: 54px; border-radius: 18px; background: var(--surface-raised); }
+.is-app .actions .btn.primary { border-radius: 22px; }
+/* Sample cards on the home screen: each one floats on its own beat, and the script brings one forward in turn. */
+.sample { animation: sample-float 5.2s ease-in-out infinite; }
+.sample:nth-child(2) { animation-duration: 4.4s; animation-delay: -1.3s; }
+.sample:nth-child(3) { animation-duration: 5.8s; animation-delay: -2.6s; }
+.is-app .sample:nth-child(1) { --x: -64%; --y: 1%; --r: -17deg; --lit: #ffd92e; }
+.is-app .sample:nth-child(2) { --x: 0%; --y: -5%; --r: -3deg; --lit: #ff7eb6; }
+.is-app .sample:nth-child(3) { --x: 64%; --y: 2%; --r: 16deg; --lit: #74c5ff; }
+@keyframes sample-float { 50% { translate: 0 -7px; rotate: 1.6deg; } }
+/* Each sample is a sticker with a hard shadow and its own colour of light; the one in front lifts, glows and catches a sweep of light. */
+.is-app .sample img { box-shadow: 5px 7px 0 #000b, 0 0 26px color-mix(in srgb, var(--lit) 30%, transparent); transition: transform 520ms cubic-bezier(.34,1.56,.64,1), box-shadow 400ms var(--ease); }
+.is-app .sample[aria-pressed=true] img { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); box-shadow: 7px 10px 0 #000c, 0 0 0 2px var(--lit), 0 0 44px color-mix(in srgb, var(--lit) 75%, transparent); }
+.is-app .sample:nth-child(2) img, .is-app .sample:nth-child(2)::after { transform-origin: 50% 0; } /* the middle card sits highest: it grows downwards so it never covers the title */
+.is-app .sample:nth-child(2)[aria-pressed=true] img, .is-app .sample:nth-child(2)[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); }
+.is-app .sample::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background: linear-gradient(110deg, transparent 35%, #ffffff66 50%, transparent 65%) 200% 0 / 250% 100% no-repeat; }
+.is-app .sample[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.1); animation: sample-sheen 900ms 180ms var(--ease); }
+@keyframes sample-sheen { 0% { opacity: 1; background-position: 200% 0; } 100% { opacity: 1; background-position: -100% 0; } }
+.is-app .result-actions { flex-wrap: nowrap; margin-top: 6px; }
+.is-app .result-actions .btn { flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }
+.is-app .result-actions .btn.primary { flex: 1.35 1 0; }
+/* The paid slide: dark, lit from the corners, with one slow sweep of light. Loud enough to notice, shown once. */
+/* As tall as a card and as wide as the screen allows. The gold is drawn inside the edge, because the strip clips anything outside it. */
+@property --spin { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.is-app .pack--slide { display: flex; flex-direction: column; gap: 10px; width: calc(100% - 4px); height: min(calc(100svh - var(--story-chrome)), 702px); aspect-ratio: auto; min-height: 0; margin: 0 auto; padding: 22px 22px 20px; }
+.is-app .pack--slide .pack-art { flex: 1 1 0; width: min(100%, 270px); min-height: 0; margin: 0 auto; }
+.is-app .pack--slide .pack-ticket { width: 50%; max-width: 132px; color: #17171c; }
+.is-app .pack--slide .pack-copy { flex: 0 0 auto; }
+.is-app .pack--slide { border-radius: 28px; color: #fff; overflow: hidden;
+  border: 3px solid transparent;
+  background: radial-gradient(120% 70% at 50% 0%, #ffd92e4d, transparent 62%) padding-box, radial-gradient(110% 60% at 50% 100%, #ffb3002e, transparent 65%) padding-box, linear-gradient(#17171c, #17171c) padding-box,
+    conic-gradient(from var(--spin), #ffd92e, #fff6c2 12%, #c79a00 30%, #ffd92e 50%, #fff6c2 62%, #c79a00 80%, #ffd92e) border-box;
+  box-shadow: inset 0 0 34px #ffd92e59, inset 0 0 90px #ffd92e24; animation: pack-spin 7s linear infinite; }
+@keyframes pack-spin { to { --spin: 360deg; } }
+.is-app .pack--slide::after { content: ""; position: absolute; inset: 0; pointer-events: none; translate: -125% 0; background: linear-gradient(105deg, transparent 38%, #ffffff2b 50%, transparent 62%); }
+.is-app .slide:not([aria-hidden]) .pack--slide::after { animation: pack-shine 2400ms 450ms var(--ease) 2; }
+@keyframes pack-shine { to { translate: 125% 0; } }
+.is-app .pack--slide .pack-label { width: fit-content; padding: 5px 10px; border-radius: 999px; background: var(--accent); color: #17171c; }
+.is-app .pack--slide h3 { width: fit-content; color: #ffd92e; background: linear-gradient(90deg, #fff 10%, #ffd92e); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.is-app .pack--slide .pack-details { color: #ececf1; font-size: .95rem; }
+.is-app .pack--slide .pack-buy { width: 100%; justify-content: center; min-height: 56px; margin-top: 4px; border: 0; border-radius: 20px; font-size: 1.04rem; box-shadow: 0 4px 0 #b08f00, 0 10px 26px #ffd92e4d; }
+.is-app .pack--slide .pack-note { color: #b6b8c4; }
+.is-app .pack--slide :focus-visible { outline-color: #ffd92e; }
+/* Loading screen and the app's startup cards: three small versions of the real cards instead of blank tiles. While a chat loads,
+   the front card counts the messages read, the list card writes its rows and the chart card's bars move. */
+.loading { position: relative; }
+.is-app .loading { min-height: calc(100svh - 150px); }
+.loading::before { content: ""; position: fixed; inset: 0; pointer-events: none; background: radial-gradient(72% 42% at 50% 36%, color-mix(in srgb, #ffd92e 22%, transparent), transparent 72%); animation: load-glow 1500ms ease-in-out infinite alternate; }
+@keyframes load-glow { from { opacity: .4; } to { opacity: 1; } }
+.loading-inner { position: relative; gap: 12px; }
+.loader-art { width: 270px; height: 236px; margin-bottom: 14px; }
+.loader-art span, .is-app .intro i {
+  --paper: #fffbf1; --tone: #ffd92e; --soft: #fff0a9; --mark: #17171c; --faint: #17171c59;
+  width: 96px; height: 171px; border: 0; border-radius: 15px; background-color: var(--paper); background-repeat: no-repeat;
+  box-shadow: 5px 6px 0 #000a, 0 0 28px color-mix(in srgb, var(--tone) 50%, transparent);
+}
+.is-app .intro i { position: relative; aspect-ratio: auto; }
+.loader-art span { animation: sample-float 3.6s ease-in-out infinite; }
+.loader-art span:nth-child(2) { animation-duration: 4.3s; animation-delay: -1.4s; }
+.loader-art span:last-child { animation-duration: 3.1s; animation-delay: -.7s; }
+.loader-art span::before, .loader-art span::after, .is-app .intro i::before, .is-app .intro i::after { content: none; }
+/* Messages sent: yellow block with the count. */
+.loader-art span:last-child, .is-app .intro i:nth-of-type(1) {
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--soft) 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--faint) 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 9px 42px, 11px 44px, 9px 104px, 50px 104px, 9px 138px, 9px 151px, 9px 158px;
+  background-size: 9px 9px, 28px 3px, 54px 7px, 78px 52px, 78px 52px, 37px 24px, 37px 24px, 62px 5px, 78px 1px, 34px 3px;
+}
+.loader-art span:last-child::before, .is-app .intro i:nth-of-type(1)::before { content: attr(data-count); position: absolute; left: 16px; top: 51px; color: #17171c; font-size: 21px; font-weight: 850; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.loader-art span:last-child[data-count]::after, .is-app .intro i:nth-of-type(1)::after { content: "messages read"; position: absolute; left: 16px; top: 76px; width: auto; height: auto; margin: 0; background: none; color: #17171c; font-size: 8px; font-weight: 750; line-height: 1; }
+.is-app .intro i:nth-of-type(1)::after { content: "messages"; }
+/* Top talkers: pink block, then the ranking written row by row. */
+.loader-art span:first-child, .is-app .intro i:nth-of-type(2) {
+  --tone: #ff8fbd; --soft: #ffd6e6;
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(var(--mark) 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--tone) 0 0), linear-gradient(var(--mark) 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 16px 50px, 16px 62px, 9px 42px, 11px 44px;
+  background-size: 9px 9px, 28px 3px, 48px 7px, 30px 5px, 46px 11px, 78px 38px, 78px 38px;
+}
+.loader-art span:first-child::before, .is-app .intro i:nth-of-type(2)::before {
+  content: ""; position: absolute; left: 9px; top: 92px; width: 78px; height: 62px; background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--faint) 0 0);
+  background-position: 0 0, 14px 2px, 60px 2px, 0 16px, 14px 18px, 62px 18px, 0 32px, 14px 34px, 64px 34px, 0 48px, 14px 50px, 66px 50px;
+  background-size: 9px 9px, 34px 5px, 18px 5px, 9px 9px, 26px 5px, 16px 5px, 9px 9px, 38px 5px, 14px 5px, 9px 9px, 22px 5px, 12px 5px;
+}
+.loader-art span:first-child::before { animation: load-rows 2400ms steps(4, end) infinite; }
+@keyframes load-rows { 0% { clip-path: inset(0 0 100% 0); } 55%, 100% { clip-path: inset(0 0 0 0); } }
+/* Busiest hour: the dark card, blue block and a bar chart. */
+.loader-art span:nth-child(2), .is-app .intro i:nth-of-type(3) {
+  --paper: #1d1d27; --tone: #74c5ff; --soft: #d8edff; --faint: #ffffff66;
+  background-image:
+    linear-gradient(var(--tone) 0 0), linear-gradient(var(--faint) 0 0), linear-gradient(#f4f4f6 0 0),
+    linear-gradient(var(--mark) 0 0), linear-gradient(var(--mark) 0 0), linear-gradient(var(--tone) 0 0), linear-gradient(#000 0 0),
+    linear-gradient(var(--soft) 0 0), linear-gradient(#ffffff24 0 0);
+  background-position: 9px 10px, 22px 13px, 9px 27px, 16px 50px, 16px 65px, 9px 42px, 11px 44px, 9px 90px, 9px 146px;
+  background-size: 9px 9px, 28px 3px, 56px 7px, 46px 10px, 30px 4px, 78px 38px, 78px 38px, 78px 50px, 78px 16px;
+}
+.loader-art span:nth-child(2)::before, .is-app .intro i:nth-of-type(3)::before {
+  content: ""; position: absolute; left: 16px; top: 96px; width: 64px; height: 38px; background-repeat: no-repeat;
+  background-image: linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0), linear-gradient(#17171c 0 0);
+  background-position: 0 100%, 11px 100%, 22px 100%, 33px 100%, 44px 100%, 55px 100%;
+  background-size: 7px 9px, 7px 16px, 7px 12px, 7px 24px, 7px 36px, 7px 19px;
+}
+.loader-art span:nth-child(2)::before { animation: load-bars 900ms ease-in-out infinite alternate; }
+@keyframes load-bars { to { background-size: 7px 22px, 7px 8px, 7px 30px, 7px 13px, 7px 20px, 7px 34px; } }
+.loader-art span:first-child { --x: -14px; --angle: -7deg; }
+.loader-art span:nth-child(2) { --x: 14px; --angle: 7deg; }
+.loader-art span:last-child { --y: -6px; }
+.loading[data-phase="counting"] .loader-art span:first-child { --x: -46px; --y: 8px; --angle: -13deg; }
+.loading[data-phase="counting"] .loader-art span:nth-child(2) { --x: 46px; --y: 8px; --angle: 13deg; }
+.loading[data-phase="building"] .loader-art span:first-child { --x: -84px; --y: 16px; --angle: -19deg; }
+.loading[data-phase="building"] .loader-art span:nth-child(2) { --x: 84px; --y: 16px; --angle: 19deg; }
+.loading[data-phase="ready"] .loader-art span:first-child { --x: -76px; --y: 8px; --angle: -14deg; }
+.loading[data-phase="ready"] .loader-art span:nth-child(2) { --x: 76px; --y: 8px; --angle: 14deg; }
+/* The bar uncovers one fixed yellow-to-pink strip, so the colours stay put and the tip stays round; the glow follows the filled part only. */
+.load-track { height: 10px; overflow: visible; }
+.load-track span { transform: none; background: none; filter: drop-shadow(0 0 7px #ffb84d99); }
+.loading[data-phase="ready"] .load-track span::before { transition-duration: 180ms; }
+.load-track span::before { content: ""; display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #ffd92e, #ff7eb6); clip-path: inset(0 calc((1 - var(--load, 0)) * 100%) 0 0 round 99px); transition: clip-path 380ms var(--ease); }
 @media (prefers-reduced-motion: reduce) {
+  .is-app .intro { display: none; }
+  .loading::before, .loader-art span, .loader-art span::before, .sample { animation: none !important; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   .loading[data-phase="building"] .loader-art span:last-child { animation: none; }
   .sample:focus-visible img, .sample:hover img, .sample[aria-pressed=true] img, .gallery-open:hover img { transform: none; }
@@ -302,6 +545,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 </style>
 </head>
 <body>
+<div class="app-only intro" id="intro" aria-hidden="true"><span class="intro-logo"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4zM8 10v2m4-3v4m4-3v2"/></svg></span><i data-count="4,179"></i><i></i><i></i><b>Yapstats</b></div>
+<p class="app-only toast" id="toast" role="status" hidden></p>
 <header class="wrap top" id="top">
   <a class="top-link" id="exportLink" href="#export-guide">How to export</a>
   <a class="brand" id="brand" href="./" aria-label="Yapstats home">
@@ -313,6 +558,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     <section class="wrap hero" id="hero">
       <div class="hero-copy">
         <h1>Who really runs the <mark>group chat?</mark></h1>
+        <p class="lede app-only"><span class="lede-text">Drop in a chat export. Get cards about your group that you can share. </span><button class="sample-link" id="trySample" type="button">Try a sample chat</button></p>
         <p class="lede">Find the biggest yapper, the midnight regular and the emoji your group has worn out. Turn the results into cards and drop the receipts back in the chat.</p>
         <div class="actions">
           <input class="vh" type="file" id="file" accept=".zip,.txt,.json">
@@ -320,7 +566,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg>
             Upload chat export
           </label>
-          <p class="file-note">WhatsApp or Instagram. No export yet? <a href="#export-guide">See how to get one</a>.</p>
+          <p class="file-note">WhatsApp or Instagram. No export yet? <a href="#export-guide">See how to get one</a> or <button class="sample-link" type="button">try a sample chat</button>.</p>
         </div>
         <p class="error" id="error" role="alert" hidden></p>
         <p class="in-app" id="inApp" hidden></p>
@@ -333,6 +579,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
           <p role="status" id="deliveryReturnText">Checking your Polar purchase…</p>
           <a id="deliveryDownload" hidden>Download your recap ZIP</a>
         </div>
+        <button class="btn app-only buy-full" id="appBuy" type="button"><span>Get the full recap · <span class="offer-price">£2.99</span></span><small>A personal card for everyone. One-off, no subscription.</small></button>
+        <p class="app-only buy-status" id="buyStatus" role="status" hidden></p>
         <p class="unlocked" id="unlocked" role="status" hidden>Full recap unlocked on this device. Go back to your recap, or upload a chat here.</p>
       </div>
       <div class="fan" id="fan" aria-label="Sample Yapstats cards"></div>
@@ -354,6 +602,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     </section>
     <section class="wrap band" id="export-guide">
       <h2>How to get your chat export</h2>
+      <p class="lede app-only">Quickest way: in WhatsApp, open the chat, tap its name, then Export chat, then Without media, and pick Yapstats.</p>
       <div class="howto">
         <div class="panel">
           <h3>WhatsApp on iPhone</h3>
@@ -381,6 +630,16 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <li>When it’s ready, download the ZIP and open it here. To recap just one file, open its <b>message_1.json</b> instead.</li>
           </ol>
         </div>
+        <div class="panel tiktok-guide app-only">
+          <h3>TikTok group chats and DMs</h3>
+          <ol>
+            <li>In TikTok, tap <b>Profile</b>, then the <b>Menu</b> button, then <b>Settings and privacy</b>.</li>
+            <li>Tap <b>Account</b>, then <b>Download your data</b>.</li>
+            <li>Choose what to include (make sure messages are included), set the file format to <b>JSON</b> and tap <b>Request data</b>.</li>
+            <li>TikTok says the file can take a few days. When it’s ready, open <b>Download your data</b> again, tap <b>Download data</b>, then <b>Download</b>. You have 4 days to get it.</li>
+            <li>Open the downloaded file here and pick the chat you want.</li>
+          </ol>
+        </div>
       </div>
       <p class="note guide-links">Stuck? Read the full guide for <a href="/export-whatsapp-chat/">WhatsApp</a> or <a href="/export-instagram-messages/">Instagram</a>.</p>
     </section>
@@ -396,7 +655,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   </section>
   <section class="wrap thread-picker" id="threads" hidden>
     <div class="panel">
-      <h2 id="threadTitle" tabindex="-1">Choose an Instagram chat</h2>
+      <h2 id="threadTitle" tabindex="-1">Choose a chat</h2>
       <p class="note">Your export contains multiple conversations. Pick the one you want to recap.</p>
       <div class="field">
         <label for="threadFilter">Find a conversation</label>
@@ -415,6 +674,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
   </section>
   <section class="wrap result" id="result" hidden>
     <div class="result-head">
+      <button class="btn app-only back-home" id="backHome" type="button" aria-label="Back to home"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg></button>
       <h2 id="groupTitle" tabindex="-1">Your group chat</h2>
       <div class="years" id="years" role="radiogroup" aria-label="Recap period" hidden></div>
       <details class="settings" id="settings">
@@ -438,6 +698,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
       </nav>
       <p class="note story-hint" id="storyHint">Tap either side or swipe to move between cards.</p>
       <div class="story-tools" id="storyTools" aria-label="Card actions">
+        <button class="btn app-only" id="savePhoto" type="button">Save</button>
         <a class="btn" id="saveCard">Save this card</a>
         <button class="btn" id="shareCard" type="button">Share this card</button>
         <button class="btn story-guess" id="guessTalker" type="button" hidden>Guess the top talker</button>
@@ -501,7 +762,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 <footer class="wrap foot">
   <p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
   <p>Your browser reads your chat export on this device. Email delivery uploads only the finished cards.</p>
-  <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
+  <p class="foot-links"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><button class="app-only restore" id="appRestore" type="button">Restore purchase</button><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a id="tipLink" target="_blank" rel="noopener noreferrer" hidden>Tip on Ko-fi ↗</a></p>
 </footer>
 <script>(() => {
 'use strict';
@@ -786,6 +1047,69 @@ function instagramThreads(entries) {
   return result;
 }
 
+// TikTok's data download is one JSON file. Each chat is a list of { Date, From, Content } under a key such as
+// "Chat History with name:" (one person) or "Group Chat with name:" (a group). The sections around those keys have
+// been renamed between exports, so the chats are found by key wherever they sit. Dates are UTC.
+// Source: open-source readers of real exports (see docs/TIKTOK_IMPORT.md). Not yet checked against a real export here.
+const TT_CHAT = /^(chat history|group chat) with (.*?):?\s*$/i;
+const TT_SECTION = /^(?:direct messages?|profile|(?:your )?activity|app settings|ads and data|comments?|video|tiktok (?:live|shopping))$/i;
+
+function tiktokThreads(data) {
+  const threads = [];
+  (function walk(node, depth, grouped) {
+    if (!node || typeof node !== 'object' || Array.isArray(node) || depth > 6) return;
+    for (const [key, value] of Object.entries(node)) {
+      const match = TT_CHAT.exec(key);
+      if (!match || !Array.isArray(value)) walk(value, depth + 1, grouped || /group ?chat/i.test(key));
+      else if (value.length) threads.push({ name: match[2].replace(MARKS, '').trim() || 'TikTok chat', group: grouped || /group/i.test(match[1]), rows: value });
+    }
+  })(data, 0, false);
+  // Group chats first, then the busiest chats: this is where people look for theirs.
+  threads.sort((a, b) => b.group - a.group || b.rows.length - a.rows.length);
+  for (const thread of threads) thread.label = `${thread.name} (${thread.group ? 'group, ' : ''}${count(thread.rows.length, 'message')})`;
+  return threads;
+}
+
+function finishTiktok(thread) {
+  const messages = [];
+  for (const row of thread.rows) {
+    const date = /^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d):(\d\d)/.exec(row?.Date ?? row?.date ?? '');
+    const a = String(row?.From ?? row?.from ?? '').replace(MARKS, '').trim();
+    if (!date || !a) continue;
+    const t = Date.UTC(+date[1], date[2] - 1, +date[3], +date[4], +date[5], +date[6]);
+    const text = String(row.Content ?? row.content ?? '').replace(MARKS, '').trim();
+    // A message that is only a link is a shared video: it counts as a message, not as words.
+    messages.push(!text || /^https?:\/\/\S+$/i.test(text) ? { t, a, type: 'media', text: '' } : { t, a, type: 'text', text });
+  }
+  if (!messages.length) throw new ChatError('No messages found in this TikTok chat. Pick another chat or request the data again.');
+  messages.sort((a, b) => a.t - b.t);
+  return { chat: { messages, localTime: true }, group: thread.name };
+}
+
+// Returns the chat (or the list of chats to pick from) if this JSON is a TikTok data file, otherwise null.
+function tiktokExport(raw) {
+  let data;
+  try { data = JSON.parse(raw); } catch { return null; }
+  if (!data || typeof data !== 'object' || Array.isArray(data.messages)) return null;
+  const threads = tiktokThreads(data);
+  if (threads.length) return threads.length === 1 ? finishTiktok(threads[0]) : { threads, openThread: finishTiktok, source: 'TikTok' };
+  if (Object.keys(data).some(key => TT_SECTION.test(key))) {
+    throw new ChatError('This TikTok data file has no chats in it. Request your data again and make sure messages are included.');
+  }
+  return null;
+}
+
+// TikTok chats are an app feature: the website recognises the file and says so.
+// shortcut: the app is not on the App Store yet, so this says "coming soon"; point to the store page once it is live.
+const TIKTOK_ON_WEB = 'TikTok chats are not read on the website. The Yapstats iPhone app, coming soon, will read them.';
+const tiktokIfApp = result => {
+  if (result && !IN_APP) throw new ChatError(TIKTOK_ON_WEB);
+  return result;
+};
+const tiktokTxt = () => new ChatError(IN_APP
+  ? 'This TikTok export is in TXT format. Request your data again and choose JSON as the file format.'
+  : TIKTOK_ON_WEB);
+
 async function readChatExport(file) {
   const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
   const zip = head[0] === 0x50 && head[1] === 0x4b;
@@ -793,8 +1117,11 @@ async function readChatExport(file) {
     throw new ChatError('This chat is too large. Export a shorter date range and try again.');
   }
   if (!zip && /\.json$/i.test(file.name)) {
+    const text = await file.text();
+    const tiktok = tiktokIfApp(tiktokExport(text));
+    if (tiktok) return tiktok;
     const messages = [];
-    const title = instagramPart(await file.text(), messages);
+    const title = instagramPart(text, messages);
     return finishInstagram(messages.reverse(), title);
   }
   let raw;
@@ -823,6 +1150,13 @@ async function readChatExport(file) {
       }
       return threads.length === 1 ? openThread(threads[0]) : { threads, openThread };
     }
+    const json = entries.filter(entry => /\.json$/i.test(entry.name) && !/(?:^|\/)(?:__MACOSX\/|\._)/.test(entry.name));
+    const dataFile = json.find(entry => /(?:^|\/)user_data[^/]*\.json$/i.test(entry.name)) || (json.length === 1 ? json[0] : null);
+    if (dataFile) {
+      const tiktok = tiktokIfApp(tiktokExport(await readZipText(file, dataFile, dirAt)));
+      if (tiktok) return tiktok;
+    }
+    if (entries.some(entry => /(?:^|\/)(?:direct messages?|chat history|group chats?)\.txt$/i.test(entry.name))) throw tiktokTxt();
     if (entries.some(entry => /(?:^|\/)message(?:_\d+)?\.html$/i.test(entry.name))) {
       throw new ChatError('This Instagram export is HTML. Request another export with Messages and JSON selected.');
     }
@@ -835,7 +1169,10 @@ async function readChatExport(file) {
     raw = await file.text();
   }
   const chat = parseChat(raw);
-  if (!chat.messages.length) throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram JSON or ZIP export.');
+  if (!chat.messages.length) {
+    if (/^(?:>>> ?)?(?:chat history|group chat) with .+:\s*$/im.test(raw.slice(0, 50_000))) throw tiktokTxt();
+    throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram JSON or ZIP export.');
+  }
   return { chat, group: groupFromFile(file.name) };
 }
 
@@ -1066,15 +1403,19 @@ function demoChat() {
 /* Money settings, filled in by build.mjs from site.config.json. An empty link hides that feature. */
 const TIP_URL = 'https://ko-fi.com/yapstats';
 const CHECKOUT_URL = 'https://buy.polar.sh/polar_cl_hhCexdidz7GjWdMaHHAUIEddSOPfuXmXBFdAe4TtQuW';
-const PACK_PRICE = '£2.99';
+let PACK_PRICE = '£2.99'; // the app replaces this with the App Store's price for the buyer's country
 const UNLOCK_CODE = 'yap-1e656267c3';
 const PACK_KEY = 'yapstats-full';
 const PACK_PEOPLE = 40; // personal cards are drawn for the 40 biggest talkers, so huge groups still load quickly
 
 // shortcut: the unlock is a code in the link the payment page sends buyers back to, remembered in this browser.
 // Anyone who reads this file can find it. Move to a checked licence key if shared links ever cost real money.
+// Inside the iPhone app the page runs in the app's web view. Apple sells the unlock there, so the web
+// checkout, the unlock link and the tip link are off; the app's native side is reached through toApp().
+const IN_APP = Boolean(globalThis.Capacitor?.isNativePlatform?.());
+const toApp = message => globalThis.webkit?.messageHandlers?.yapstats?.postMessage(message);
 let packOwned = false;
-try { packOwned = localStorage.getItem(PACK_KEY) === UNLOCK_CODE; } catch { /* storage blocked: the unlock lasts for this visit */ }
+if (!IN_APP) try { packOwned = localStorage.getItem(PACK_KEY) === UNLOCK_CODE; } catch { /* storage blocked: the unlock lasts for this visit */ }
 // 'none': nothing is for sale. 'sample': the top talker's personal card is shown free. 'full': everything.
 const packMode = () => !CHECKOUT_URL ? 'none' : packOwned ? 'full' : 'sample';
 
@@ -1646,6 +1987,9 @@ function activate(index) {
     previous.inert = true;
   }
   state.index = index;
+  const last = stripView.children.length - 1;
+  $('result').style.setProperty('--p', (index / Math.max(1, last)).toFixed(3)); // drives the glow behind the cards
+  if (IN_APP && previous) toApp({ type: index === last ? 'success' : 'tick' });
   const slide = stripView.children[index];
   slide.removeAttribute('aria-hidden');
   slide.inert = false;
@@ -1678,7 +2022,7 @@ function activate(index) {
   const shareCard = $('shareCard');
   const saveCard = $('saveCard');
   if (card) {
-    shareCard.textContent = isHighlights ? 'Share highlights' : 'Share this card';
+    shareCard.textContent = IN_APP ? 'Share' : isHighlights ? 'Share highlights' : 'Share this card';
     saveCard.textContent = isHighlights ? 'Save highlights' : 'Save this card';
     saveCard.href = card.url;
     saveCard.download = card.file.name;
@@ -1729,11 +2073,16 @@ function nudge() {
   stripView.classList.add('settling');
   const started = performance.now();
   function step(now) {
-    const t = clamp((now - started) / 760, 0, 1);
-    stripView.scrollLeft = .17 * width * Math.sin(Math.PI * t) ** 2;
+    const t = clamp((now - started) / (IN_APP ? 900 : 760), 0, 1);
+    stripView.scrollLeft = (IN_APP ? .26 : .17) * width * Math.sin(Math.PI * t) ** 2;
     layoutDeck();
     if (t < 1) settle.frame = requestAnimationFrame(step);
-    else { cancelSettle(); continueNavigation(); }
+    else {
+      cancelSettle();
+      continueNavigation();
+      // App: there are no arrows, so the deck keeps showing the move (top card pulls aside, next card rises) until the first swipe or tap.
+      if (IN_APP && state.index === 0 && viewedCards.size === 1) nudgeTimer = setTimeout(nudge, 2300);
+    }
   }
   settle = { index: 0, nudge: true, frame: requestAnimationFrame(step) };
 }
@@ -1938,6 +2287,8 @@ function finishDrag(event) {
   }
 }
 stripView.addEventListener('dragstart', event => event.preventDefault());
+// Once a sideways drag is under way the touch is ours: stop iOS from turning the rest of it into a scroll.
+stripView.addEventListener('touchmove', event => { if (drag?.moved && event.cancelable) event.preventDefault(); }, { passive: false });
 window.addEventListener('pointerup', finishDrag);
 window.addEventListener('pointercancel', finishDrag);
 
@@ -1961,6 +2312,10 @@ function showGallery(event) {
     link.href = card.url;
     link.download = card.file.name;
     link.textContent = `Save ${card.title.toLowerCase()}`;
+    if (IN_APP) { // a download link does nothing in the app: save to Photos instead
+      link.setAttribute('role', 'button');
+      link.addEventListener('click', event => { event.preventDefault(); savePhoto(card, link); });
+    }
     caption.append(link);
     const open = document.createElement('button');
     open.type = 'button';
@@ -2176,6 +2531,7 @@ function setLoadingProgress(progress) {
 }
 
 function loading(phase, message, progress) {
+  const changed = $('loading').getAttribute('data-phase') !== phase;
   if (phase === 'reading') { // a new import: empty the bar at once, so it never runs backwards from the last recap's 100%
     const fill = $('loadingFill');
     fill.classList.add('reset');
@@ -2186,10 +2542,28 @@ function loading(phase, message, progress) {
   $('loading').setAttribute('data-phase', phase);
   $('loadingStatus').textContent = message;
   setLoadingProgress(progress);
+  if (changed) loadingBeat(phase);
+}
+
+// Loading screen: the front card counts up to the number of messages read. In the app each phase is also a tap you can feel.
+function loadingBeat(phase) {
+  toApp({ type: phase === 'ready' ? 'success' : 'tick' });
+  const card = document.querySelector('.loader-art span:last-child');
+  if (phase === 'reading') card.removeAttribute('data-count');
+  if (phase !== 'counting' || !state.chat) return;
+  const total = state.chat.messages.length;
+  const started = performance.now();
+  const step = now => {
+    const t = reducedMotion.matches ? 1 : Math.min(1, (now - started) / 1000);
+    card.dataset.count = Math.round(total * (1 - (1 - t) ** 3)).toLocaleString('en-GB');
+    if (t < 1 && !$('loading').hidden) requestAnimationFrame(step);
+  };
+  step(started);
 }
 
 function screen(id) {
   for (const view of ['landing', 'loading', 'threads', 'result']) $(view).hidden = view !== id;
+  if (IN_APP && id !== 'landing') { showGuide(false); endIntro(); }
   $('exportLink').style.visibility = id === 'landing' ? '' : 'hidden';
 }
 
@@ -2310,6 +2684,17 @@ function fillPackOffer(container, { locked, people, rankings }) {
   }
   tickets[2].textContent = personal.length ? 'Your own card' : 'Group chat awards';
   const buy = container.querySelector('.pack-buy');
+  if (IN_APP) {
+    buy.setAttribute('role', 'button');
+    buy.tabIndex = 0;
+    buy.addEventListener('click', () => askApp('buy'));
+    buy.append(`Unlock full recap · ${PACK_PRICE}`);
+    container.querySelector('.pack-note').textContent = 'One-off purchase through Apple. No subscription. Your chat stays on this iPhone.';
+    const restore = Object.assign(document.createElement('button'), { type: 'button', className: 'restore', textContent: 'Restore purchase' });
+    restore.addEventListener('click', () => askApp('restore'));
+    container.querySelector('.pack-copy').append(restore);
+    return;
+  }
   buy.href = CHECKOUT_URL;
   buy.addEventListener('click', event => {
     if (!emailDeliveryEnabled || !state.chat || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
@@ -2337,6 +2722,7 @@ function showPack(recap) {
 
 function syncLandingOffer() {
   for (const id of ['heroOffer', 'fullOption']) $(id).hidden = !CHECKOUT_URL || packOwned;
+  $('appBuy').hidden = packOwned;
 }
 
 function nameField(id, label, value, onChange) {
@@ -2453,7 +2839,7 @@ async function importChat(read, recover) {
   screen('loading');
   scrollTo(0, 0);
   $('loadingTitle').focus({ preventScroll: true });
-  loading('reading', recover ? 'Reading your Instagram chat…' : 'Reading your export…', 10);
+  loading('reading', recover ? 'Reading your chat…' : 'Reading your export…', 10);
   try {
     await afterPaint();
     if (job !== state.job) return;
@@ -2462,6 +2848,7 @@ async function importChat(read, recover) {
     $('file').value = '';
     if (result.threads) {
       instagramArchive = result;
+      $('threadTitle').textContent = `Choose ${result.source === 'TikTok' ? 'a TikTok' : 'an Instagram'} chat`;
       $('threadFilter').value = '';
       $('threadSelect').value = '';
       $('threadError').hidden = true;
@@ -2587,6 +2974,7 @@ function returnToUpload() {
 }
 $('again').addEventListener('click', returnToUpload);
 $('another').addEventListener('click', returnToUpload);
+$('backHome').addEventListener('click', returnToUpload);
 $('changeExport').addEventListener('click', returnToUpload);
 $('brand').addEventListener('click', event => {
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -2609,7 +2997,175 @@ window.addEventListener('drop', event => {
   take(event.dataTransfer.files[0]);
 });
 
-if (TIP_URL) {
+// App only: the export guide opens as its own screen instead of a section further down the page.
+function showGuide(open) {
+  document.documentElement.classList.toggle('guide-open', open);
+  $('exportLink').textContent = open ? 'Back' : 'How to export';
+}
+// App only: save the card in front straight to Photos. The native side asks for add-only access the first time
+// and answers through yapstatsSaved({ ok, error }).
+let toastTimer;
+function toast(message) {
+  clearTimeout(toastTimer);
+  $('toast').textContent = message;
+  $('toast').hidden = !message;
+  if (message) toastTimer = setTimeout(() => toast(''), 4200);
+}
+let saving = null; // the control that asked for the save in progress, and its label
+async function savePhoto(card = currentCard(), control = $('savePhoto')) {
+  if (!card || saving) return;
+  saving = { control, label: control.textContent };
+  control.setAttribute('aria-busy', 'true');
+  const data = await new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result.slice(reader.result.indexOf(',') + 1) : '');
+    reader.readAsDataURL(card.file);
+  });
+  if (data) toApp({ type: 'save', data });
+  else globalThis.yapstatsSaved({ ok: false, error: 'Couldn’t read that card. Try again.' });
+}
+globalThis.yapstatsSaved = ({ ok, error }) => {
+  if (!saving) return;
+  const { control, label } = saving;
+  saving = null;
+  control.removeAttribute('aria-busy');
+  toast(ok ? '' : error || 'Couldn’t save that card. Try again.');
+  if (!ok) return;
+  control.textContent = 'Saved';
+  control.classList.add('done');
+  setTimeout(() => { control.textContent = label; control.classList.remove('done'); }, 1900);
+};
+
+// App purchases. Apple sells the unlock; the native side (StoreKit) buys, restores and verifies, then calls
+// yapstatsPurchase({ owned, price, error }) after every request and whenever a purchase changes.
+function askApp(type) {
+  buyStatus('');
+  for (const button of document.querySelectorAll('#appBuy, .pack--slide .pack-buy, .restore')) button.setAttribute('aria-busy', 'true');
+  toApp({ type });
+}
+// Redraw the open recap. Bought mid-recap: land on the first new card, not back on card 1, and keep the cards already seen marked as seen.
+function redraw(unlockedNow) {
+  const before = state.cards.length;
+  const firstNew = unlockedNow ? before - 1 : -1; // the last free card is a sample of the paid set, so the new cards start in its place
+  const seen = [...viewedCards].filter(i => i < firstNew);
+  return render().then(() => {
+    if (firstNew < 0 || state.cards.length <= before) return;
+    for (const i of seen) viewedCards.add(i);
+    go(firstNew, false);
+    layoutDeck();
+  });
+}
+function buyStatus(message) {
+  $('buyStatus').textContent = message;
+  $('buyStatus').hidden = !message;
+  const note = document.querySelector('.pack--slide .pack-note');
+  if (note && message) note.textContent = message;
+}
+globalThis.yapstatsPurchase = ({ owned, price, error }) => {
+  for (const button of document.querySelectorAll('[aria-busy]')) button.removeAttribute('aria-busy');
+  const unlockedNow = owned === true && !packOwned;
+  let changed = (owned === true) !== packOwned;
+  packOwned = owned === true;
+  if (price && price !== PACK_PRICE) {
+    PACK_PRICE = price;
+    changed = true;
+    for (const label of document.querySelectorAll('.offer-price')) label.textContent = price;
+  }
+  $('unlocked').hidden = !packOwned;
+  syncLandingOffer();
+  if (state.chat && changed) redraw(unlockedNow); // only when something changed: the paid cards appear, or the offer shows the right price
+  buyStatus(error || '');
+};
+
+// App startup animation: lasts about 1.3s, then hands over to the screen behind it. Leaving home (a shared chat arriving) ends it early.
+// It plays with its sound on launch and again every time the app comes back to the front (the native side calls yapstatsIntro).
+let introTemplate = null, introTimers = [];
+function endIntro() {
+  introTimers.forEach(clearTimeout);
+  $('intro')?.remove();
+  document.documentElement.style.removeProperty('--intro');
+}
+function playIntro(again = false) {
+  if (again) {
+    if (reducedMotion.matches || !introTemplate || !$('loading').hidden || document.querySelector('dialog[open]')) return; // nothing to cover: a recap is being made, or a question is open
+    endIntro();
+    document.body.prepend(introTemplate.cloneNode(true)); // a fresh copy, so its animations start from the beginning
+  }
+  document.documentElement.style.setProperty('--intro', '1250ms'); // the home screen's own entrance waits for the intro
+  if (again && !$('landing').hidden) { // run the home screen's entrance again behind the animation
+    $('landing').hidden = true;
+    $('landing').offsetWidth;
+    $('landing').hidden = false;
+  }
+  toApp({ type: 'intro' }); // the native side plays the startup sound
+  introTimers = [setTimeout(() => toApp({ type: 'tick' }), 500), setTimeout(endIntro, 1750)]; // the tick is felt as the cards deal out
+}
+globalThis.yapstatsIntro = () => playIntro(true);
+if (IN_APP) {
+  document.documentElement.classList.add('is-app');
+  // On a page load the animation plays once per launch: not again when coming back from Privacy or Terms.
+  introTemplate = $('intro').cloneNode(true);
+  let seenIntro = false;
+  try { seenIntro = sessionStorage.getItem('yapstatsIntro') === '1'; sessionStorage.setItem('yapstatsIntro', '1'); } catch { /* storage blocked: the intro plays each time */ }
+  if (reducedMotion.matches || seenIntro) endIntro();
+  else playIntro(); // not 'in-app': that class styles the in-app-browser notice
+  // The height the page really has, without the status bar and home indicator. Layout that must fit one screen uses it.
+  const fitScreen = () => {
+    if (/^(?:INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return; // the keyboard is up: keep the layout still
+    document.documentElement.style.setProperty('--app-h', `${innerHeight}px`);
+    document.documentElement.classList.toggle('short', innerHeight < 740); // iPhone mini and SE
+    document.documentElement.classList.toggle('tiny', innerHeight < 700); // iPhone SE
+  };
+  // A card screen never scrolls. When a line or a row of buttons appears under the cards (the last card's end actions,
+  // a status note), the cards give up exactly that much height (--story-extra). The all-cards grid is the one view that scrolls.
+  const fitStory = () => {
+    const result = $('result');
+    if (result.hidden || !$('gallery').hidden || /^(?:INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return;
+    result.style.removeProperty('--story-extra');
+    for (let extra = 0, tries = 0; tries < 8; tries++) { // a card held narrower than its height allows has slack to use up first, hence the loop
+      const over = document.documentElement.scrollHeight - innerHeight;
+      if (over <= 0) break;
+      result.style.setProperty('--story-extra', `${extra += over}px`);
+    }
+  };
+  let fitQueued = false;
+  const queueFit = () => {
+    if (fitQueued) return;
+    fitQueued = true;
+    requestAnimationFrame(() => { fitQueued = false; fitStory(); });
+  };
+  new MutationObserver(queueFit).observe($('result'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'open'] });
+  fitScreen();
+  addEventListener('resize', () => { fitScreen(); queueFit(); });
+  $('savePhoto').addEventListener('click', () => savePhoto());
+  // The app sells the unlock through Apple only: the website's checkout, tip and long-guide links are not part of it.
+  for (const link of document.querySelectorAll('.checkout-link, .guide-links, #tipLink, .foot-links a[href*="export"]')) link.remove();
+  $('openGallery').textContent = 'All cards';
+  $('guessTalker').textContent = 'Guess top talker';
+  $('file').labels[0].lastChild.textContent = ' Choose a chat export ';
+  document.querySelector('.file-note').textContent = 'WhatsApp, Instagram or TikTok. Never uploaded.';
+  document.querySelector('.foot p').textContent = 'Not affiliated with, endorsed by or connected to WhatsApp, Meta or TikTok.';
+  $('appBuy').addEventListener('click', () => askApp('buy'));
+  $('appRestore').addEventListener('click', () => askApp('restore'));
+  $('unlocked').textContent = 'Full recap unlocked.';
+  toApp({ type: 'purchase' }); // ask what this Apple Account already owns
+  for (const link of document.querySelectorAll('a[href="#export-guide"]')) {
+    link.addEventListener('click', event => {
+      event.preventDefault();
+      showGuide(!document.documentElement.classList.contains('guide-open'));
+      scrollTo(0, 0);
+    });
+  }
+}
+
+// No export to hand? The sample chat is made up, and shows the whole thing: cards, sharing, saving and the unlock.
+for (const link of document.querySelectorAll('.sample-link')) {
+  link.addEventListener('click', () => {
+    if (!$('landing').hidden) importChat(async () => ({ chat: parseChat(demoChat()), group: 'Flat 12 (sample)' }));
+  });
+}
+
+if (TIP_URL && !IN_APP) {
   $('tipLink').href = TIP_URL;
   $('tipLink').hidden = false;
 }
@@ -2617,19 +3173,19 @@ if (CHECKOUT_URL) {
   for (const link of document.querySelectorAll('.checkout-link')) link.href = CHECKOUT_URL;
   for (const price of document.querySelectorAll('.offer-price')) price.textContent = PACK_PRICE;
   // The payment page sends buyers back with the code after ? or #. Either works, whatever else it adds to the link.
-  if (location.hash === `#unlock=${UNLOCK_CODE}` || new URLSearchParams(location.search).get('unlock') === UNLOCK_CODE) {
+  if (!IN_APP && (location.hash === `#unlock=${UNLOCK_CODE}` || new URLSearchParams(location.search).get('unlock') === UNLOCK_CODE)) {
     packOwned = true;
     try { localStorage.setItem(PACK_KEY, UNLOCK_CODE); } catch { /* storage blocked: the unlock lasts for this visit */ }
     history.replaceState(null, '', location.pathname);
     $('unlocked').hidden = false;
   }
   // The payment page opens in a new tab. When it comes back unlocked, redraw the recap that is still open here.
-  window.addEventListener('storage', event => {
+  if (!IN_APP) window.addEventListener('storage', event => {
     if (event.key !== PACK_KEY || event.newValue !== UNLOCK_CODE || packOwned) return;
     packOwned = true;
     syncLandingOffer();
     $('unlocked').hidden = false;
-    if (state.chat) render();
+    if (state.chat) redraw(true);
   });
 }
 
@@ -2772,7 +3328,7 @@ for (const link of document.querySelectorAll('.checkout-link')) {
   });
 }
 
-if (location.protocol !== 'file:') {
+if (location.protocol !== 'file:' && !IN_APP) {
   fetch(emailApi + 'available').then(response => response.ok ? response.json() : {}).then(({ enabled }) => {
     emailDeliveryEnabled = enabled === true && typeof $('emailRecap').showModal === 'function';
     if (emailDeliveryEnabled) {
@@ -2840,6 +3396,12 @@ restoreEmailPurchase();
       if (!pressed) button.setAttribute('aria-pressed', 'true');
     });
     fan.append(button);
+  }
+  // Home: bring each sample forward in turn so the screen is never still. A touch or the mouse on the cards hands control back.
+  if (!reducedMotion.matches) {
+    let turn = 1;
+    const timer = setInterval(() => { if (!$('landing').hidden) fan.children[turn++ % 3].click(); }, 2600);
+    for (const type of ['pointerdown', 'pointerenter']) fan.addEventListener(type, () => clearInterval(timer), { once: true });
   }
 })().catch(() => {});
 })();</script>

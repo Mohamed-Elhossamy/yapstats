@@ -18,6 +18,9 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ink); color: var(--text); font: 1.0625rem/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
 a { color: inherit; }
+.app-only { display: none; }
+.is-app .app-only { display: inline; }
+.is-app .web-only { display: none; } /* the iPhone app shows these pages too, without the parts that are only about the website */
 .wrap { width: min(100% - 40px, 720px); margin-inline: auto; }
 header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; border-bottom: 1px solid var(--line); }
 .brand { font-weight: 850; font-size: 1.2rem; text-decoration: none; }
@@ -42,7 +45,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <main class="wrap">
 <h1>Privacy</h1>
 <p class="lede">Short version: your chat export is read by your browser on your own device. It is never sent to Yapstats or to anyone else.</p>
-<p>Last updated: 12 November 2026.</p>
+<p>Last updated: 26 November 2026.</p>
 
 <h2>Your chat export</h2>
 <ul>
@@ -52,6 +55,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <li>Cards leave your device only when you choose to share or save them.</li>
 </ul>
 
+<div class="web-only">
 <h2>What is stored on your device</h2>
 <p>The recap page sets no cookies. If you buy the Full recap, your browser remembers one small entry so the purchase stays unlocked. It holds no personal information.</p>
 
@@ -65,6 +69,16 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <p>The download link expires after seven days and the archive is scheduled for removal. If you abandon checkout, the archive is removed after the checkout expires or fails. Yapstats removes the email address from temporary delivery storage after sending or after delivery attempts end. Keep the private link with the people you intend to share it with.</p>
 <h2>Tips</h2>
 <p>Tips go through Ko-fi, which handles the payment under its own privacy policy.</p>
+</div>
+
+<h2>The iPhone app</h2>
+<ul>
+<li>The app reads your chat export on your iPhone. The file is never uploaded and the app collects no data about you.</li>
+<li>The app has no account, no analytics, no ads and no tracking. It sends nothing to Yapstats.</li>
+<li>The Full recap is an in-app purchase handled by Apple under Apple’s privacy policy. Yapstats does not receive your name, email or payment details.</li>
+<li>Saving a card asks for permission to add pictures to Photos. The app can only add pictures. It cannot see your library.</li>
+<li>The app has no email delivery and no tips.</li>
+</ul>
 
 <h2>Your rights</h2>
 <p>Under UK data protection law you can ask what personal data is held about you and ask for it to be corrected or deleted. Yapstats stores recap cards temporarily only if you choose email delivery. Contact <a href="mailto:hello@yapstats.tech">hello@yapstats.tech</a>. You can also complain to the Information Commissioner’s Office at ico.org.uk.</p>
@@ -73,8 +87,8 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <p>A chat export contains other people’s names and messages. The cards can show names, counts and aggregate results such as frequently used words. Share them where the people in them would expect, which is usually the group itself.</p>
 </main>
 <footer class="wrap">
-<p>Not affiliated with, endorsed by or connected to WhatsApp or Meta.</p>
-<nav aria-label="Site"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+<p>Not affiliated with, endorsed by or connected to WhatsApp<span class="web-only"> or Meta</span><span class="app-only">, Meta or TikTok</span>.</p>
+<nav aria-label="Site"><a class="web-only" href="/export-whatsapp-chat/">WhatsApp export guide</a><a class="web-only" href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
 </footer>
 </body>
 </html>
