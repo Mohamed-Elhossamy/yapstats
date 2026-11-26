@@ -1,6 +1,22 @@
 # App Store listing
 
-Draft for App Store Connect, written 26 Nov 2026. Nothing here has been entered anywhere: an Apple Developer Program membership is needed first. The listing follows the project rule that no other company's brand appears in the name, text or pictures.
+Written 26 Nov 2026. Mohamed joined the Apple Developer Program that day (individual, team `3RQ7N785AC`) and the listing below was entered in App Store Connect.
+
+## Status in App Store Connect (26 Nov 2026)
+
+Entered and saved:
+- App record: Yapstats, Apple ID `6839611903`, SKU `yapstats-ios`, bundle ID `tech.yapstats.app`, primary language English (U.K.).
+- App Information: subtitle, categories, content rights (no third-party content), age rating (calculated 4+).
+- Version 1.0: promotional text, description, keywords, support and marketing URLs, copyright, review notes and contact, sign-in not required, manual release.
+- Pricing: free (base United Kingdom).
+- App Privacy: policy URL and "Data not collected" saved, not yet published.
+- In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, £2.99 (base United Kingdom), all countries, display name, description and review note.
+- Agreements: Paid Apps Agreement accepted; both US tax forms (Certificate of Foreign Status, W-8BEN) active.
+
+Still open:
+- Mohamed: bank account, EU trader status, pressing Publish on App Privacy.
+- App availability (countries), which depends on the trader decision.
+- Screenshots upload, the purchase's review screenshot, a build (archive and upload from Xcode), then Add for Review. The listing follows the project rule that no other company's brand appears in the name, text or pictures.
 
 ## App information
 
