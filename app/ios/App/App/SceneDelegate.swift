@@ -76,6 +76,15 @@ final class YapstatsViewController: CAPBridgeViewController {
         webView?.scrollView.backgroundColor = background
         // The page reaches native features with window.webkit.messageHandlers.yapstats.postMessage({ type }).
         webView?.configuration.userContentController.add(self, name: "yapstats")
+        if let scroll = webView?.scrollView {
+            // While the page loads its height changes, and WebKit can leave it resting under the status bar (seen on iOS 27:
+            // offset 0 where the top limit is -62). A page that fits the screen cannot be dragged back, so a resting
+            // position outside the limits is put back inside them.
+            scrollWatch = [
+                scroll.observe(\.contentSize) { scroll, _ in YapstatsViewController.settle(scroll) },
+                scroll.observe(\.contentOffset) { scroll, _ in YapstatsViewController.settle(scroll) }
+            ]
+        }
         // Purchases that finish outside a buy tap (Ask to Buy approvals, refunds, another device) arrive here.
         purchaseUpdates = Task { [weak self] in
             for await update in Transaction.updates {
@@ -86,6 +95,22 @@ final class YapstatsViewController: CAPBridgeViewController {
     }
 
     private var purchaseUpdates: Task<Void, Never>?
+    private var scrollWatch: [NSKeyValueObservation] = []
+
+    private static func restingOffset(for scroll: UIScrollView) -> CGFloat? {
+        guard !scroll.isTracking, !scroll.isDecelerating, !scroll.isZooming else { return nil } // a finger or a bounce may pass the limits
+        let top = -scroll.adjustedContentInset.top
+        let bottom = max(top, scroll.contentSize.height - scroll.bounds.height + scroll.adjustedContentInset.bottom)
+        let inside = min(max(scroll.contentOffset.y, top), bottom)
+        return abs(inside - scroll.contentOffset.y) > 0.5 ? inside : nil
+    }
+
+    private static func settle(_ scroll: UIScrollView) {
+        guard restingOffset(for: scroll) != nil else { return }
+        DispatchQueue.main.async { // after WebKit has finished its own update
+            if let inside = restingOffset(for: scroll) { scroll.contentOffset.y = inside }
+        }
+    }
 
     /// Tells the page whether the full recap is owned and what it costs in the buyer's currency, plus a message if something went wrong.
     private func reportPurchase(message: String? = nil) async {

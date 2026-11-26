@@ -43,7 +43,7 @@ Tested on an iPhone 16 Pro (iOS 27.2.1, Xcode 27.2, free Personal Team signing),
 - **Taps** move one card at a time through all 12 cards, the highlights and the unlock slide.
 - **Share this card works** (system share sheet with the PNG, including Save Image).
 
-Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (13) from `app/`.
+Checks: `node test/handoff.check.mjs` (5) and `node test/deck.check.mjs` (14) from `app/`.
 
 Mohamed confirmed on 26 Nov that finger swipes work on the fixed build.
 
@@ -51,7 +51,9 @@ Not tested yet: the haptics, WhatsApp's own "Export chat" sheet, Save Image and 
 
 Purchase: one non-consumable, `tech.yapstats.app.fullrecap`. The page sends `buy`, `restore` or `purchase` (ask what is owned); `SceneDelegate.swift` calls StoreKit 2 and answers through `window.yapstatsPurchase({ owned, price, error })`. Ownership lives only in StoreKit: nothing is saved in the page. `App/Products.storekit` is a local test product and the shared `App` scheme points at it, so a build from Xcode buys with test data: no App Store Connect, no real money. An archive for the App Store ignores it and needs the same product id created in App Store Connect.
 
-Not yet tested on a device: the purchase sheet, restore, and the price coming back from StoreKit. Tested so far: it compiles and runs on the iPhone, and the page side passes the browser checks with a stand-in for the native answer.
+Tested on the iPhone with Xcode's test store (26 Nov 2026): cancel, buy from the unlock card (12 cards become 22), restore with nothing owned and with the purchase owned, and the unlock surviving a relaunch. Not tested on a device: landing on the first new card straight after buying (the browser check covers it; undoing a test purchase needs Xcode's Debug > StoreKit > Manage Transactions), refunds, Ask to Buy, and anything against the real App Store.
+
+Third trap: on launch WebKit can leave the page resting under the status bar (scroll offset 0 where the top limit is -62) when the page's height changes while it loads. It showed up once the unlock was owned at startup. `YapstatsViewController` watches the scroll view and puts a resting position back inside its limits. Do not remove that guard without retesting a launch with the purchase owned.
 
 Known gaps: the app icon is Capacitor's default; `--story-chrome` is tuned for Face ID iPhones.
 

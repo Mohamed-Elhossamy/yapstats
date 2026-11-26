@@ -82,6 +82,9 @@ await page.evaluate(() => window.yapstatsPurchase({ owned: true, price: '£2.99'
 const slidesAfter = await page.evaluate(() => document.getElementById('cards').children.length);
 assert.ok(slidesAfter > slidesBefore, `${slidesBefore} -> ${slidesAfter}`);
 assert.equal(await page.evaluate(() => Boolean(document.querySelector('.pack--slide'))), false); ok(`buying unlocks the paid cards (${slidesBefore} slides become ${slidesAfter}) and removes the offer`);
+const landed = await page.evaluate(() => [...document.getElementById('progress').children].findIndex(segment => segment.classList.contains('current')));
+assert.equal(landed, slidesBefore - 3); // free cards, then highlights and the offer: the first new card replaces the last free one
+assert.match(await page.textContent('#storyCount'), new RegExp(`^${landed + 1} of `)); ok(`after buying, the deck opens on the first new card (card ${landed + 1}), not card 1`);
 
 await page.click('#backHome'); await page.waitForTimeout(400);
 assert.deepEqual(await page.evaluate(() => [document.getElementById('appBuy').hidden, document.getElementById('unlocked').hidden]), [true, false]); ok('home shows the full recap as unlocked instead of the buy button');

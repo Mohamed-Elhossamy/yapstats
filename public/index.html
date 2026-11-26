@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-6nFD5WkkE6uZWjxuR7AGLnQCRhYwsfPYsMKRdBdeQlo='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-nE3eSvhwZr3modRBqpcS3eHPUjcNHD0bQ+xWXxKMZ2Y='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
@@ -321,7 +321,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .buy-full small { color: var(--muted); font-size: .74rem; font-weight: 560; }
 .is-app .buy-full[hidden], .is-app .buy-status[hidden] { display: none; }
 .is-app .buy-status { order: 3; text-align: center; font-size: .82rem; font-weight: 650; }
-.is-app .unlocked { max-width: none; text-align: center; }
+.is-app .unlocked { max-width: none; padding: 9px 14px; border: 1.5px solid var(--accent); background: none; color: inherit; text-align: center; font-size: .9rem; } /* a quiet confirmation: the yellow stays with the one main button */
+.is-app .unlocked::before { content: '✓ '; color: var(--accent); font-weight: 800; }
 .is-app .restore { display: inline; padding: 5px 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: .22em; }
 .is-app .pack--slide .restore { align-self: center; margin-top: 2px; color: #b6b8c4; font-size: .74rem; }
 .is-app [aria-busy=true] { opacity: .6; pointer-events: none; }
@@ -405,6 +406,8 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 /* Each sample is a sticker with a hard shadow and its own colour of light; the one in front lifts, glows and catches a sweep of light. */
 .is-app .sample img { box-shadow: 5px 7px 0 #000b, 0 0 26px color-mix(in srgb, var(--lit) 30%, transparent); transition: transform 520ms cubic-bezier(.34,1.56,.64,1), box-shadow 400ms var(--ease); }
 .is-app .sample[aria-pressed=true] img { transform: translateY(-5%) rotate(calc(var(--r) * -.7)) scale(1.15); box-shadow: 7px 10px 0 #000c, 0 0 0 2px var(--lit), 0 0 44px color-mix(in srgb, var(--lit) 75%, transparent); }
+.is-app .sample:nth-child(2) img, .is-app .sample:nth-child(2)::after { transform-origin: 50% 0; } /* the middle card sits highest: it grows downwards so it never covers the title */
+.is-app .sample:nth-child(2)[aria-pressed=true] img, .is-app .sample:nth-child(2)[aria-pressed=true]::after { transform: translateY(-2%) rotate(calc(var(--r) * -.7)) scale(1.12); }
 .is-app .sample::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; background: linear-gradient(110deg, transparent 35%, #ffffff66 50%, transparent 65%) 200% 0 / 250% 100% no-repeat; }
 .is-app .sample[aria-pressed=true]::after { transform: translateY(-5%) rotate(calc(var(--r) * -.7)) scale(1.15); animation: sample-sheen 900ms 180ms var(--ease); }
 @keyframes sample-sheen { 0% { opacity: 1; background-position: 200% 0; } 100% { opacity: 1; background-position: -100% 0; } }
@@ -2798,6 +2801,7 @@ function buyStatus(message) {
 }
 globalThis.yapstatsPurchase = ({ owned, price, error }) => {
   for (const button of document.querySelectorAll('[aria-busy]')) button.removeAttribute('aria-busy');
+  const unlockedNow = owned === true && !packOwned;
   let changed = (owned === true) !== packOwned;
   packOwned = owned === true;
   if (price && price !== PACK_PRICE) {
@@ -2807,7 +2811,18 @@ globalThis.yapstatsPurchase = ({ owned, price, error }) => {
   }
   $('unlocked').hidden = !packOwned;
   syncLandingOffer();
-  if (state.chat && changed) render(); // redraw only when something changed: the paid cards appear, or the offer shows the right price
+  if (state.chat && changed) { // redraw only when something changed: the paid cards appear, or the offer shows the right price
+    // Bought mid-recap: land on the first new card, not back on card 1, and keep the cards already seen marked as seen.
+    const before = state.cards.length;
+    const firstNew = unlockedNow ? before - 1 : -1; // the last free card is a sample of the paid set, so the new cards start in its place
+    const seen = [...viewedCards].filter(i => i < firstNew);
+    render().then(() => {
+      if (firstNew < 0 || state.cards.length <= before) return;
+      for (const i of seen) viewedCards.add(i);
+      go(firstNew, false);
+      layoutDeck();
+    });
+  }
   buyStatus(error || '');
 };
 
