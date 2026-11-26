@@ -30,12 +30,17 @@ const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome'
 const context = await browser.newContext({ viewport: { width: 402, height: 874 }, hasTouch: true, isMobile: true });
 const page = await context.newPage();
 const errors = []; page.on('pageerror', error => errors.push(String(error)));
-await page.addInitScript(() => { window.Capacitor = { isNativePlatform: () => true }; });
+await page.addInitScript(() => {
+  window.Capacitor = { isNativePlatform: () => true };
+  window.sent = []; // what the page asks the native side to do
+  window.webkit = { messageHandlers: { yapstats: { postMessage: message => window.sent.push(message) } } };
+});
 await page.goto(`http://127.0.0.1:${server.address().port}/`);
 let passed = 0; const ok = name => { passed++; console.log('ok', name); };
 await page.waitForTimeout(2300); // the startup animation takes about 1.3s
 assert.deepEqual(await page.evaluate(() => [!document.getElementById('intro'), document.documentElement.scrollWidth <= innerWidth, document.documentElement.scrollHeight <= innerHeight]), [true, true, true]);
 ok('the startup animation ends and the home screen fits with no scrolling either way');
+assert.equal(await page.evaluate(() => window.sent.filter(message => message.type === 'intro').length), 1); ok('the startup sound is asked for once');
 let gap = { title: Infinity, button: Infinity };
 for (let i = 0; i < 3; i++) {
   await page.evaluate(i => document.getElementById('fan').children[i].click(), i); // bring each sample to the front
@@ -104,6 +109,49 @@ await page.click('#backHome'); await page.waitForTimeout(400);
 assert.deepEqual(await page.evaluate(() => [document.getElementById('appBuy').hidden, document.getElementById('unlocked').hidden]), [true, false]); ok('home shows the full recap as unlocked instead of the buy button');
 assert.equal(await page.isVisible('#landing'), true); assert.equal(await page.isVisible('#result'), false); ok('the back button returns to the home screen');
 
+// The app sells through Apple only: no website checkout, tip or long-guide link may be left in the page.
+assert.equal(await page.evaluate(() => document.querySelectorAll('.checkout-link, #tipLink, .guide-links, a[href*="polar.sh"], a[href*="ko-fi"], a[href*="/export-"]').length), 0);
+ok('no website checkout, tip or web-guide links exist in the app');
+
+// The sample chat lets anyone (App Review included) see the whole app without an export.
+await page.click('#trySample'); await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
+assert.equal(await page.textContent('#groupTitle'), 'Flat 12 (sample)');
+assert.equal(await page.evaluate(() => Boolean(document.querySelector('.pack--slide'))), false); // already unlocked by the purchase above
+await page.click('#backHome'); await page.waitForTimeout(400); ok('Try a sample chat opens a made-up recap');
+
+// About, Privacy and Terms inside the app: the native side marks them as in-app, which hides the website-only parts.
+for (const path of ['/about/', '/privacy/', '/terms/']) {
+  const sub = await context.newPage();
+  await sub.addInitScript(() => document.addEventListener('DOMContentLoaded', () => document.documentElement.classList.add('is-app'))); // WKUserScript does this at document start
+  await sub.goto(`http://127.0.0.1:${server.address().port}${path}`);
+  assert.equal(await sub.evaluate(() => [...document.querySelectorAll('.web-only')].some(element => element.offsetParent)), false, path);
+  assert.doesNotMatch(await sub.evaluate(() => document.body.innerText), /Polar|Ko-fi|Android|export guide/i, path);
+  await sub.close();
+}
+ok('About, Privacy and Terms hide their website-only parts in the app');
+
+// Save to Photos: the page hands the card to the native side as a PNG and shows what came back.
+await page.setInputFiles('#file', join(work, 'flat7-chat.txt')); await page.waitForSelector('#result:not([hidden])'); await page.waitForTimeout(900);
+await page.click('#savePhoto'); await page.waitForFunction(() => window.sent.some(message => message.type === 'save'));
+assert.match(await page.evaluate(() => window.sent.find(message => message.type === 'save').data.slice(0, 11)), /^iVBORw0KGgo/); // base64 PNG
+await page.evaluate(() => window.yapstatsSaved({ ok: true }));
+assert.equal(await page.textContent('#savePhoto'), 'Saved'); assert.equal(await page.isVisible('#toast'), false);
+await page.waitForTimeout(2100); assert.equal(await page.textContent('#savePhoto'), 'Save');
+await page.click('#savePhoto'); await page.waitForFunction(() => window.sent.filter(message => message.type === 'save').length === 2);
+await page.evaluate(() => window.yapstatsSaved({ ok: false, error: 'Yapstats can’t add to Photos.' }));
+assert.match(await page.textContent('#toast'), /can’t add to Photos/); ok('Save sends the card as a PNG, confirms a save and explains a refusal');
+await page.touchscreen.tap(330, 400); await page.waitForTimeout(700); // card 2, where All cards is offered
+await page.click('#openGallery'); await page.waitForSelector('#gallery:not([hidden])'); await page.waitForTimeout(900);
+await page.evaluate(() => { window.sent.length = 0; });
+await page.click('.gallery-item:nth-child(3) figcaption a'); await page.waitForFunction(() => window.sent.some(message => message.type === 'save'));
+await page.evaluate(() => window.yapstatsSaved({ ok: true }));
+assert.equal(await page.textContent('.gallery-item:nth-child(3) figcaption a'), 'Saved'); ok('the save links under All cards save to Photos too');
+await page.click('#backHome'); await page.waitForTimeout(400);
+
+// Coming back to the home screen later in the same launch (from Privacy or Terms) must not replay the intro or its sound.
+await page.reload(); await page.waitForTimeout(400);
+assert.deepEqual(await page.evaluate(() => [Boolean(document.getElementById('intro')), window.sent.some(message => message.type === 'intro')]), [false, false]); ok('the intro and its sound play once per launch');
+
 // A second import: the loading bar must start empty and only ever grow (it used to start full and run backwards).
 await page.evaluate(() => {
   window.fills = [];
@@ -122,6 +170,22 @@ await page.waitForSelector('#result:not([hidden])');
 const fills = await page.evaluate(() => window.fills);
 assert.ok(fills.length > 20 && fills[0] < .05 && fills.at(-1) > .95, `${fills.length} frames, ${fills[0]} to ${fills.at(-1)}`);
 assert.ok(fills.every((fill, i) => i === 0 || fill >= fills[i - 1] - .002)); ok('on a second import the loading bar starts empty and never runs backwards');
+
+// Every supported iPhone size: the visible page (screen minus status bar and home indicator) must hold the home screen
+// and a card without scrolling, and the three card buttons must show their whole labels.
+for (const [name, width, height] of [['SE', 375, 647], ['mini', 375, 728], ['16', 393, 759], ['16 Pro Max', 440, 860]]) {
+  const small = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: true });
+  const phone = await small.newPage();
+  await phone.addInitScript(() => { window.Capacitor = { isNativePlatform: () => true }; });
+  await phone.goto(`http://127.0.0.1:${server.address().port}/`); await phone.waitForTimeout(2300);
+  const fits = () => phone.evaluate(() => document.documentElement.scrollHeight <= innerHeight && document.documentElement.scrollWidth <= innerWidth);
+  assert.equal(await fits(), true, `${name} home`);
+  await phone.setInputFiles('#file', join(work, 'flat7-chat.txt')); await phone.waitForSelector('#result:not([hidden])'); await phone.waitForTimeout(900);
+  assert.equal(await fits(), true, `${name} card`);
+  assert.deepEqual(await phone.evaluate(() => [...document.querySelectorAll('#storyTools .btn')].filter(b => b.offsetParent).map(b => b.scrollWidth <= b.clientWidth + 1)), [true, true, true], `${name} buttons`);
+  await small.close();
+}
+ok('home and cards fit, with whole button labels, on SE, mini, 16 and 16 Pro Max screens');
 
 assert.deepEqual(errors, []); ok('no page errors');
 console.log(`${passed} checks passed`);

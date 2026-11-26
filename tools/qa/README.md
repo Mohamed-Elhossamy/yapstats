@@ -14,7 +14,7 @@ node hash.mjs        # REQUIRED after every edit to the inline script: updates t
 node interact.mjs    # 22 checks: taps, drags, keyboard, year chips, gallery, reduced motion, resize
 node wheel2.mjs      # 8 checks: trackpad swipes
 node checks2.mjs     # 12 checks: offer cue, phone layout, error state, end actions, unlocked state
-node mktiktok.mjs && node tiktok.mjs   # 5 checks: TikTok data file and ZIP, chat picker, TXT refused
+node mktiktok.mjs && node tiktok.mjs   # 3 checks: the website refuses TikTok files (the import is app-only, checked in app/test)
 ```
 
 `*.txt` files and the TikTok test files here are generated and ignored by git.

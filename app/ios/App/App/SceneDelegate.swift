@@ -1,6 +1,8 @@
 import UIKit
 import WebKit
 import StoreKit
+import Photos
+import AVFoundation
 import Capacitor
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -74,6 +76,9 @@ final class YapstatsViewController: CAPBridgeViewController {
         webView?.isOpaque = false
         webView?.backgroundColor = background
         webView?.scrollView.backgroundColor = background
+        // Every page, About, Privacy and Terms included, knows it is in the app before it first draws.
+        webView?.configuration.userContentController.addUserScript(WKUserScript(
+            source: "document.documentElement.classList.add('is-app')", injectionTime: .atDocumentStart, forMainFrameOnly: true))
         // The page reaches native features with window.webkit.messageHandlers.yapstats.postMessage({ type }).
         webView?.configuration.userContentController.add(self, name: "yapstats")
         if let scroll = webView?.scrollView {
@@ -96,6 +101,52 @@ final class YapstatsViewController: CAPBridgeViewController {
 
     private var purchaseUpdates: Task<Void, Never>?
     private var scrollWatch: [NSKeyValueObservation] = []
+    private var startupSound: AVAudioPlayer?
+    private var startupSoundAsked = false
+
+    /// One quiet chime with the startup animation. It follows the silent switch, never interrupts or talks over other
+    /// audio, and plays once per launch. The audio session is set up off the main thread: those calls can stall the UI.
+    private func playStartupSound() {
+        guard !startupSoundAsked, let url = Bundle.main.url(forResource: "startup", withExtension: "m4a") else { return }
+        startupSoundAsked = true
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let session = AVAudioSession.sharedInstance()
+            guard !session.isOtherAudioPlaying else { return }
+            try? session.setCategory(.ambient)
+            guard let player = try? AVAudioPlayer(contentsOf: url) else { return }
+            player.volume = 0.7
+            player.play()
+            DispatchQueue.main.async { self?.startupSound = player } // keep it alive while it plays
+        }
+    }
+
+    /// Saves one card (PNG, base64 from the page) to Photos. Asks for add-only access the first time: the app never reads the library.
+    private func saveToPhotos(base64: String) {
+        guard let data = Data(base64Encoded: base64), UIImage(data: data) != nil else {
+            reportSaved(error: "Couldn’t read that card. Try again.")
+            return
+        }
+        PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
+            guard status == .authorized || status == .limited else {
+                self?.reportSaved(error: "Yapstats can’t add to Photos. Allow it in Settings, under Yapstats, then Photos.")
+                return
+            }
+            PHPhotoLibrary.shared().performChanges({
+                PHAssetCreationRequest.forAsset().addResource(with: .photo, data: data, options: nil) // the PNG as it is, not re-compressed
+            }, completionHandler: { saved, _ in
+                self?.reportSaved(error: saved ? nil : "Couldn’t save that card. Try again.")
+            })
+        }
+    }
+
+    private func reportSaved(error: String?) {
+        DispatchQueue.main.async { [weak self] in
+            if error == nil { UINotificationFeedbackGenerator().notificationOccurred(.success) }
+            var state: [String: Any] = ["ok": error == nil]
+            if let error { state["error"] = error }
+            self?.webView?.callAsyncJavaScript("window.yapstatsSaved?.(state); return true;", arguments: ["state": state], in: nil, in: .page, completionHandler: nil)
+        }
+    }
 
     private static func restingOffset(for scroll: UIScrollView) -> CGFloat? {
         guard !scroll.isTracking, !scroll.isDecelerating, !scroll.isZooming else { return nil } // a finger or a bounce may pass the limits
@@ -185,6 +236,8 @@ extension YapstatsViewController: WKScriptMessageHandler {
         switch type {
         case "tick": UIImpactFeedbackGenerator(style: .light).impactOccurred()
         case "success": UINotificationFeedbackGenerator().notificationOccurred(.success)
+        case "intro": playStartupSound()
+        case "save": saveToPhotos(base64: body["data"] as? String ?? "")
         case "buy": Task { await buy() }
         case "restore": Task { await restore() }
         case "purchase": Task { await reportPurchase() }

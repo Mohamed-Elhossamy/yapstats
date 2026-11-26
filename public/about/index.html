@@ -18,6 +18,7 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ink); color: var(--text); font: 1.0625rem/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
 a { color: inherit; }
+.is-app .web-only { display: none; } /* the iPhone app shows these pages too, without the parts that are only about the website */
 .wrap { width: min(100% - 40px, 720px); margin-inline: auto; }
 header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; border-bottom: 1px solid var(--line); }
 .brand { font-weight: 850; font-size: 1.2rem; text-decoration: none; }
@@ -57,7 +58,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 <p>If the export cannot prove a number, the card for it is left out.</p>
 
 <h2>What it costs</h2>
-<p>The recap is free. The Full recap is an optional one-off purchase that adds a personal card for each member and extra rankings. Tips are welcome and never required.</p>
+<p>The recap is free. The Full recap is an optional one-off purchase that adds a personal card for each member and extra rankings.<span class="web-only"> Tips are welcome and never required.</span></p>
 
 <h2>Contact</h2>
 <p>Questions, bugs and takedown requests: <a href="mailto:hello@yapstats.tech">hello@yapstats.tech</a>.</p>
@@ -65,7 +66,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 </main>
 <footer class="wrap">
 <p>Not affiliated with, endorsed by or connected to WhatsApp, Meta or TikTok.</p>
-<nav aria-label="Site"><a href="/export-whatsapp-chat/">WhatsApp export guide</a><a href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
+<nav aria-label="Site"><a class="web-only" href="/export-whatsapp-chat/">WhatsApp export guide</a><a class="web-only" href="/export-instagram-messages/">Instagram export guide</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav>
 </footer>
 </body>
 </html>

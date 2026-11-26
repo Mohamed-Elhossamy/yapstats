@@ -3,7 +3,7 @@
   "private": true,
   "description": "Native shell for Yapstats. Bundles ../public unchanged.",
   "scripts": {
-    "sync": "cap copy ios"
+    "sync": "cap copy ios && rm -rf ios/App/App/public/export-whatsapp-chat ios/App/App/public/export-instagram-messages ios/App/App/public/email-download ios/App/App/public/og.png ios/App/App/public/sitemap.xml ios/App/App/public/robots.txt ios/App/App/public/_headers"
   },
   "dependencies": {
     "@capacitor/core": "8.6.3",

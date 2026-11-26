@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-UhB7M3nh/Mr3DB4NdU0mqc1vb+KhB7OQarZbEY5HcA8='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-fypBHvFx1Ib+ImzyEmVuom49SCAkH08oAFfwmA4rrx0='; style-src 'unsafe-inline'; img-src blob: data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Turn your WhatsApp chats, Instagram DMs and TikTok group chats into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
+<meta name="description" content="Turn your WhatsApp chats and Instagram DMs into shareable recap cards. Find your biggest talker, busiest hour and favourite emoji on your own device.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ffd92e'/%3E%3Cpath d='M16 20h32v22H28l-8 7v-7h-4z' fill='none' stroke='%2317171c' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M24 33v-4m8 6v-8m8 6v-4' stroke='%2317171c' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E" type="image/svg+xml">
 <meta property="og:title" content="Yapstats: who really runs the group chat?">
-<meta property="og:description" content="Turn a WhatsApp, Instagram or TikTok chat export into recap cards for your group. Start free. Your chat stays on your device.">
+<meta property="og:description" content="Turn a WhatsApp or Instagram chat export into recap cards for your group. Start free. Your chat stays on your device.">
 <meta property="og:image" content="https://yapstats.tech/og.png">
 <meta property="og:url" content="https://yapstats.tech/">
 <meta property="og:type" content="website">
@@ -256,6 +256,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .result-actions { flex-wrap: wrap; gap: 8px; margin-top: 12px; }
 .result-actions .btn { font-size: .84rem; }
 #sendNote { margin-top: 9px; text-align: center; }
+.is-app #sendNote:empty { display: none; }
 .gallery-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
 .gallery-top h3 { font-size: 1.6rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 185px), 1fr)); gap: 12px; }
@@ -312,7 +313,19 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .lede:not(.app-only), .is-app .foot p:nth-child(2) { display: none; }
 .is-app .hero { gap: 11px; padding-block: 20px 4px; }
 .is-app .hero h1 { font-size: clamp(2.3rem, 11.5vw, 3.5rem); }
-.is-app .fan { order: 1; width: min(84%, 372px, 41svh); margin-block: 20px 12px; } /* room above and below: the samples grow and float, and must not sit on the title or the button */
+/* The samples take whatever height is left once everything else on the home screen has its room (--home-rest), so the
+   screen never scrolls. Shorter iPhones drop the description line, then tighten the spacing. */
+.is-app { --home-rest: 494px; }
+.is-app.short { --home-rest: 496px; }
+.is-app.tiny { --home-rest: 420px; }
+.is-app.tiny .buy-full small { font-size: .68rem; }
+.is-app.short .lede-text { display: none; }
+.is-app .sample-link { display: inline; padding: 4px 0; border: 0; background: none; color: var(--text); font: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: .22em; }
+.is-app.tiny .top { min-height: 42px; }
+.is-app.tiny .hero { gap: 8px; padding-block: 8px 2px; }
+.is-app.tiny .hero h1 { font-size: 2.2rem; }
+.is-app.tiny .fan { margin-block: 12px 8px; }
+.is-app .fan { order: 1; width: min(84%, 372px, calc((var(--app-h, 100svh) - var(--home-rest)) * 1.1)); margin-block: 20px 12px; } /* room above and below: the samples grow and float, and must not sit on the title or the button */
 .is-app .actions, .is-app .error { order: 2; }
 .is-app .actions { justify-content: center; text-align: center; gap: 8px; }
 .is-app .actions .btn { width: 100%; min-height: 60px; font-size: 1.08rem; }
@@ -359,7 +372,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 @keyframes intro-out { to { opacity: 0; visibility: hidden; } }
 /* Story: no arrow buttons to look at. They stay in the page for VoiceOver; taps and swipes do the moving. */
 .is-app:has(#landing[hidden]) .top { display: none; } /* in the story the cards carry the name; the screen is theirs */
-.is-app .result { --story-chrome: 262px; padding-block: 8px 10px; }
+.is-app .result { --story-chrome: calc(100svh - var(--app-h, 100svh) + 166px); padding-block: 8px 10px; } /* cards get the real screen height minus the top bar, bars and buttons */
 .is-app .back-home { display: inline-flex; flex: none; width: 44px; min-height: 44px; padding: 0; border-radius: 50%; background: var(--surface-raised); border-color: transparent; }
 .is-app .result > .pack, .is-app .pack-cue { display: none; } /* the offer is the last slide of the story */
 .is-app { --action: var(--accent); --on-action: var(--on-accent); }
@@ -388,11 +401,19 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 .is-app .story-tools .btn, .is-app .result-actions .btn, .is-app .actions .btn.primary, .is-app .buy-full, .is-app .pack--slide .pack-buy {
   --edge: color-mix(in srgb, var(--text) 22%, var(--ink)); border-color: transparent; font-weight: 820; box-shadow: 0 4px 0 var(--edge); transition: translate 90ms var(--ease), box-shadow 90ms var(--ease); }
 .is-app .story-tools .btn:active, .is-app .result-actions .btn:active, .is-app .actions .btn.primary:active, .is-app .buy-full:active, .is-app .pack--slide .pack-buy:active { scale: 1; transform: none; translate: 0 3px; box-shadow: 0 1px 0 var(--edge); }
-.is-app .story-tools .btn { min-height: 54px; border-radius: 18px; font-size: .92rem; gap: 8px; }
+.is-app .story-tools .btn { min-height: 54px; padding-inline: 8px; border-radius: 18px; font-size: clamp(.8rem, 3.6vw, .92rem); gap: 7px; }
+.is-app #savePhoto { display: inline-flex; flex: 0 0 auto; padding-inline: 13px; }
+.is-app #shareCard { flex: 0 1 auto; padding-inline: 13px; }
+.is-app #savePhoto.done { --edge: #1f7a3d; background: #2fa957; color: #fff; }
+.is-app .gallery-item a.done { color: #2fa957; font-weight: 750; text-decoration: none; }
+.is-app .toast { position: fixed; z-index: 70; left: 18px; right: 18px; bottom: 84px; width: fit-content; max-width: calc(100vw - 36px); margin: 0 auto; padding: 11px 16px; border-radius: 14px; background: var(--text); color: var(--ink); font-size: .9rem; font-weight: 700; text-align: center; box-shadow: 0 8px 26px #0006; animation: app-rise 260ms var(--ease) both; }
+.is-app .toast[hidden] { display: none; }
 .is-app .story-tools .btn:not(.story-guess) { background: var(--surface-raised); }
 .is-app .story-tools .story-guess, .is-app .story-tools:has(#guessTalker[hidden]) #shareCard, .is-app .result-actions .btn.primary, .is-app .actions .btn.primary, .is-app .pack--slide .pack-buy { --edge: #b08f00; background: var(--accent); color: var(--on-accent); }
 .is-app .buy-full { --edge: color-mix(in srgb, var(--accent) 45%, var(--ink)); border-color: var(--accent); }
-.is-app #shareCard::before, .is-app #openGallery::before, .is-app #guessTalker::before, .is-app #send::before { content: ""; flex: none; width: 19px; height: 19px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
+.is-app #savePhoto { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11m-4-4 4 4 4-4M5 19h14'/%3E%3C/svg%3E"); }
+.is-app #savePhoto.done { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E"); }
+.is-app #savePhoto::before, .is-app #shareCard::before, .is-app #openGallery::before, .is-app #guessTalker::before, .is-app #send::before { content: ""; flex: none; width: 19px; height: 19px; background: currentColor; -webkit-mask: var(--icon) center / contain no-repeat; mask: var(--icon) center / contain no-repeat; }
 .is-app #shareCard, .is-app #send { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V3m-4 4 4-4 4 4M5 12v8h14v-8'/%3E%3C/svg%3E"); }
 .is-app #openGallery { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linejoin='round'%3E%3Cpath d='M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z'/%3E%3C/svg%3E"); }
 .is-app #guessTalker { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8M12 17h.01M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z'/%3E%3C/svg%3E"); }
@@ -531,6 +552,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
 </head>
 <body>
 <div class="app-only intro" id="intro" aria-hidden="true"><span class="intro-logo"><svg class="icon" viewBox="0 0 24 24"><path d="M4 5h16v11H10l-4 4v-4H4zM8 10v2m4-3v4m4-3v2"/></svg></span><i data-count="4,179"></i><i></i><i></i><b>Yapstats</b></div>
+<p class="app-only toast" id="toast" role="status" hidden></p>
 <header class="wrap top" id="top">
   <a class="top-link" id="exportLink" href="#export-guide">How to export</a>
   <a class="brand" id="brand" href="./" aria-label="Yapstats home">
@@ -542,7 +564,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
     <section class="wrap hero" id="hero">
       <div class="hero-copy">
         <h1>Who really runs the <mark>group chat?</mark></h1>
-        <p class="lede app-only">Drop in a chat export. Get cards about your group that you can share.</p>
+        <p class="lede app-only"><span class="lede-text">Drop in a chat export. Get cards about your group that you can share. </span><button class="sample-link" id="trySample" type="button">Try a sample chat</button></p>
         <p class="lede">Find the biggest yapper, the midnight regular and the emoji your group has worn out. Turn the results into cards and drop the receipts back in the chat.</p>
         <div class="actions">
           <input class="vh" type="file" id="file" accept=".zip,.txt,.json">
@@ -550,7 +572,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></svg>
             Upload chat export
           </label>
-          <p class="file-note">WhatsApp, Instagram or TikTok. No export yet? <a href="#export-guide">See how to get one</a>.</p>
+          <p class="file-note">WhatsApp or Instagram. No export yet? <a href="#export-guide">See how to get one</a>.</p>
         </div>
         <p class="error" id="error" role="alert" hidden></p>
         <p class="in-app" id="inApp" hidden></p>
@@ -614,7 +636,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
             <li>When it’s ready, download the ZIP and open it here. To recap just one file, open its <b>message_1.json</b> instead.</li>
           </ol>
         </div>
-        <div class="panel tiktok-guide">
+        <div class="panel tiktok-guide app-only">
           <h3>TikTok group chats and DMs</h3>
           <ol>
             <li>In TikTok, tap <b>Profile</b>, then the <b>Menu</b> button, then <b>Settings and privacy</b>.</li>
@@ -682,6 +704,7 @@ mark { display: inline-block; padding: .02em .22em; border-radius: 8px; backgrou
       </nav>
       <p class="note story-hint" id="storyHint">Tap either side or swipe to move between cards.</p>
       <div class="story-tools" id="storyTools" aria-label="Card actions">
+        <button class="btn app-only" id="savePhoto" type="button">Save</button>
         <a class="btn" id="saveCard">Save this card</a>
         <button class="btn" id="shareCard" type="button">Share this card</button>
         <button class="btn story-guess" id="guessTalker" type="button" hidden>Guess the top talker</button>
@@ -982,7 +1005,7 @@ function instagramPart(raw, messages) {
   let data;
   try { data = JSON.parse(raw); } catch { /* report a friendly error below */ }
   if (!Array.isArray(data?.messages)) {
-    throw new ChatError('This JSON is not a chat export. For Instagram, choose a message_1.json from the chat folder. For TikTok, choose the data file you downloaded.');
+    throw new ChatError('This is not an Instagram messages JSON. Export Messages in JSON format or choose a message_1.json from the chat folder.');
   }
   for (const item of data.messages) {
     const t = item?.timestamp_ms;
@@ -1082,7 +1105,14 @@ function tiktokExport(raw) {
   return null;
 }
 
-const TIKTOK_TXT = 'This TikTok export is in TXT format. Request your data again and choose JSON as the file format.';
+// TikTok chats are an app feature: the website recognises the file and says where it works.
+const tiktokIfApp = result => {
+  if (result && !IN_APP) throw new ChatError('TikTok chats are read in the Yapstats iPhone app, not on the website.');
+  return result;
+};
+const tiktokTxt = () => new ChatError(IN_APP
+  ? 'This TikTok export is in TXT format. Request your data again and choose JSON as the file format.'
+  : 'TikTok chats are read in the Yapstats iPhone app, not on the website.');
 
 async function readChatExport(file) {
   const head = new Uint8Array(await file.slice(0, 2).arrayBuffer());
@@ -1092,7 +1122,7 @@ async function readChatExport(file) {
   }
   if (!zip && /\.json$/i.test(file.name)) {
     const text = await file.text();
-    const tiktok = tiktokExport(text);
+    const tiktok = tiktokIfApp(tiktokExport(text));
     if (tiktok) return tiktok;
     const messages = [];
     const title = instagramPart(text, messages);
@@ -1127,25 +1157,25 @@ async function readChatExport(file) {
     const json = entries.filter(entry => /\.json$/i.test(entry.name) && !/(?:^|\/)(?:__MACOSX\/|\._)/.test(entry.name));
     const dataFile = json.find(entry => /(?:^|\/)user_data[^/]*\.json$/i.test(entry.name)) || (json.length === 1 ? json[0] : null);
     if (dataFile) {
-      const tiktok = tiktokExport(await readZipText(file, dataFile, dirAt));
+      const tiktok = tiktokIfApp(tiktokExport(await readZipText(file, dataFile, dirAt)));
       if (tiktok) return tiktok;
     }
-    if (entries.some(entry => /(?:^|\/)(?:direct messages?|chat history|group chats?)\.txt$/i.test(entry.name))) throw new ChatError(TIKTOK_TXT);
+    if (entries.some(entry => /(?:^|\/)(?:direct messages?|chat history|group chats?)\.txt$/i.test(entry.name))) throw tiktokTxt();
     if (entries.some(entry => /(?:^|\/)message(?:_\d+)?\.html$/i.test(entry.name))) {
       throw new ChatError('This Instagram export is HTML. Request another export with Messages and JSON selected.');
     }
     const txt = entries.find(entry => /(?:^|\/)_chat\.txt$/i.test(entry.name)) ||
       entries.find(entry => /\.txt$/i.test(entry.name));
-    if (!txt) throw new ChatError('No chat files found. Export a WhatsApp chat without media, select Messages and JSON for Instagram, or choose JSON for TikTok.');
+    if (!txt) throw new ChatError('No chat files found. Export a WhatsApp chat without media, or select Messages and JSON for Instagram.');
     raw = await readZipText(file, txt, dirAt);
   } else {
-    if (/\.html?$/i.test(file.name)) throw new ChatError('Choose a WhatsApp TXT or ZIP file, or an Instagram or TikTok JSON export.');
+    if (/\.html?$/i.test(file.name)) throw new ChatError('Choose an Instagram JSON export or a WhatsApp TXT or ZIP file.');
     raw = await file.text();
   }
   const chat = parseChat(raw);
   if (!chat.messages.length) {
-    if (/^(?:>>> ?)?(?:chat history|group chat) with .+:\s*$/im.test(raw.slice(0, 50_000))) throw new ChatError(TIKTOK_TXT);
-    throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram or TikTok JSON or ZIP export.');
+    if (/^(?:>>> ?)?(?:chat history|group chat) with .+:\s*$/im.test(raw.slice(0, 50_000))) throw tiktokTxt();
+    throw new ChatError('No messages found. Choose a WhatsApp TXT or ZIP, or an Instagram JSON or ZIP export.');
   }
   return { chat, group: groupFromFile(file.name) };
 }
@@ -1998,7 +2028,7 @@ function activate(index) {
   const shareCard = $('shareCard');
   const saveCard = $('saveCard');
   if (card) {
-    shareCard.textContent = isHighlights ? 'Share highlights' : 'Share this card';
+    shareCard.textContent = IN_APP ? 'Share' : isHighlights ? 'Share highlights' : 'Share this card';
     saveCard.textContent = isHighlights ? 'Save highlights' : 'Save this card';
     saveCard.href = card.url;
     saveCard.download = card.file.name;
@@ -2288,6 +2318,10 @@ function showGallery(event) {
     link.href = card.url;
     link.download = card.file.name;
     link.textContent = `Save ${card.title.toLowerCase()}`;
+    if (IN_APP) { // a download link does nothing in the app: save to Photos instead
+      link.setAttribute('role', 'button');
+      link.addEventListener('click', event => { event.preventDefault(); savePhoto(card, link); });
+    }
     caption.append(link);
     const open = document.createElement('button');
     open.type = 'button';
@@ -2974,6 +3008,40 @@ function showGuide(open) {
   document.documentElement.classList.toggle('guide-open', open);
   $('exportLink').textContent = open ? 'Back' : 'How to export';
 }
+// App only: save the card in front straight to Photos. The native side asks for add-only access the first time
+// and answers through yapstatsSaved({ ok, error }).
+let toastTimer;
+function toast(message) {
+  clearTimeout(toastTimer);
+  $('toast').textContent = message;
+  $('toast').hidden = !message;
+  if (message) toastTimer = setTimeout(() => toast(''), 4200);
+}
+let saving = null; // the control that asked for the save in progress, and its label
+async function savePhoto(card = currentCard(), control = $('savePhoto')) {
+  if (!card || saving) return;
+  saving = { control, label: control.textContent };
+  control.setAttribute('aria-busy', 'true');
+  const data = await new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result.slice(reader.result.indexOf(',') + 1) : '');
+    reader.readAsDataURL(card.file);
+  });
+  if (data) toApp({ type: 'save', data });
+  else globalThis.yapstatsSaved({ ok: false, error: 'Couldn’t read that card. Try again.' });
+}
+globalThis.yapstatsSaved = ({ ok, error }) => {
+  if (!saving) return;
+  const { control, label } = saving;
+  saving = null;
+  control.removeAttribute('aria-busy');
+  toast(ok ? '' : error || 'Couldn’t save that card. Try again.');
+  if (!ok) return;
+  control.textContent = 'Saved';
+  control.classList.add('done');
+  setTimeout(() => { control.textContent = label; control.classList.remove('done'); }, 1900);
+};
+
 // App purchases. Apple sells the unlock; the native side (StoreKit) buys, restores and verifies, then calls
 // yapstatsPurchase({ owned, price, error }) after every request and whenever a purchase changes.
 function askApp(type) {
@@ -3021,14 +3089,36 @@ function endIntro() {
 }
 if (IN_APP) {
   document.documentElement.classList.add('is-app');
-  if (reducedMotion.matches) endIntro();
+  // The startup animation and its sound play once per launch, not again when coming back from Privacy or Terms.
+  let seenIntro = false;
+  try { seenIntro = sessionStorage.getItem('yapstatsIntro') === '1'; sessionStorage.setItem('yapstatsIntro', '1'); } catch { /* storage blocked: the intro plays each time */ }
+  if (reducedMotion.matches || seenIntro) endIntro();
   else {
     document.documentElement.style.setProperty('--intro', '1250ms'); // the home screen's own entrance waits for the intro
+    toApp({ type: 'intro' }); // the native side plays the startup sound
     setTimeout(() => toApp({ type: 'tick' }), 500); // felt as the cards deal out
     setTimeout(endIntro, 1750);
   } // not 'in-app': that class styles the in-app-browser notice
+  // The height the page really has, without the status bar and home indicator. Layout that must fit one screen uses it.
+  const fitScreen = () => {
+    if (/^(?:INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName)) return; // the keyboard is up: keep the layout still
+    document.documentElement.style.setProperty('--app-h', `${innerHeight}px`);
+    document.documentElement.classList.toggle('short', innerHeight < 740); // iPhone mini and SE
+    document.documentElement.classList.toggle('tiny', innerHeight < 700); // iPhone SE
+  };
+  fitScreen();
+  addEventListener('resize', fitScreen);
+  $('savePhoto').addEventListener('click', () => savePhoto());
+  // No export to hand? The sample chat is made up, and shows the whole app: cards, sharing, saving and the unlock.
+  $('trySample').addEventListener('click', () => {
+    if (!$('landing').hidden) importChat(async () => ({ chat: parseChat(demoChat()), group: 'Flat 12 (sample)' }));
+  });
+  // The app sells the unlock through Apple only: the website's checkout, tip and long-guide links are not part of it.
+  for (const link of document.querySelectorAll('.checkout-link, .guide-links, #tipLink, .foot-links a[href*="export"]')) link.remove();
+  $('openGallery').textContent = 'All cards';
+  $('guessTalker').textContent = 'Guess top talker';
   $('file').labels[0].lastChild.textContent = ' Choose a chat export ';
-  document.querySelector('.file-note').textContent = 'Read on this iPhone. Never uploaded.';
+  document.querySelector('.file-note').textContent = 'WhatsApp, Instagram or TikTok. Never uploaded.';
   $('appBuy').addEventListener('click', () => askApp('buy'));
   $('appRestore').addEventListener('click', () => askApp('restore'));
   $('unlocked').textContent = 'Full recap unlocked.';
