@@ -4,19 +4,23 @@ Written 26 Nov 2026. Mohamed joined the Apple Developer Program that day (indivi
 
 ## Status in App Store Connect (26 Nov 2026)
 
-Entered and saved:
+Everything below is entered and saved. Nothing has been submitted for review.
+
 - App record: Yapstats, Apple ID `6839611903`, SKU `yapstats-ios`, bundle ID `tech.yapstats.app`, primary language English (U.K.).
 - App Information: subtitle, categories, content rights (no third-party content), age rating (calculated 4+).
-- Version 1.0: promotional text, description, keywords, support and marketing URLs, copyright, review notes and contact, sign-in not required, manual release.
-- Pricing: free (base United Kingdom).
-- App Privacy: policy URL and "Data not collected" saved, not yet published.
-- In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, £2.99 (base United Kingdom), all countries, display name, description and review note.
-- Agreements: Paid Apps Agreement accepted; both US tax forms (Certificate of Foreign Status, W-8BEN) active.
+- Version 1.0: promotional text, description, keywords, support and marketing URLs, copyright, review notes and contact, sign-in not required, manual release, build 1.0 (1) attached.
+- Screenshots: the five 1320 x 2868 pictures are in the Asset Library and on the large iPhone slot, in order 1 to 5. The required medium slot uses the same pictures, scaled by Apple.
+- Pricing: free (base United Kingdom). Availability: 174 countries and regions. China mainland is left out because it needs a security assessment and an AI-content filing.
+- App Privacy: policy URL and "Data Not Collected" published.
+- In-app purchase: Full recap, Apple ID `6839620033`, non-consumable, GBP 2.99 (base United Kingdom), display name, description, review note and review screenshot. Status "Prepare for Submission"; it goes to review together with version 1.0.
+- Business: Paid Apps Agreement, bank account, both US tax forms, Digital Services Act trader status and MRDP are all Active.
+- TestFlight: build 1.0 (1) uploaded; internal group "Me" with Mohamed as tester. The sandbox purchase sheet shows the real price.
 
 Still open:
-- Mohamed: bank account, EU trader status, pressing Publish on App Privacy.
-- App availability (countries), which depends on the trader decision.
-- Screenshots upload, the purchase's review screenshot, a build (archive and upload from Xcode), then Add for Review. The listing follows the project rule that no other company's brand appears in the name, text or pictures.
+- Mohamed decides when to press Add for Review (version 1.0 and the Full recap purchase together).
+- After release: point the website's TikTok note at the App Store page.
+
+The listing follows the project rule that no other company's brand appears in the name, text or pictures.
 
 ## App information
 
