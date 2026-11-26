@@ -12,7 +12,7 @@ Run from this folder:
 node mkchat.mjs && node demo.mjs && printf 'not a chat\n' > junk.txt   # synthetic test files, all made up
 node hash.mjs        # REQUIRED after every edit to the inline script: updates the CSP hash in public/index.html
 node interact.mjs    # 22 checks: taps, drags, keyboard, year chips, gallery, reduced motion, resize
-node wheel2.mjs      # 8 checks: trackpad swipes
+node wheel2.mjs      # 10 checks: trackpad swipes, including hard swipes that must turn one card only
 node checks2.mjs     # 12 checks: offer cue, phone layout, error state, end actions, unlocked state
 node mktiktok.mjs && node tiktok.mjs   # 3 checks: the website refuses TikTok files (the import is app-only, checked in app/test)
 node polish.mjs      # 6 checks: sample chat, loading cards, unlock lands on the first new card, no TikTok wording on the website
