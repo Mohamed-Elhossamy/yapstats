@@ -52,6 +52,12 @@ Ship Yapstats as a real app on the App Store and Google Play, at the same qualit
 - Landing: export help link; on phones the sample cards come before the paid offer; notice for in-app browsers.
 - Mohamed rejected a "See a sample recap" demo button: the three sample cards on the landing page are enough.
 
+## Decisions made on 26 Nov 2026
+
+- **iOS only for now.** Android waits (it also needs a real Android phone and a 12-tester, 14-day closed test).
+- **Build approach: Capacitor shell**, in `app/` on the `ios-app` branch. See `app/README.md` for status and `THIRD_PARTY_NOTICES.md` for what was added.
+- No accounts created and nothing spent. The Apple Developer Program (about £79 a year) is needed only for TestFlight and submission.
+
 ## Open decisions for the app (not made yet)
 
 1. **Build approach.** Starting point to evaluate, not a decision: wrap the existing page in a native shell (Capacitor is the usual tool), because the parser and canvas card drawing already work and would be reused unchanged. Compare it with a native rewrite before choosing. His standing rule: search GitHub first for reusable open-source repos (1k+ stars, recent commits, permissive licence), report them and get approval before copying.

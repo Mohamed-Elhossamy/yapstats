@@ -1,0 +1,8 @@
+{
+  "appId": "tech.yapstats.app",
+  "appName": "Yapstats",
+  "webDir": "../public",
+  "ios": {
+    "contentInset": "always"
+  }
+}
