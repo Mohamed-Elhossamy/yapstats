@@ -2,6 +2,38 @@
 
 Written 26 Nov 2026 at the end of the web polish session. Read this first, then `README.md`.
 
+## Current state on 27 Nov 2026 (read this first)
+
+The sections further down describe the starting point. This section is the present.
+
+Where things live:
+- Branch `ios-app` has the app (`app/`, a Capacitor 8 iOS shell around the same `public/index.html`) and the newest docs. `main` is the live website and deploys on every push.
+- The Xcode project Mohamed builds from is a copy on his Mac at `~/Downloads/Yapstats-iOS`. After changing `public/` or `app/ios`, copy the files there and check them before he archives.
+- `docs/APP_STORE_LISTING.md` has the full App Store Connect status, IDs and listing text. `docs/IOS_APP_DESIGN.md` and `docs/TIKTOK_IMPORT.md` cover the app design and the app-only TikTok import.
+
+App Store:
+- Version 1.0 (build 1) and the Full recap purchase were submitted together on 26 Nov 2026 at 15:03. Both were "Waiting for Review". Release is manual.
+- TestFlight: internal group "Me" works and Mohamed confirmed the sandbox purchase unlocks the full recap. External group "Friends" holds build 1 in beta review. The public link in the listing doc accepts testers only after that review passes.
+- While either review is waiting, do not upload a build or edit the submission.
+- If Apple rejects: read the cited guideline, fix that, then resubmit. Never resubmit unchanged.
+- After release: change `TIKTOK_ON_WEB` in `public/index.html` to point at the App Store page (run `node tools/qa/hash.mjs` after), and check the purchase sheet shows the app icon.
+
+Not yet confirmed by Mohamed on his phone:
+- A hard swipe moves one card only, the last paid card fits without scrolling, and the lit card edge looks right. All three are in build 1.
+- Restore purchases after deleting and reinstalling from TestFlight.
+- Save to Photos, light mode, small iPhones, VoiceOver.
+
+Ads (started 27 Nov 2026, nothing made and nothing bought):
+- Budget is about 25 pounds and is not available yet.
+- He wants talking-actor "UGC" style ads like the MakeUGC samples. Findings: its 1 dollar trial renews at full price (59, 79 or 149 dollars a month, or a yearly bill), trial credits are not published, and reviewers report charges after cancelling. If he takes the trial, he pays himself with a virtual card backed by about 2 pounds, picks monthly billing, and cancels the same night.
+- Free routes found: photo slideshows made from the recap cards, screen recordings of the real app, Google Flow's free daily Veo clips, and real reactions from TestFlight friends. Pay-as-you-go actor tools start at about 5 dollars.
+- Ad rules: scripts never claim a real customer experience (presenter lines, acted skits and challenge hooks are fine), AI actors are labelled as AI on the platform, no other company's brand, and no real chats.
+- Offered but not built: three 15-second scripts, three slideshow sets and three demo videos from the sample chat.
+
+Working with Mohamed, learned the hard way:
+- He does not follow multi-step interface instructions. Do the clicking for him and give him one action at a time.
+- Ask for a plain yes before a push to `main`, before pressing any submit button, and before anything that costs money. He types passwords, payment details and ID numbers himself.
+
 ## Goal
 
 Ship Yapstats as a real app on the App Store and Google Play, at the same quality bar as the site. TikTok chat import was added on 26 Nov 2026 (see docs/TIKTOK_IMPORT.md; not yet checked against a real export). Snapchat import is rejected (its export only holds saved messages, so recaps would be near-empty).
@@ -87,7 +119,6 @@ He has an `app-store-compliance` skill. Run it before calling anything submissio
 
 ## First steps for the new chat
 
-1. Add the repo `Mohamed-Elhossamy/yapstats` and read this file and `README.md`.
-2. Do the official-source checks above and the GitHub search, then give him one recommended approach, one fallback and the total cost in pounds.
-3. Wait for his yes on approach and costs before creating accounts or projects.
-4. Prototype the share-sheet import first on one platform, with a synthetic export.
+1. Add the repo `Mohamed-Elhossamy/yapstats`, check out `ios-app`, and read "Current state" at the top of this file, then `docs/APP_STORE_LISTING.md`.
+2. Ask Mohamed what has changed since 27 Nov 2026: any email from Apple, and whether he took an ads trial.
+3. Carry on from whichever is live: the review result, or the ads work.
